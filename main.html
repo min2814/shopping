@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>쇼핑몰</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://kit.fontawesome.com/5c3afda2cc.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <header class="top-bar">
+    <div class="top-left">
+      <div class="delivery-toggle" role="tablist" aria-label="배송 방식">
+        <button class="nav-btn active" role="tab" aria-selected="true">Delivery</button>
+        <button class="nav-btn" role="tab" aria-selected="false">Pickup</button>
+      </div>
+      <span class="address">Select the delivery address</span>
+      <span class="edit-icon" aria-hidden="true"><i class="fa-regular fa-pen-to-square"></i></span>
+      <span class="delivery-time">Nearest delivery <strong>today is 13:00-14:00</strong></span>
+    </div>
+    <div class="top-right">
+      <span class="phone"><strong>+ 8 800 555-35-35 </strong>Around the clock</span>
+    </div>
+  </header>
+  <div class="search-section">
+    <button class="catalog-btn" type="button">
+      <i class="fa-regular fa-clone" aria-hidden="true"></i>
+      Catalog
+    </button>
+
+    <div class="search-group">
+      <div class="search-pill">
+        <select class="category-select" aria-label="카테고리">
+          <option>ALL CATEGORIES</option>
+        </select>
+        <input class="search-input" type="text" placeholder="Search in the market" aria-label="검색어 입력">
+      </div>
+
+      <button class="search-submit" type="button" aria-label="검색">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <div class="icons" aria-label="바로가기 아이콘">
+      <div class="icon-box" role="button" tabindex="0" aria-label="배송">
+        <i class="fa-solid fa-truck" aria-hidden="true"></i>
+      </div>
+      <div class="icon-box" role="button" tabindex="0" aria-label="찜">
+        <i class="fa-solid fa-heart" aria-hidden="true"></i>
+      </div>
+      <div class="icon-box" role="button" tabindex="0" aria-label="장바구니">
+        <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+      </div>
+      <div class="icon-box" role="button" tabindex="0" aria-label="마이페이지">
+        <i class="fa-solid fa-user" aria-hidden="true"></i>
+      </div>
+    </div>
+  </div>
+
+  <section class="banner" aria-label="프로모션 배너">
+    <div class="banner-text">
+      <h1>BUY NOW <span>PAY LATER</span></h1>
+    </div>
+    <div class="banner-img" aria-hidden="true">💳</div>
+  </section>
+
+  <section class="popular" aria-label="인기 상품">
+    <div class="section-header">
+      <h3>Popular</h3>
+      <a href="#">See all</a>
+    </div>
+
+  <div class="product-list">
+    <div class="product-card">
+      <button class="wishlist-btn" aria-label="찜하기">
+        <i class="fa-regular fa-heart"></i>
+      </button>
+      <div class="img-wrap">
+        <img src="../../a.jpg" wialt="TV">
+      </div>
+      <p class="product-name">TV</p>
+      <div class="price-row">
+        <span class="price">$800.00</span>
+        <button class="add-btn" aria-label="담기"><i class="fa-solid fa-plus"></i></button>
+      </div>
+    </div>
+
+    <div class="product-card">
+      <button class="wishlist-btn" aria-label="찜하기"><i class="fa-regular fa-heart"></i></button>
+      <div class="img-wrap"><img src="../../a.jpg"></div>
+      <p class="product-name">Diskette</p>
+      <div class="price-row">
+        <span class="price">$3.00</span>
+        <button class="add-btn" aria-label="담기"><i class="fa-solid fa-plus"></i></button>
+      </div>
+    </div>
+
+    <div class="product-card">
+      <button class="wishlist-btn" aria-label="찜하기"><i class="fa-regular fa-heart"></i></button>
+      <div class="img-wrap"><img src="../../a.jpg"></div>
+      <p class="product-name">Telephone</p>
+      <div class="price-row">
+        <span class="price">$200.00</span>
+        <button class="add-btn" aria-label="담기"><i class="fa-solid fa-plus"></i></button>
+      </div>
+    </div>
+
+    <div class="product-card">
+      <button class="wishlist-btn" aria-label="찜하기"><i class="fa-regular fa-heart"></i></button>
+      <div class="img-wrap"><img src="../../a.jpg"></div>
+      <p class="product-name">Cart</p>
+      <div class="price-row">
+        <span class="price">$50.00</span>
+        <button class="add-btn" aria-label="담기"><i class="fa-solid fa-plus"></i></button>
+      </div>
+    </div>
+        <div class="product-card">
+      <button class="wishlist-btn" aria-label="찜하기"><i class="fa-regular fa-heart"></i></button>
+      <div class="img-wrap"><img src="../../a.jpg"></div>
+      <p class="product-name">Cart</p>
+      <div class="price-row">
+        <span class="price">$50.00</span>
+        <button class="add-btn" aria-label="담기"><i class="fa-solid fa-plus"></i></button>
+      </div>
+    </div>
+        <div class="product-card">
+      <button class="wishlist-btn" aria-label="찜하기"><i class="fa-regular fa-heart"></i></button>
+      <div class="img-wrap"><img src="../../a.jpg"></div>
+      <p class="product-name">Cart</p>
+      <div class="price-row">
+        <span class="price">$50.00</span>
+        <button class="add-btn" aria-label="담기"><i class="fa-solid fa-plus"></i></button>
+      </div>
+    </div>
+        <div class="product-card">
+      <button class="wishlist-btn" aria-label="찜하기"><i class="fa-regular fa-heart"></i></button>
+      <div class="img-wrap"><img src="../../a.jpg"></div>
+      <p class="product-name">Cart</p>
+      <div class="price-row">
+        <span class="price">$50.00</span>
+        <button class="add-btn" aria-label="담기"><i class="fa-solid fa-plus"></i></button>
+      </div>
+    </div>
+
+  </section>
+
+</body>
+</html>
