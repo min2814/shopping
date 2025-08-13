@@ -1,6 +1,6 @@
 const ul = document.querySelector(".shopping__list ul");
 
-fetch("https://fakestoreapi.com/products?limit=10")
+fetch("https://fakestoreapi.com/products?limit=5")
   .then((v) => v.json()) // JSON 변환
   .then((data) => {
     ul.innerHTML = "";
@@ -26,8 +26,14 @@ fetch("https://fakestoreapi.com/products?limit=10")
         </div>
       `;
       ul.appendChild(li);
-      //   console.log(product.title, product.price);
     });
+
+    document
+      .querySelector(".payment__btn button")
+      .addEventListener("click", () => {
+        localStorage.setItem("products", JSON.stringify(data));
+        window.location.href = "../pay/pay.html";
+      });
   })
   .catch((error) => console.error("API 호출 에러:", error));
 
