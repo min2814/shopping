@@ -261,6 +261,10 @@ body {
   display: flex;
   justify-content: space-between;
 }
+.shopping__product_price div:first-child {
+  font-size: 26px;
+  font-weight: 600;
+}
 .nav-btn {
   border: none;
   background: transparent;
