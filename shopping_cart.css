@@ -161,9 +161,15 @@ body {
 }
 
 body {
-  display: flex;
+  display: block;
+  padding-top: calc(
+    42px + 68px + 16px
+  ); /* 42=top-bar, 68=search-section 대략값, 16은 여유 */
+  background-color: rgba(0, 0, 0, 0.04);
+  overflow-x: hidden;
+  /* display: flex;
   justify-content: center;
-  padding: 180px 150px;
+  padding: 180px 150px; */
   margin: 0;
   background-color: rgba(0, 0, 0, 0.04);
   /* position: relative; */
@@ -174,24 +180,27 @@ body {
   font-family: "Kanit", sans-serif;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   height: 100vh;
   align-items: center;
   width: 100%;
+  align-items: stretch;
+  min-height: 100dvh;
 }
 .shopping__container h1 {
   color: black;
   margin-bottom: 0;
-  position: absolute;
-  top: 140px;
-  left: 150px;
-  z-index: 0;
-  /* position: static;
-  margin: 16px 0; */
-  /* text-shadow: 0 0 10px rgba(0, 0, 0, 0.3); */
+  position: static;
+  top: auto;
+  left: auto;
+  margin: 16px 0 0 100px;
+  z-index: auto;
 }
 .shopping__cart_container {
   display: flex;
+  margin: 0 100px;
+  align-items: flex-start;
+  gap: 24px;
 }
 .shopping__list ul li img {
   width: 20%;
@@ -355,4 +364,29 @@ p {
 }
 .accept img {
   width: 50px;
+}
+
+@media (max-width: 1024px) {
+  .shopping__cart_container {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .payment__container {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+@media (max-width: 768px) {
+  .top-left {
+    gap: 8px;
+  }
+  .category-select {
+    flex-basis: 140px;
+  }
+  .search-submit {
+    padding: 0 12px;
+  }
+  .icons {
+    gap: 6px;
+  }
 }

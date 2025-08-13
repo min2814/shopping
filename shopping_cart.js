@@ -1,6 +1,6 @@
 const ul = document.querySelector(".shopping__list ul");
 
-fetch("https://fakestoreapi.com/products?limit=3")
+fetch("https://fakestoreapi.com/products?limit=5")
   .then((v) => v.json()) // JSON 변환
   .then((data) => {
     ul.innerHTML = "";
