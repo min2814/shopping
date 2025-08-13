@@ -96,12 +96,15 @@
         let selectedColor = null;
         let selectedSize = null;
 
+        let product=null;  // fetch에서 들고온 상품 정보
+
         const imgElement = document.getElementById('product-image');
         const loadingText = document.getElementById('loading-text');
 
         fetch(`https://fakestoreapi.com/products/${productId}`)
             .then(res => res.json())
-            .then(product => {
+            .then(data => {
+                product=data;
                 // 이미지 로드 처리
                 setProductImage(product.image, product.title);
 
@@ -115,8 +118,8 @@
 
                     // 색상 변경 시 이미지도 다시 로드
                     // 실제 서비스라면 색상별 이미지 URL 매핑 필요
-                    const newImageUrl = product.image + `?color=${encodeURIComponent(color)}`;
-                    setProductImage(newImageUrl, `${product.title} - ${color}`);
+                    // const newImageUrl = product.image + `?color=${encodeURIComponent(color)}`;
+                    // setProductImage(newImageUrl, `${product.title} - ${color}`);
                 });
 
                 createOptionButtons('size-options', sizes, (size) => {
@@ -177,14 +180,21 @@
                 alert('색상과 사이즈를 선택해주세요.');
                 return;
             }
+            //cart라는 이름으로 저당된 json 문자열을 가지고 와서 js 객체로 전환
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             cart.push({
                 id: productId,
-                color: selectedColor,
+                title: product.title,       // 상품 제목
+                image: product.image,       // 상품 이미지
+                category:product.category,  // 상품 카테고리
+                price:product.price,        // 상품 가격
+                color: selectedColor,       
                 size: selectedSize,
                 quantity: 1
             });
+            //cart라는 이름으로 js 객체를 다시 json 문자열로 저장
             localStorage.setItem('cart', JSON.stringify(cart));
+            console.log(localStorage);
             alert('장바구니에 담았습니다!');
         });
     </script>
