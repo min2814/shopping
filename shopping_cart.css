@@ -10,6 +10,7 @@
   position: fixed;
   width: 100%;
   top: 0;
+  z-index: 4;
 }
 .delivery-toggle {
   display: inline-flex;
@@ -158,30 +159,34 @@ html,
 body {
   width: 100%;
   overflow-x: hidden;
+  overflow-y: auto;
 }
 
 body {
   display: block;
-  padding-top: calc(
-    42px + 68px + 16px
-  ); /* 42=top-bar, 68=search-section 대략값, 16은 여유 */
+  padding-top: calc(42px + 68px + 16px);
   background-color: rgba(0, 0, 0, 0.04);
   overflow-x: hidden;
-  /* display: flex;
-  justify-content: center;
-  padding: 180px 150px; */
   margin: 0;
   background-color: rgba(0, 0, 0, 0.04);
   /* position: relative; */
 }
+.shopping__cart_container {
+  display: flex;
+  margin: 0 100px;
+  align-items: flex-start;
+  gap: 24px;
+}
 
 .shopping__container {
+  min-height: 100dvh;
+  overflow: visible;
   /* background-color: white; */
   font-family: "Kanit", sans-serif;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  height: 100vh;
+  /* height: 100vh; */
   align-items: center;
   width: 100%;
   align-items: stretch;
@@ -196,14 +201,14 @@ body {
   margin: 16px 0 0 100px;
   z-index: auto;
 }
-.shopping__cart_container {
-  display: flex;
-  margin: 0 100px;
-  align-items: flex-start;
-  gap: 24px;
+.shopping__list {
+  flex: 1 1 70%;
+  min-width: 0;
 }
 .shopping__list ul li img {
-  width: 20%;
+  width: 140px;
+  height: 140px;
+  /* height: 100%; */
   margin-right: 20px;
   padding-right: 20px;
   border-right: 1px solid black;
@@ -214,13 +219,14 @@ body {
 .shopping__list li {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  /* height: 150px; */
   /* width: 400px; */
   border: 3px solid black;
   border-radius: 40px;
-  padding: 10px 30px;
+  padding: 15px 30px;
   margin: 30px 30px 10px 0;
   background-color: white;
-  /* height: 130px; */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 .shopping__list li > div {
@@ -240,7 +246,9 @@ body {
   margin: 0;
   font-weight: 300;
   cursor: pointer;
+  font-size: 24px !important;
 }
+
 .shopping__product_detail div {
   display: flex;
   justify-content: space-between;
@@ -265,6 +273,9 @@ body {
   font-size: 26px;
   font-weight: 600;
 }
+.shopping__product_price div:last-child {
+  margin-right: 10px;
+}
 .nav-btn {
   border: none;
   background: transparent;
@@ -288,12 +299,26 @@ body {
 }
 /* pay============================================ */
 .payment__container {
+  /* position: absolute;
+  right: 0;
+  top: 0;
+  transform: translateY(0);
+  transition: transform 0.7s ease-out; */
+  flex: 0 0 30%;
+  width: 30%;
+  position: relative;
+  will-change: transform;
+  transform: translateY(0);
+
+  z-index: 0;
+
   display: flex;
   flex-direction: column;
-  /* justify-content: center; */
+  justify-content: center;
   align-items: center;
   width: 30%;
-  margin-left: 20px;
+  margin: 0 20px;
+  /* will-change: transform; */
 }
 
 .payment {
@@ -393,4 +418,58 @@ p {
   .icons {
     gap: 6px;
   }
+}
+
+@media (max-width: 1024px) {
+  .shopping__cart_container {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .payment__container {
+    width: 100%;
+    margin-left: 0;
+    transform: none !important;
+  }
+}
+/* tooltip =============================== */
+.icon-box {
+  position: relative;
+  /* display: inline-block; */
+  cursor: pointer;
+}
+
+.tooltip {
+  position: absolute;
+  top: 120%; /* 아이콘 아래쪽 */
+  left: 50%;
+  transform: translateX(-50%) translateY(-10px); /* 처음에 살짝 위에 */
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.25s ease; /* 애니메이션 효과 */
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* 꼬리 부분 */
+.tooltip::after {
+  content: "";
+  position: absolute;
+  bottom: 100%; /* 말풍선 위쪽 */
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent rgba(0, 0, 0, 0.8) transparent;
+}
+
+.icon-box.tooltip-show .tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
 }
