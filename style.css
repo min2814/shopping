@@ -97,14 +97,16 @@ input[type="checkbox"] {
 
 .product-card:hover {
     transform: translateY(-3px);
+        color: gray;
       cursor: pointer;
 }
 
-.product-card img {
+.product-card img:hover {
     max-width: 100%;
     height: 150px;
     object-fit: contain;
     cursor: pointer;
+    color: gray;
 }
 
 .product-name {
