@@ -186,7 +186,6 @@ input[type="text"], input[type="tel"] {
     box-sizing: border-box;
 }
 
-/* 주소 검색 버튼 */
 .address-group button {
     padding: 12px 20px;
     font-size: 16px;
@@ -202,7 +201,6 @@ input[type="text"], input[type="tel"] {
     background-color: #8da4e0;
 }
 
-/* 도로명 주소 & 상세주소 */
 .address-result,
 input.detail-address {
     width: 100%;
@@ -213,3 +211,4 @@ input.detail-address {
     font-size: 16px;
     box-sizing: border-box;
 }
+
