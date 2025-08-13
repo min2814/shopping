@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Account (Clickable + Popover)</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f5f7fb;
+        --card: #fff;
+        --line: #e9eef5;
+        --text: #1c2230;
+        --primary: #1357ff;
+        --primary-700: #0f46cc;
+        --shadow: 0 10px 30px rgba(24, 39, 75, 0.08);
+        --radius: 16px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: Inter, "Noto Sans KR", system-ui, -apple-system, Segoe UI,
+          Roboto, Arial, "Apple SD Gothic Neo", "Noto Sans", sans-serif;
+      }
+
+      /* Top bar */
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: #fff;
+        height: 72px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 10px rgba(24, 39, 75, 0.06);
+      }
+      .topbar .inner {
+        width: min(1200px, 96vw);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        position: relative;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 140px;
+      }
+      .brand-logo {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: #e8f0ff;
+        display: grid;
+        place-items: center;
+        color: #3b6cff;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+      }
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        margin-left: 8px;
+        margin-right: auto;
+      }
+      .nav a {
+        text-decoration: none;
+        color: #3d4658;
+        font-weight: 600;
+        font-size: 14px;
+      }
+      .nav a:hover {
+        color: #111827;
+      }
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .icon-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: #f2f5fb;
+        display: grid;
+        place-items: center;
+        color: #5a657a;
+        border: 1px solid #eef2f8;
+        cursor: pointer;
+        position: relative;
+      }
+      .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: #ffd7b6;
+        display: grid;
+        place-items: center;
+        font-weight: 700;
+        color: #8b4b2b;
+        cursor: pointer;
+        border: 1px solid #f1c7a9;
+      }
+
+      /* Popover */
+      .popover {
+        position: absolute;
+        top: 58px; /* 버튼 아래 */
+        min-width: 220px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        padding: 12px;
+        display: none;
+        z-index: 30;
+      }
+      .popover.show {
+        display: block;
+      }
+      .popover h4 {
+        margin: 4px 0 8px;
+        font-size: 14px;
+      }
+      .popover .row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px;
+        border-radius: 8px;
+      }
+      .popover .row:hover {
+        background: #f6f8fe;
+      }
+      .popover .cta-mini {
+        margin-top: 8px;
+        width: 100%;
+        height: 36px;
+        border-radius: 8px;
+        border: none;
+        background: var(--primary);
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .popover .cta-mini:hover {
+        background: var(--primary-700);
+      }
+
+      /* Layout */
+      .page {
+        width: min(1200px, 96vw);
+        margin: 24px auto 40px;
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 24px;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 14px 0;
+        height: fit-content;
+      }
+      .side-title {
+        font-size: 20px;
+        font-weight: 800;
+        padding: 18px 22px 6px;
+      }
+      .side-list {
+        list-style: none;
+        margin: 0;
+        padding: 8px;
+      }
+      .side-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        margin: 4px 8px;
+        border-radius: 12px;
+        color: #2b3240;
+        cursor: pointer;
+        user-select: none;
+        outline: none;
+      }
+      .side-item:hover {
+        background: #f6f8fe;
+      }
+      .side-item:focus-visible {
+        box-shadow: 0 0 0 2px #cfe0ff;
+      }
+      .side-item .dot {
+        width: 24px;
+        height: 24px;
+        border-radius: 8px;
+        background: #eef2ff;
+        display: grid;
+        place-items: center;
+        color: #3b6cff;
+        font-weight: 700;
+        font-size: 12px;
+      }
+      .side-item.active {
+        background: #f5f8ff;
+        outline: 1px solid #e4ebff;
+        color: #1141c7;
+      }
+      .side-sep {
+        height: 1px;
+        background: var(--line);
+        margin: 10px 14px;
+      }
+      .signout {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 18px;
+        color: #d14747;
+        font-weight: 600;
+        margin-top: 4px;
+        cursor: pointer;
+      }
+
+      /* Content */
+      .content {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .page-title {
+        font-size: 36px;
+        font-weight: 800;
+        letter-spacing: -0.3px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 24px;
+      }
+      .card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+      .h2 {
+        font-size: 22px;
+        font-weight: 800;
+      }
+      .link {
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+      }
+      .link:hover {
+        text-decoration: underline;
+      }
+      .label {
+        font-size: 14px;
+        color: #667085;
+        margin: 8px 0 8px;
+      }
+
+      .input {
+        height: 52px;
+        border-radius: 12px;
+        border: 1px solid #e4e9f3;
+        display: flex;
+        align-items: center;
+        padding: 0 14px;
+        font-size: 16px;
+        font-weight: 700;
+        color: #111827;
+        background: #fff;
+        box-shadow: inset 0 1px 0 rgba(17, 24, 39, 0.02);
+        max-width: 360px;
+      }
+      .input .prefix {
+        margin-right: 8px;
+        color: #6b7280;
+        font-weight: 800;
+      }
+      .spacer {
+        height: 10px;
+      }
+
+      .list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 4px;
+        max-width: 720px;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 14px;
+        padding: 12px 14px;
+        border: 1px solid #e8edf6;
+        border-radius: 12px;
+        background: #fff;
+      }
+      .row .icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: #eef2ff;
+        display: grid;
+        place-items: center;
+        color: #3b6cff;
+        font-weight: 800;
+      }
+      .row .texts {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.25;
+      }
+      .row .title {
+        font-weight: 700;
+      }
+      .row .sub {
+        font-size: 12px;
+        color: #8a94a6;
+      }
+      .radio {
+        width: 18px;
+        height: 18px;
+        border-radius: 999px;
+        border: 2px solid #c9d4ea;
+        display: grid;
+        place-items: center;
+      }
+      .radio.on {
+        border-color: #2e58ff;
+      }
+      .radio.on::after {
+        content: "";
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: #2e58ff;
+        display: block;
+      }
+
+      .cta {
+        margin-top: 18px;
+        max-width: 720px;
+        height: 56px;
+        border-radius: 12px;
+        border: none;
+        background: var(--primary);
+        color: #fff;
+        font-weight: 700;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 20px rgba(19, 87, 255, 0.25);
+        cursor: pointer;
+      }
+      .cta:hover {
+        background: var(--primary-700);
+      }
+      .cta:active {
+        transform: translateY(1px);
+      }
+
+      @media (max-width: 960px) {
+        .page {
+          grid-template-columns: 1fr;
+        }
+        .sidebar {
+          order: 2;
+        }
+        .content {
+          order: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 상단 바 -->
+    <header class="topbar">
+      <div class="inner">
+        <div class="brand">
+          <div class="brand-logo">MI</div>
+          <div class="muted" style="color: #6b7280; font-weight: 700">
+            myfriends
+          </div>
+        </div>
+
+        <!-- 네비게이션: 클릭 가능 -->
+        <nav class="nav" id="topNav">
+          <a href="#" data-nav="supplements">Supplements</a>
+          <a href="#" data-nav="apparels">Apparels</a>
+          <a href="#" data-nav="equipments">Equipments</a>
+          <a href="#" data-nav="gadgets">Gadgets</a>
+        </nav>
+
+        <div class="actions">
+          <button
+            class="icon-btn"
+            id="heartBtn"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            ♡
+          </button>
+          <button
+            class="icon-btn"
+            id="cartBtn"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            🛒
+          </button>
+          <button
+            class="avatar"
+            id="userBtn"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            A
+          </button>
+
+          <!-- Popovers -->
+          <div
+            class="popover"
+            id="heartPop"
+            role="dialog"
+            aria-label="Wishlist"
+          >
+            <h4>Wishlist</h4>
+            <div class="row">하트를 눌러 찜한 상품이 여기에 표시돼요.</div>
+            <button class="cta-mini">찜 상품 보러가기</button>
+          </div>
+
+          <div class="popover" id="cartPop" role="dialog" aria-label="Cart">
+            <h4>Cart</h4>
+            <div class="row">장바구니가 비어있어요.</div>
+            <button class="cta-mini">쇼핑 계속하기</button>
+          </div>
+
+          <div class="popover" id="userPop" role="dialog" aria-label="Profile">
+            <h4>Account</h4>
+            <div class="row">프로필 보기</div>
+            <div class="row">주문 내역</div>
+            <div class="row">설정</div>
+            <button class="cta-mini">로그아웃</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 본문 -->
+    <main class="page">
+      <!-- 사이드바 -->
+      <aside class="sidebar" id="sidebar">
+        <div class="side-title">My Account</div>
+        <ul class="side-list">
+          <li class="side-item" tabindex="0" data-id="profile">
+            <span class="dot">•</span> My Profile
+          </li>
+          <li class="side-item" tabindex="0" data-id="shared">
+            <span class="dot">•</span> Shared Products
+          </li>
+          <li class="side-item" tabindex="0" data-id="payments">
+            <span class="dot">•</span> My Payments
+          </li>
+          <li class="side-item" tabindex="0" data-id="refer">
+            <span class="dot">•</span> Refer &amp; Earn
+          </li>
+          <li class="side-item" tabindex="0" data-id="ref-code">
+            <span class="dot">{</span> Enter Referral Code
+          </li>
+          <li class="side-item active" tabindex="0" data-id="wallet">
+            <span class="dot">⌂</span> My Wallet
+          </li>
+          <li class="side-item" tabindex="0" data-id="terms">
+            <span class="dot">✓</span> Terms &amp; Conditions
+          </li>
+          <li class="side-item" tabindex="0" data-id="privacy">
+            <span class="dot">ⓘ</span> Privacy Policy
+          </li>
+          <li class="side-item" tabindex="0" data-id="switch">
+            <span class="dot">⇄</span> Switch Account
+          </li>
+        </ul>
+        <div class="side-sep"></div>
+        <div class="signout" tabindex="0" data-id="signout">
+          ⎋&nbsp;&nbsp;Sign Out
+        </div>
+      </aside>
+
+      <!-- 콘텐츠 -->
+      <section class="content">
+        <h1 class="page-title">My Account</h1>
+
+        <div class="card">
+          <div class="card-head">
+            <div class="h2">Withdraw</div>
+            <a href="#" class="link" id="addCardBtn">+Add New Card</a>
+          </div>
+
+          <div class="label">Amount</div>
+          <div class="input"><span class="prefix">₹</span>20.00</div>
+
+          <div class="spacer"></div>
+          <div class="label" style="margin-top: 10px">Amount</div>
+
+          <div class="list" id="cardList">
+            <div class="row">
+              <div class="icon">🏛</div>
+              <div class="texts">
+                <div class="title">Standard chartered card</div>
+                <div class="sub">•••• •••• 2878</div>
+              </div>
+              <div class="radio"></div>
+            </div>
+
+            <div class="row">
+              <div class="icon">🏛</div>
+              <div class="texts">
+                <div class="title">Standard chartered card</div>
+                <div class="sub">•••• •••• 2878</div>
+              </div>
+              <div class="radio on"></div>
+            </div>
+
+            <div class="row">
+              <div class="icon">🏛</div>
+              <div class="texts">
+                <div class="title">Standard chartered card</div>
+                <div class="sub">•••• •••• 2878</div>
+              </div>
+              <div class="radio"></div>
+            </div>
+
+            <div class="row">
+              <div class="icon">🏛</div>
+              <div class="texts">
+                <div class="title">Standard chartered card</div>
+                <div class="sub">•••• •••• 2878</div>
+              </div>
+              <div class="radio"></div>
+            </div>
+
+            <button class="cta" id="withdrawBtn">Withdraw</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- JS -->
+    <script>
+      /*** 1) 상단 네비 링크 클릭 ***/
+      document.getElementById("topNav").addEventListener("click", (e) => {
+        const link = e.target.closest("a[data-nav]");
+        if (!link) return;
+        e.preventDefault();
+        const where = link.dataset.nav;
+        console.log("[TopNav]", where);
+        alert("Go to: " + where);
+        // 실제 라우팅 연결: location.href = `/category/${where}`;
+      });
+
+      /*** 2) 팝오버 공통 로직 ***/
+      const btns = {
+        heart: {
+          btn: document.getElementById("heartBtn"),
+          pop: document.getElementById("heartPop"),
+        },
+        cart: {
+          btn: document.getElementById("cartBtn"),
+          pop: document.getElementById("cartPop"),
+        },
+        user: {
+          btn: document.getElementById("userBtn"),
+          pop: document.getElementById("userPop"),
+        },
+      };
+
+      // 팝오버 위치를 버튼 아래로 정렬
+      function positionPopover(btn, pop) {
+        const r = btn.getBoundingClientRect();
+        const parentR = btn.offsetParent.getBoundingClientRect();
+        pop.style.left = r.left - parentR.left - 90 + r.width / 2 + "px"; // 중앙 살짝 맞춤
+        pop.style.top = r.bottom - parentR.top + 8 + "px";
+      }
+
+      function closeAll() {
+        Object.values(btns).forEach(({ btn, pop }) => {
+          pop.classList.remove("show");
+          btn.setAttribute("aria-expanded", "false");
+        });
+      }
+
+      function togglePopover(key) {
+        const { btn, pop } = btns[key];
+        const willOpen = !pop.classList.contains("show");
+        closeAll();
+        if (willOpen) {
+          positionPopover(btn, pop);
+          pop.classList.add("show");
+          btn.setAttribute("aria-expanded", "true");
+          // 첫 포커스 이동
+          const focusable = pop.querySelector(
+            'button, [href], [tabindex]:not([tabindex="-1"])'
+          );
+          (focusable || pop).focus?.();
+        }
+      }
+
+      // 버튼 클릭/키보드로 토글
+      Object.entries(btns).forEach(([key, { btn, pop }]) => {
+        btn.addEventListener("click", () => togglePopover(key));
+        btn.addEventListener("keydown", (e) => {
+          if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            togglePopover(key);
+          }
+        });
+      });
+
+      // 바깥 클릭/ESC로 닫기
+      document.addEventListener("click", (e) => {
+        const anyOpen = Object.values(btns).some(({ pop }) =>
+          pop.classList.contains("show")
+        );
+        if (!anyOpen) return;
+        const clickedInside = Object.values(btns).some(
+          ({ btn, pop }) => pop.contains(e.target) || btn.contains(e.target)
+        );
+        if (!clickedInside) closeAll();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeAll();
+      });
+
+      /*** 3) 기존 사이드바/카드 인터랙션 (그대로) ***/
+      const sidebar = document.getElementById("sidebar");
+      sidebar.addEventListener("click", (e) => {
+        const item = e.target.closest(".side-item, .signout");
+        if (!item) return;
+        if (item.classList.contains("side-item")) {
+          document
+            .querySelectorAll(".side-item")
+            .forEach((li) => li.classList.remove("active"));
+          item.classList.add("active");
+        }
+        alert("Clicked: " + (item.dataset.id || "unknown"));
+      });
+      sidebar.addEventListener("keydown", (e) => {
+        if (
+          (e.key === "Enter" || e.key === " ") &&
+          (e.target.classList.contains("side-item") ||
+            e.target.classList.contains("signout"))
+        ) {
+          e.preventDefault();
+          e.target.click();
+        }
+      });
+
+      const addCardBtn = document.getElementById("addCardBtn");
+      const cardList = document.getElementById("cardList");
+      addCardBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const row = document.createElement("div");
+        row.className = "row";
+        row.innerHTML = `
+        <div class="icon">🏦</div>
+        <div class="texts">
+          <div class="title">New bank card</div>
+          <div class="sub">•••• •••• ${Math.floor(
+            1000 + Math.random() * 9000
+          )}</div>
+        </div>
+        <div class="radio"></div>
+      `;
+        cardList.insertBefore(row, document.getElementById("withdrawBtn"));
+      });
+
+      cardList.addEventListener("click", (e) => {
+        const row = e.target.closest(".row");
+        if (!row) return;
+        document
+          .querySelectorAll(".row .radio")
+          .forEach((r) => r.classList.remove("on"));
+        row.querySelector(".radio").classList.add("on");
+      });
+
+      document.getElementById("withdrawBtn").addEventListener("click", () => {
+        const selected = document.querySelector(".row .radio.on");
+        alert(
+          "Withdrawing to card " +
+            (selected ? "selected ✅" : "not selected ❌")
+        );
+      });
+
+      // 리사이즈 시 열려있는 팝오버 위치 재계산
+      window.addEventListener("resize", () => {
+        Object.values(btns).forEach(({ btn, pop }) => {
+          if (pop.classList.contains("show")) positionPopover(btn, pop);
+        });
+      });
+    </script>
+  </body>
+</html>
