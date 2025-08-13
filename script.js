@@ -1,8 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const products = [
-    { name: "여름 린넨 셔츠", price: 45000, quantity: 1 },
-    { name: "데님 숏 팬츠", price: 38000, quantity: 1 },
-  ];
+  const products = JSON.parse(localStorage.getItem("products")) || [];
 
   const productList = document.getElementById("product-list");
   const totalAmountSpan = document.getElementById("total-amount");
@@ -12,14 +9,14 @@ document.addEventListener("DOMContentLoaded", function () {
   products.forEach((product) => {
     const li = document.createElement("li");
     li.innerHTML = `
-            <span>${product.name} (${product.quantity}개)</span>
-            <span>${product.price.toLocaleString()}원</span>
+            <span>${product.title}</span>
+            <span>${product.price.toLocaleString()}$</span>
         `;
     productList.appendChild(li);
-    total += product.price * product.quantity;
+    total += product.price;
   });
 
-  totalAmountSpan.textContent = `${total.toLocaleString()}원`;
+  totalAmountSpan.textContent = `${total.toLocaleString()}$`;
 
   const paymentLabels = document.querySelectorAll(".payment-options label");
   const cardSelectContainer = document.getElementById("card-select-container");
@@ -79,14 +76,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (name && address && phone && termsChecked) {
       alert(`
-                주문이 완료되었습니다!
                 이름: ${name}
                 주소: ${address}
                 연락처: ${phone}
                 결제 방법: ${paymentMethodText}
-                총 금액: ${total.toLocaleString()}원
+                총 금액: ${total.toLocaleString()}$
             `);
-      window.location.href = "../shopping-mainpage/main.html";
+      window.location.href = "../mainpage/main.html";
     } else {
       let message = "배송 정보를 모두 입력해 주세요.";
       if (name && address && phone && !termsChecked) {
