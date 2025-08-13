@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>상품 목록 (카탈로그 토글 필터)</title>
+<script src="https://kit.fontawesome.com/5c3afda2cc.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="style.css">
+<style>
+  .catalog-panel{display:none;margin:10px 0;padding:16px;border:1px solid #e5e7eb;border-radius:10px;background:#fff}
+  .catalog-panel.open{display:block}
+  .catalog-panel h3{margin:0 0 10px;font-size:16px}
+  .catalog-panel .category-filter label{display:inline-flex;align-items:center;gap:6px;margin:6px 12px 6px 0;cursor:pointer}
+  .product-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px}
+  .product-card{border:1px solid #eee;border-radius:10px;padding:12px;background:#fff}
+  .product-card img{width:100%;height:160px;object-fit:contain}
+  .product-name{margin-top:8px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden} /* 긴 제목 말줄임(2줄) */
+  .pagination{display:flex;gap:6px;justify-content:center;margin:20px 0}
+  .pagination button.active{font-weight:700}
+</style>
+</head>
+<body>
+<header class="top-bar">
+  <div class="top-left">
+    <div class="delivery-toggle" role="tablist" aria-label="배송 방식">
+      <button class="nav-btn active" role="tab" aria-selected="true">Delivery</button>
+      <button class="nav-btn" role="tab" aria-selected="false">Pickup</button>
+    </div>
+    <span class="address">Select the delivery address</span>
+    <span class="edit-icon" aria-hidden="true"><i class="fa-regular fa-pen-to-square"></i></span>
+    <span class="delivery-time">Nearest delivery <strong>today is 13:00-14:00</strong></span>
+  </div>
+  <div class="top-right">
+    <span class="phone"><strong>+ 8 800 555-35-35 </strong>Around the clock</span>
+  </div>
+</header>
+
+<div class="search-section">
+  <button class="catalog-btn" type="button" aria-expanded="false" aria-controls="catalog-panel">
+    <i class="fa-regular fa-clone" aria-hidden="true"></i>
+    Catalog
+  </button>
+
+  <div class="search-group">
+    <div class="search-pill">
+      <select class="category-select" aria-label="카테고리">
+        <option>ALL CATEGORIES</option>
+      </select>
+      <input class="search-input" type="text" placeholder="Search in the market" aria-label="검색어 입력">
+    </div>
+
+    <button class="search-submit" type="button" aria-label="검색">
+      <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+    </button>
+  </div>
+
+  <div class="icons" aria-label="바로가기 아이콘">
+    <div class="icon-box" role="button" tabindex="0" aria-label="배송">
+      <i class="fa-solid fa-truck" aria-hidden="true"></i>
+    </div>
+    <div class="icon-box" role="button" tabindex="0" aria-label="찜">
+      <i class="fa-solid fa-heart" aria-hidden="true"></i>
+    </div>
+    <div class="icon-box" role="button" tabindex="0" aria-label="장바구니">
+      <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+    </div>
+    <div class="icon-box" role="button" tabindex="0" aria-label="마이페이지">
+      <i class="fa-solid fa-user" aria-hidden="true"></i>
+    </div>
+  </div>
+</div>
+
+<div id="catalog-panel" class="catalog-panel" role="region" aria-label="카테고리 필터">
+  <!-- <h3>카테고리</h3> -->
+  <div class="category-filter" id="category-filter"></div>
+</div>
+
+<div class="main">
+  <div class="content">
+    <div class="product-list" id="product-list"></div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+</div>
+
+<script>
+  let products = [];
+  let filteredProducts = [];
+  const itemsPerPage = 20;
+  let currentPage = 1;
+  let categories = [];
+
+  async function fetchProducts() {
+    try {
+      const res = await fetch("https://fakestoreapi.com/products");
+      const data = await res.json();
+
+      products = data.map(item => ({
+        name: item.title,
+        price: item.price,
+        rating: item.rating?.rate || 0,
+        image: item.image,
+        category: item.category
+      }));
+
+      categories = ["전체", ...new Set(products.map(p => p.category))];
+      createCategoryFilters();
+      applyCategoryFilter();
+    } catch (err) {
+      console.error("상품 데이터를 불러오는 중 오류 발생:", err);
+    }
+  }
+
+  function createCategoryFilters() {
+    const container = document.getElementById("category-filter");
+    container.innerHTML = categories.map(cat => `
+      <label>
+        <input type="checkbox" value="${cat}" ${cat === "전체" ? "checked" : ""} />
+        ${cat}
+      </label>
+    `).join('');
+
+    container.addEventListener('change', applyCategoryFilter);
+  }
+
+  function applyCategoryFilter() {
+    const checked = Array.from(document.querySelectorAll('#category-filter input:checked'))
+      .map(input => input.value);
+
+    if (checked.includes("전체") || checked.length === 0) {
+      filteredProducts = products;
+    } else {
+      filteredProducts = products.filter(p => checked.includes(p.category));
+    }
+    goToPage(1);
+  }
+
+  function renderProducts(page) {
+    const start = (page - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    const displayProducts = filteredProducts.slice(start, end);
+
+    document.getElementById("product-list").innerHTML = displayProducts.map(p => `
+      <div class="product-card">
+        <img src="${p.image}" alt="${p.name}">
+        <div class="product-name">${p.name}</div>
+        <div class="product-price">$${p.price}</div>
+        <div class="product-rating">⭐ ${p.rating}</div>
+      </div>
+    `).join('');
+  }
+
+  function renderPagination() {
+    let buttons = '';
+    const maxPages = Math.ceil(filteredProducts.length / itemsPerPage);
+    for (let i = 1; i <= maxPages; i++) {
+      buttons += `<button class="${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+    }
+    document.getElementById("pagination").innerHTML = buttons;
+  }
+
+  function goToPage(page) {
+    currentPage = page;
+    renderProducts(page);
+    renderPagination();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  const catalogBtn = document.querySelector('.catalog-btn');
+  const catalogPanel = document.getElementById('catalog-panel');
+
+  function toggleCatalogPanel(forceOpen) {
+    const willOpen = typeof forceOpen === 'boolean' ? forceOpen : !catalogPanel.classList.contains('open');
+    catalogPanel.classList.toggle('open', willOpen);
+    catalogBtn.setAttribute('aria-expanded', String(willOpen));
+  }
+
+  catalogBtn.addEventListener('click', () => toggleCatalogPanel());
+
+  document.addEventListener('click', (e) => {
+    if (!catalogPanel.classList.contains('open')) return;
+    const isInside = catalogPanel.contains(e.target) || catalogBtn.contains(e.target);
+    if (!isInside) toggleCatalogPanel(false);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && catalogPanel.classList.contains('open')) {
+      toggleCatalogPanel(false);
+      catalogBtn.focus();
+    }
+  });
+
+  fetchProducts();
+</script>
+</body>
+</html>
