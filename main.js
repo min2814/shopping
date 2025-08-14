@@ -245,7 +245,6 @@ updateDeliveryDate();
   const WISH_KEY = 'wish';
   const $productList = document.querySelector('.product-list');
 
-  // 저장
   const readWish = () => {
     try { return JSON.parse(localStorage.getItem(WISH_KEY)) || {}; }
     catch { return {}; }
@@ -398,15 +397,14 @@ updateDeliveryDate();
   }
   ensureDOM();
 
-  // 참조
-  let anchor = document.getElementById('wishIcon');                         // ★ 변경: 뒤에서 재할당되므로 let
+  let anchor = document.getElementById('wishIcon');                   
   const popover  = document.getElementById('wishPopover');
   const panel    = popover?.querySelector('.wish-panel');
   const listEl   = document.getElementById('wishPopItems');
   const countEl  = document.getElementById('wishPopCount');
   const totalEl  = document.getElementById('wishPopTotal');
-  const closeWishBtn = document.getElementById('wishPopClose');             // ★ 변경: 변수명 혼동 방지
-  const wishBackdrop = document.getElementById('wishBackdrop');             // ★ 변경: 전역 backdrop과 구분
+  const closeWishBtn = document.getElementById('wishPopClose');     
+  const wishBackdrop = document.getElementById('wishBackdrop');    
 
   const pickFromCard = (id) => {
     const card  = document.querySelector(`.product-card[data-id="${CSS.escape(id)}"]`);
@@ -458,11 +456,11 @@ updateDeliveryDate();
     totalEl.textContent = fmtUSD(total);
   }
 
-  function placeWishPopover(){                                              // ★ 변경: 함수명 충돌 방지
+  function placeWishPopover(){                 
     if (!anchor || !panel) return;
     const r  = anchor.getBoundingClientRect();
     const gap = 10;
-    const panelW = panel.offsetWidth || 360;                                // ★ 변경: 실제 패널 폭 반영
+    const panelW = panel.offsetWidth || 360;     
     const vw = document.documentElement.clientWidth;
     const sx = window.scrollX, sy = window.scrollY;
 
@@ -487,9 +485,9 @@ updateDeliveryDate();
     requestAnimationFrame(() => {
       popover.classList.add('open');
       wishBackdrop.classList.add('show');
-      placeWishPopover();                                                  // ★ 변경
+      placeWishPopover();       
     });
-    anchor?.setAttribute('aria-expanded', 'true');                          // ★ 변경
+    anchor?.setAttribute('aria-expanded', 'true');   
     window.addEventListener('resize', placeWishPopover);
     window.addEventListener('scroll', placeWishPopover, { passive:true });
     window.addEventListener('keydown', onEsc);
@@ -497,7 +495,7 @@ updateDeliveryDate();
   function closeWish(){
     popover.classList.remove('open');
     wishBackdrop.classList.remove('show');
-    anchor?.setAttribute('aria-expanded', 'false');                         // ★ 변경
+    anchor?.setAttribute('aria-expanded', 'false');  
     window.removeEventListener('resize', placeWishPopover);
     window.removeEventListener('scroll', placeWishPopover);
     window.removeEventListener('keydown', onEsc);
@@ -505,18 +503,13 @@ updateDeliveryDate();
   }
   function onEsc(e){ if (e.key === 'Escape') closeWish(); }
 
-  /* ---------------------------
-   * 하트 아이콘(#wishIcon) 토글
-   * (1) 노드 복제로 과거 리스너 제거
-   * (2) 캡처 단계에서 토글 + 전파 완전 차단
-   * --------------------------- */
-  if (anchor) {                                                             // ★ 변경: 기존 리스너 정리
+  if (anchor) {                                                
     const cloned = anchor.cloneNode(true);
     anchor.parentNode.replaceChild(cloned, anchor);
     anchor = cloned;
   }
 
-  anchor?.addEventListener('click', (e) => {                                // ★ 변경: 토글 + 차단
+  anchor?.addEventListener('click', (e) => {    
     e.preventDefault();
     e.stopImmediatePropagation();
     e.stopPropagation();
@@ -525,8 +518,8 @@ updateDeliveryDate();
     else openWish();
   }, { capture: true });
 
-  closeWishBtn?.addEventListener('click', closeWish);                        // ★ 변경: 변수명
-  wishBackdrop?.addEventListener('click', closeWish);                        // ★ 변경: 변수명
+  closeWishBtn?.addEventListener('click', closeWish);  
+  wishBackdrop?.addEventListener('click', closeWish);    
 
   listEl?.addEventListener('click', (e) => {
     const rm = e.target.closest('.wish-remove');
@@ -550,7 +543,7 @@ updateDeliveryDate();
     box?.setAttribute('aria-label', `찜 ${n}개`);
 
     renderWish();
-    placeWishPopover();                                                     // ★ 변경
+    placeWishPopover();                                                     
   });
 
   document.addEventListener('click', (e) => {
