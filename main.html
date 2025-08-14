@@ -17,14 +17,14 @@
       </div>
       <span class="address">Select the delivery address</span>
       <span class="edit-icon" aria-hidden="true"><i class="fa-regular fa-pen-to-square"></i></span>
-      <span class="delivery-time">Nearest delivery <strong>today is 13:00-14:00</strong></span>
+      <span class="delivery-time">Nearest delivery <strong id="delivery-time-text"></strong></span>
     </div>
     <div class="top-right">
       <span class="phone"><strong>+ 8 800 555-35-35 </strong>Around the clock</span>
     </div>
   </header>
 
-  <!-- 검색/아이콘 영역 -->
+  <!-- 검색/아이콘 -->
   <div class="search-section">
     <button class="catalog-btn" type="button">
       <i class="fa-regular fa-clone" aria-hidden="true"></i> Catalog
@@ -50,7 +50,7 @@
         <i class="fa-solid fa-heart" aria-hidden="true"></i>
       </div>
 
-      <!-- 장바구니 아이콘 (드로어 오픈 트리거) -->
+      <!-- 장바구니 아이콘 -->
       <div id="cartOpenBtn" class="icon-box" role="button" tabindex="0" aria-label="장바구니" aria-haspopup="dialog" aria-expanded="false">
         <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
         <span id="cartCount" class="badge" aria-live="polite" aria-atomic="true">0</span>
@@ -65,7 +65,7 @@
   <!-- 배너 -->
   <section class="banner" aria-label="프로모션 배너">
     <div class="banner-text">
-      <h1><img src="./배너이미지.png" alt="프로모션 배너"></h1>
+      <h1><img src="./banner.png" alt="프로모션 배너"></h1>
     </div>
   </section>
 
@@ -76,16 +76,11 @@
       <a href="#">See all</a>
     </div>
     <div class="product-list">
-      <!-- JS에서 카드가 렌더링됩니다 -->
     </div>
   </section>
 
-  <!-- ===== 장바구니 드로어 ===== -->
-  <!-- 백드롭 -->
   <div id="cartBackdrop" class="backdrop" hidden></div>
 
-  <!-- 오른쪽 드로어 패널 -->
-  <aside id="cartDrawer" class="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cartTitle" aria-describedby="cartDesc" hidden>
     <div class="cart-panel">
       <header class="cart-header">
         <div>
@@ -96,7 +91,6 @@
       </header>
 
       <ul id="cartItems" class="cart-items" aria-label="장바구니 목록">
-        <!-- 항목이 동적으로 추가됩니다 -->
       </ul>
 
       <footer class="cart-footer">
@@ -108,7 +102,6 @@
         <button id="viewCartBtn" class="cp-view">View details</button>
       </footer>
     </div>
-  </aside>
 
   <script src="./main.js"></script>
 </body>
