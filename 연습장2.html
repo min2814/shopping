@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Account (with New Top Header)</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://kit.fontawesome.com/5c3afda2cc.js"
+      crossorigin="anonymous"
+    ></script>
+    <style>
+      :root {
+        --bg: #f5f7fb;
+        --card: #fff;
+        --line: #e9eef5;
+        --text: #1c2230;
+        --primary: #1357ff;
+        --primary-700: #0f46cc;
+        --shadow: 0 10px 30px rgba(24, 39, 75, 0.08);
+        --radius: 16px;
+        --muted: #9aa3b2;
+        --topbar-h: 42px;
+        --search-h: 72px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: Inter, "Noto Sans KR", system-ui, -apple-system, Segoe UI,
+          Roboto, Arial, "Apple SD Gothic Neo", "Noto Sans", sans-serif;
+        padding-top: calc(var(--topbar-h) + var(--search-h) + 16px);
+        scroll-behavior: smooth;
+      }
+
+      /* ===== 상단 2줄 고정 헤더 ===== */
+      .top-bar {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 50;
+        background: #1c1e26;
+        color: #fff;
+        height: var(--topbar-h);
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 14px;
+      }
+      .top-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .delivery-toggle {
+        display: inline-flex;
+        align-items: center;
+        background: #2b2f38;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+          0 4px 10px rgba(0, 0, 0, 0.25);
+      }
+      .top-right {
+        color: gray;
+      }
+      .top-right strong {
+        color: #fff;
+      }
+
+      .search-section {
+        position: fixed;
+        top: var(--topbar-h);
+        width: 100%;
+        z-index: 40;
+        background: #fff;
+        border-bottom: 1px solid #ddd;
+        height: var(--search-h);
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .catalog-btn {
+        background: #077de2;
+        color: #fff;
+        border: none;
+        height: 48px;
+        padding: 0 22px;
+        border-radius: 18px;
+        cursor: pointer;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .search-group {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        flex: 1;
+        min-width: 420px;
+      }
+      .search-pill {
+        display: flex;
+        align-items: center;
+        flex: 1;
+        background: #fff;
+        border: 2px solid #2f80ed;
+        border-right: 0;
+        border-radius: 14px 0 0 18px;
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
+        overflow: hidden;
+      }
+      .category-select {
+        appearance: none;
+        height: 48px;
+        flex: 0 0 240px;
+        border: 0;
+        border-right: 1px solid #e6e6ea;
+        padding: 0 30px 0 16px;
+        font-weight: 800;
+        cursor: pointer;
+        background: #fff
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>")
+          no-repeat right 14px center/14px;
+      }
+      .search-input {
+        height: 48px;
+        flex: 1;
+        border: 0;
+        padding: 0 16px;
+        outline: none;
+        font-size: 15px;
+      }
+      .search-submit {
+        height: 52px;
+        padding: 0 18px;
+        background: #2f80ed;
+        color: #fff;
+        border: 2px solid #2f80ed;
+        border-left: 0;
+        border-radius: 0 18px 18px 0;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      .search-pill:focus-within {
+        box-shadow: 0 0 0 3px rgba(47, 128, 237, 0.16);
+      }
+
+      .icons {
+        display: flex;
+        gap: 10px;
+        margin-left: auto;
+        position: relative;
+      }
+      .icon-box {
+        width: 44px;
+        height: 44px;
+        border: 1px solid #e2e4ea;
+        border-radius: 14px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #fff;
+        cursor: pointer;
+      }
+      .icon-box i {
+        font-size: 18px;
+        color: #333;
+      }
+      .icon-box:hover i {
+        color: #077de2;
+        transition: color 0.2s;
+      }
+
+      /* 공통 팝오버 */
+      .popover {
+        position: absolute;
+        top: 58px;
+        min-width: 220px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        padding: 12px;
+        display: none;
+        z-index: 60;
+      }
+      .popover.show {
+        display: block;
+      }
+      .popover h4 {
+        margin: 4px 0 8px;
+        font-size: 14px;
+      }
+      .popover .row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px;
+        border-radius: 8px;
+      }
+      .popover .row:hover {
+        background: #f6f8fe;
+      }
+      .popover .cta-mini {
+        margin-top: 8px;
+        width: 100%;
+        height: 36px;
+        border-radius: 8px;
+        border: none;
+        background: var(--primary);
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .popover .cta-mini:hover {
+        background: var(--primary-700);
+      }
+
+      /* ===== 페이지 제목 ===== */
+      .section-title {
+        width: min(1400px, 98vw);
+        margin: 0 auto 12px;
+        padding: 0 2px;
+      }
+      .section-title h1 {
+        margin: 0;
+        font-size: 32px;
+        line-height: 1.2;
+        font-weight: 800;
+        letter-spacing: -0.3px;
+        color: #1c2230;
+        text-align: left;
+      }
+
+      /* 페이지 레이아웃 */
+      .page {
+        width: min(1400px, 98vw);
+        margin: 0 auto 40px;
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 24px;
+      }
+      .sidebar {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 14px 0;
+        height: fit-content;
+        position: sticky;
+        top: calc(var(--topbar-h) + var(--search-h) + 16px);
+      }
+      .side-list {
+        list-style: none;
+        margin: 0;
+        padding: 8px;
+      }
+      .side-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        margin: 4px 8px;
+        border-radius: 12px;
+        color: #2b3240;
+        cursor: pointer;
+        user-select: none;
+      }
+      .side-item:hover {
+        background: #f6f8fe;
+      }
+      .side-item.active {
+        background: #f5f8ff;
+        outline: 1px solid #e4ebff;
+        color: #1141c7;
+      }
+      .side-sep {
+        height: 1px;
+        background: var(--line);
+        margin: 10px 14px;
+      }
+      .signout {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 18px;
+        color: #d14747;
+        font-weight: 600;
+        margin-top: 4px;
+        cursor: pointer;
+      }
+
+      .content {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      /* 카드 */
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 24px;
+        scroll-margin-top: calc(var(--topbar-h) + var(--search-h) + 16px);
+      }
+      .card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        gap: 12px;
+      }
+      .h2 {
+        font-size: 22px;
+        font-weight: 800;
+      }
+
+      .card.highlight {
+        animation: pop 900ms ease;
+        outline: 2px solid rgba(19, 87, 255, 0.25);
+      }
+      @keyframes pop {
+        0% {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 30px rgba(19, 87, 255, 0.15);
+        }
+        100% {
+          transform: none;
+          box-shadow: var(--shadow);
+        }
+      }
+
+      .profile {
+        margin-top: 16px;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-color: transparent;
+        border: 2px solid black;
+        margin-bottom: 16px;
+        background-image: url("유연상.png");
+        background-size: cover;
+        background-position: center;
+      }
+
+      .label {
+        font-size: 14px;
+        color: #667085;
+        margin: 8px 0 8px;
+      }
+
+      .date-field {
+        display: inline-flex;
+        align-items: center;
+        height: 48px;
+        background: #fff;
+        border: 1px solid #e4e9f3;
+        border-radius: 12px;
+        overflow: hidden;
+        max-width: 450px;
+      }
+      .date-field input[type="date"] {
+        height: 100%;
+        border: 0;
+        outline: 0;
+        padding: 0 12px;
+        font-size: 15px;
+        min-width: 200px;
+        background: #fff;
+        color: #111827;
+      }
+      .calendar-btn {
+        width: 48px;
+        height: 48px;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+      }
+      .calendar-btn:hover {
+        background: #f6f8fe;
+      }
+
+      .link {
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+      }
+      .link:hover {
+        text-decoration: underline;
+      }
+
+      /* 수정하기 버튼 */
+      .btn-edit {
+        appearance: none;
+        border: 1px solid #d6def0;
+        background: #f7f9ff;
+        color: #1141c7;
+        height: 36px;
+        padding: 0 14px;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .btn-edit:hover {
+        background: #eef4ff;
+      }
+
+      /* ▶ 입력칸 & 커스텀 셀렉트 공통 */
+      .input,
+      .select-display {
+        height: 56px;
+        border-radius: 12px;
+        border: 1px solid #e4e9f3;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        padding: 0 14px;
+        box-shadow: inset 0 1px 0 rgba(17, 24, 39, 0.02);
+        max-width: 450px;
+      }
+      .input {
+        font-size: 16px;
+        font-weight: 700;
+        color: #111827;
+      }
+      .input .prefix {
+        margin-right: 8px;
+        color: #6b7280;
+        font-weight: 800;
+      }
+
+      .select-wrap {
+        position: relative;
+        max-width: 450px;
+      }
+      .select-display {
+        justify-content: space-between;
+        cursor: pointer;
+      }
+      .select-placeholder {
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .select-value {
+        color: #111827;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .chevron {
+        width: 0;
+        height: 0;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 7px solid var(--muted);
+        margin-left: 10px;
+      }
+      .select-menu {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: calc(100% + 8px);
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        padding: 6px;
+        display: none;
+        z-index: 35;
+      }
+      .select-menu.show {
+        display: block;
+      }
+      .select-item {
+        padding: 10px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        color: #1c2230;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .select-item.muted {
+        color: var(--muted);
+      }
+      .select-item:hover {
+        background: #f6f8fe;
+      }
+
+      /* === 은행 로고 뱃지 === */
+      .bank-logo {
+        width: 20px;
+        height: 20px;
+        border-radius: 6px;
+        display: grid;
+        place-items: center;
+        font-size: 11px;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: 0.3px;
+        flex: 0 0 20px;
+      }
+      .bank-logo.kb {
+        background: #f0c400;
+        color: #2b2b2b;
+      } /* KB국민(노랑) */
+      .bank-logo.shinhan {
+        background: #003474;
+      } /* 신한(남) */
+      .bank-logo.samsung {
+        background: #1428a0;
+      } /* 삼성(블루) */
+      .bank-logo.hyundai {
+        background: #111111;
+      } /* 현대(블랙) */
+      .bank-logo.lotte {
+        background: #ed1c24;
+      } /* 롯데(레드) */
+      .bank-logo.woori {
+        background: #1e6ed2;
+      } /* 우리(블루) */
+      .bank-logo.hana {
+        background: #008485;
+      } /* 하나(그린) */
+      .bank-logo.nh {
+        background: #00a64e;
+      } /* NH농협(그린) */
+
+      /* 카드 리스트 */
+      .list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 4px;
+        max-width: 900px;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 14px;
+        padding: 12px 14px;
+        border: 1px solid #e8edf6;
+        border-radius: 12px;
+        background: #fff;
+        min-height: 56px;
+      }
+      .row .icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: #eef2ff;
+        display: grid;
+        place-items: center;
+        color: #3b6cff;
+        font-weight: 800;
+      }
+      .row .texts {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.25;
+      }
+      .row .title {
+        font-weight: 700;
+      }
+      .row .sub {
+        font-size: 12px;
+        color: #8a94a6;
+      }
+      .radio {
+        width: 18px;
+        height: 18px;
+        border-radius: 999px;
+        border: 2px solid #c9d4ea;
+        display: grid;
+        place-items: center;
+      }
+      .radio.on {
+        border-color: #2e58ff;
+      }
+      .radio.on::after {
+        content: "";
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: #2e58ff;
+        display: block;
+      }
+
+      .cta {
+        margin-top: 18px;
+        max-width: 900px;
+        height: 56px;
+        border-radius: 12px;
+        border: none;
+        background: var(--primary);
+        color: #fff;
+        font-weight: 700;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 20px rgba(19, 87, 255, 0.25);
+        cursor: pointer;
+      }
+      .cta:hover {
+        background: var(--primary-700);
+      }
+      .cta:active {
+        transform: translateY(1px);
+      }
+
+      /* ===== 입력 비포커스 ===== */
+      .no-focus {
+        pointer-events: none;
+        caret-color: transparent;
+      }
+
+      /* 편집 비활성화 스타일 */
+      .disabled .select-display {
+        background: #f8fafc;
+        color: var(--muted);
+        cursor: default;
+      }
+      .date-field.disabled {
+        background: #f8fafc;
+      }
+
+      @media (max-width: 960px) {
+        .section-title {
+          width: min(100%, 98vw);
+          padding: 0 12px;
+        }
+        .page {
+          grid-template-columns: 1fr;
+          width: min(100%, 98vw);
+        }
+        .list,
+        .cta {
+          max-width: 100%;
+        }
+        .input,
+        .select-wrap,
+        .date-field {
+          max-width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ===== 상단바 ===== -->
+    <header class="top-bar">
+      <div class="top-left">
+        <div class="delivery-toggle" role="tablist" aria-label="배송 방식">
+          <button class="nav-btn active" role="tab" aria-selected="true">
+            Delivery
+          </button>
+          <button class="nav-btn" role="tab" aria-selected="false">
+            Pickup
+          </button>
+        </div>
+        <span class="address">Select the delivery address</span>
+        <span class="edit-icon" aria-hidden="true"
+          ><i class="fa-regular fa-pen-to-square"></i
+        ></span>
+        <span class="delivery-time"
+          >Nearest delivery <strong>today is 13:00-14:00</strong></span
+        >
+      </div>
+      <div class="top-right">
+        <span class="phone"
+          ><strong>+ 8 800 555-35-35 </strong>Around the clock</span
+        >
+      </div>
+    </header>
+
+    <div class="search-section">
+      <button class="catalog-btn" type="button">
+        <i class="fa-regular fa-clone" aria-hidden="true"></i> Catalog
+      </button>
+
+      <div class="search-group">
+        <div class="search-pill">
+          <select class="category-select" aria-label="카테고리">
+            <option>ALL CATEGORIES</option>
+          </select>
+          <input
+            class="search-input"
+            type="text"
+            placeholder="Search in the market"
+            aria-label="검색어 입력"
+          />
+        </div>
+        <button class="search-submit" type="button" aria-label="검색">
+          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <div class="icons" id="iconsWrap" aria-label="바로가기 아이콘">
+        <div
+          class="icon-box"
+          id="heartBtn"
+          role="button"
+          tabindex="0"
+          aria-label="배송"
+        >
+          <i class="fa-solid fa-truck" aria-hidden="true"></i>
+        </div>
+        <div
+          class="icon-box"
+          id="cartBtn"
+          role="button"
+          tabindex="0"
+          aria-label="찜"
+        >
+          <i class="fa-solid fa-heart" aria-hidden="true"></i>
+        </div>
+        <div
+          class="icon-box"
+          id="userBtn"
+          role="button"
+          tabindex="0"
+          aria-label="장바구니"
+        >
+          <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+        </div>
+        <div
+          class="icon-box"
+          role="button"
+          tabindex="0"
+          aria-label="마이페이지"
+        >
+          <i class="fa-solid fa-user" aria-hidden="true"></i>
+        </div>
+
+        <!-- Popovers -->
+        <div class="popover" id="heartPop" role="dialog" aria-label="Wishlist">
+          <h4>Wishlist</h4>
+          <div class="row">하트를 눌러 찜한 상품이 여기에 표시돼요.</div>
+          <button class="cta-mini">찜 상품 보러가기</button>
+        </div>
+        <div class="popover" id="cartPop" role="dialog" aria-label="Cart">
+          <h4>Cart</h4>
+          <div class="row">장바구니가 비어있어요.</div>
+          <button class="cta-mini">쇼핑 계속하기</button>
+        </div>
+        <div class="popover" id="userPop" role="dialog" aria-label="Profile">
+          <h4>Account</h4>
+          <div class="row">프로필 보기</div>
+          <div class="row">주문 내역</div>
+          <div class="row">설정</div>
+          <button class="cta-mini">로그아웃</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 페이지 제목 ===== -->
+    <div class="section-title" aria-labelledby="page-title">
+      <h1 id="page-title">My page</h1>
+    </div>
+
+    <!-- ===== 본문 ===== -->
+    <main class="page">
+      <!-- 사이드바 -->
+      <aside class="sidebar" id="sidebar" aria-label="내 계정 섹션 목록">
+        <ul class="side-list">
+          <li
+            class="side-item active"
+            tabindex="0"
+            data-target="profileCard"
+            aria-controls="profileCard"
+          >
+            마이 프로필
+          </li>
+          <li
+            class="side-item"
+            tabindex="0"
+            data-target="paymentsCard"
+            aria-controls="paymentsCard"
+          >
+            결제관리
+          </li>
+          <li
+            class="side-item"
+            tabindex="0"
+            data-target="ordersCard"
+            aria-controls="ordersCard"
+          >
+            주문내역
+          </li>
+          <li
+            class="side-item"
+            tabindex="0"
+            data-target="csCard"
+            aria-controls="csCard"
+          >
+            취소/반품/교환
+          </li>
+          <li
+            class="side-item"
+            tabindex="0"
+            data-target="recentCard"
+            aria-controls="recentCard"
+          >
+            최근 본 상품
+          </li>
+          <li
+            class="side-item"
+            tabindex="0"
+            data-target="noticeCard"
+            aria-controls="noticeCard"
+          >
+            공지사항
+          </li>
+        </ul>
+        <div class="side-sep"></div>
+        <div class="signout" tabindex="0" data-id="signout">
+          ⎋&nbsp;&nbsp;Sign Out
+        </div>
+      </aside>
+
+      <!-- 컨텐츠 -->
+      <section class="content" id="content">
+        <!-- === 프로필 정보 카드 === -->
+        <div class="card" id="profileCard">
+          <div class="card-head">
+            <div class="h2">프로필 정보</div>
+            <button
+              type="button"
+              id="editToggle"
+              class="btn-edit"
+              aria-pressed="false"
+            >
+              수정하기
+            </button>
+          </div>
+
+          <div class="profile" aria-label="프로필 이미지"></div>
+
+          <div class="label">이름</div>
+          <div class="input">
+            <input
+              id="nameField"
+              type="text"
+              value="유연상"
+              aria-label="이름"
+              class="no-focus"
+              tabindex="-1"
+              readonly
+              aria-readonly="true"
+              style="
+                flex: 1;
+                border: 0;
+                outline: 0;
+                height: 100%;
+                font-size: 16px;
+                font-weight: 700;
+                color: #111827;
+                background: transparent;
+              "
+            />
+          </div>
+
+          <div class="label" style="margin-top: 10px">생년월일</div>
+          <div class="date-field" id="birthWrap">
+            <input type="date" id="birthDate" value="2001-09-18" disabled />
+            <button
+              type="button"
+              class="calendar-btn"
+              aria-label="달력 열기"
+              disabled
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                aria-hidden="true"
+              >
+                <path
+                  d="M7 2v2M17 2v2M3 9h18M4 7h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <div class="label" style="margin-top: 10px">성별</div>
+          <div class="select-wrap disabled" id="genderSelect">
+            <div
+              class="select-display"
+              id="genderDisplay"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+              aria-disabled="true"
+              tabindex="-1"
+            >
+              <span class="select-value" id="genderText" data-value="male"
+                >남성</span
+              >
+              <span class="chevron" aria-hidden="true"></span>
+            </div>
+            <div class="select-menu" id="genderMenu" role="listbox">
+              <div class="select-item muted" data-value="">선택하세요</div>
+              <div class="select-item" data-value="female">여성</div>
+              <div class="select-item" data-value="male">남성</div>
+              <div class="select-item" data-value="other">기타/밝히지 않음</div>
+            </div>
+          </div>
+
+          <div class="label" style="margin-top: 10px">전화번호</div>
+          <div class="input" aria-live="polite">
+            <span class="prefix">+82</span>
+            <input
+              id="phone"
+              type="tel"
+              inputmode="numeric"
+              autocomplete="tel"
+              placeholder="010-1234-5678"
+              aria-label="전화번호"
+              value="010-4140-1166"
+              class="no-focus"
+              tabindex="-1"
+              readonly
+              aria-readonly="true"
+              style="
+                flex: 1;
+                border: 0;
+                outline: 0;
+                height: 100%;
+                font-size: 16px;
+                font-weight: 700;
+                color: #111827;
+                background: transparent;
+              "
+            />
+          </div>
+
+          <div class="label" style="margin-top: 10px">이메일</div>
+          <div class="input">
+            <input
+              id="email"
+              type="email"
+              autocomplete="email"
+              placeholder="name@example.com"
+              aria-label="이메일"
+              value="yscome1159@naver.com "
+              class="no-focus"
+              tabindex="-1"
+              readonly
+              aria-readonly="true"
+              style="
+                flex: 1;
+                border: 0;
+                outline: 0;
+                height: 100%;
+                font-size: 16px;
+                font-weight: 700;
+                color: #111827;
+                background: transparent;
+              "
+            />
+          </div>
+        </div>
+
+        <!-- === 결제관리 카드 === -->
+        <div class="card" id="paymentsCard">
+          <div class="card-head">
+            <div class="h2">결제관리</div>
+            <a href="#" class="link" id="addCardBtn">+Add New Card</a>
+          </div>
+
+          <div class="label" style="margin-top: 10px">Bank</div>
+          <div class="select-wrap" id="issuerSelect">
+            <div
+              class="select-display"
+              id="issuerDisplay"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+              tabindex="0"
+            >
+              <span class="select-placeholder" id="issuerText"
+                >카드사 선택</span
+              >
+              <span class="chevron" aria-hidden="true"></span>
+            </div>
+
+            <!-- ▼▼▼ 은행 로고가 포함된 '목록' ▼▼▼ -->
+            <div class="select-menu" id="issuerMenu" role="listbox">
+              <div class="select-item muted" data-value="">
+                <span
+                  class="bank-logo"
+                  style="background: #e5e7eb; color: #374151"
+                  >–</span
+                >카드사 선택
+              </div>
+              <div class="select-item" data-value="KB국민카드">
+                <span class="bank-logo kb">KB</span>KB국민카드
+              </div>
+              <div class="select-item" data-value="신한카드">
+                <span class="bank-logo shinhan">SH</span>신한카드
+              </div>
+              <div class="select-item" data-value="삼성카드">
+                <span class="bank-logo samsung">SS</span>삼성카드
+              </div>
+              <div class="select-item" data-value="현대카드">
+                <span class="bank-logo hyundai">HD</span>현대카드
+              </div>
+              <div class="select-item" data-value="롯데카드">
+                <span class="bank-logo lotte">LT</span>롯데카드
+              </div>
+              <div class="select-item" data-value="우리카드">
+                <span class="bank-logo woori">WR</span>우리카드
+              </div>
+              <div class="select-item" data-value="하나카드">
+                <span class="bank-logo hana">HN</span>하나카드
+              </div>
+              <div class="select-item" data-value="NH농협카드">
+                <span class="bank-logo nh">NH</span>NH농협카드
+              </div>
+            </div>
+            <!-- ▲▲▲ -->
+          </div>
+
+          <!-- 카드 리스트 -->
+          <div class="list" id="cardList" style="margin-top: 18px">
+            <div class="row">
+              <div class="icon">🏛</div>
+              <div class="texts">
+                <div class="title">Standard chartered card</div>
+                <div class="sub">•••• •••• 2878</div>
+              </div>
+              <div class="radio"></div>
+            </div>
+            <div class="row">
+              <div class="icon">🏛</div>
+              <div class="texts">
+                <div class="title">Standard chartered card</div>
+                <div class="sub">•••• •••• 2878</div>
+              </div>
+              <div class="radio on"></div>
+            </div>
+            <div class="row">
+              <div class="icon">🏛</div>
+              <div class="texts">
+                <div class="title">Standard chartered card</div>
+                <div class="sub">•••• •••• 2878</div>
+              </div>
+              <div class="radio"></div>
+            </div>
+            <div class="row">
+              <div class="icon">🏛</div>
+              <div class="texts">
+                <div class="title">Standard chartered card</div>
+                <div class="sub">•••• •••• 2878</div>
+              </div>
+              <div class="radio"></div>
+            </div>
+            <button class="cta" id="withdrawBtn">Withdraw</button>
+          </div>
+        </div>
+
+        <!-- === 더미 섹션들 === -->
+        <div class="card" id="ordersCard">
+          <div class="card-head"><div class="h2">주문내역</div></div>
+          <p>최근 주문내역이 여기에 표시됩니다.</p>
+        </div>
+
+        <div class="card" id="csCard">
+          <div class="card-head"><div class="h2">취소/반품/교환</div></div>
+          <p>취소/반품/교환 진행 현황을 확인할 수 있습니다.</p>
+        </div>
+
+        <div class="card" id="recentCard">
+          <div class="card-head"><div class="h2">최근 본 상품</div></div>
+          <p>최근 확인한 상품 목록입니다.</p>
+        </div>
+
+        <div class="card" id="noticeCard">
+          <div class="card-head"><div class="h2">공지사항</div></div>
+          <p>중요한 공지사항을 확인하세요.</p>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      /* ===== 상단 아이콘 팝오버 ===== */
+      const btns = {
+        heart: {
+          btn: document.getElementById("heartBtn"),
+          pop: document.getElementById("heartPop"),
+        },
+        cart: {
+          btn: document.getElementById("cartBtn"),
+          pop: document.getElementById("cartPop"),
+        },
+        user: {
+          btn: document.getElementById("userBtn"),
+          pop: document.getElementById("userPop"),
+        },
+      };
+      function positionPopover(btn, pop) {
+        const r = btn.getBoundingClientRect();
+        const parent =
+          btn.offsetParent ||
+          document.getElementById("iconsWrap") ||
+          document.body;
+        const parentR = parent.getBoundingClientRect();
+        pop.style.left = r.left - parentR.left - 90 + r.width / 2 + "px";
+        pop.style.top = r.bottom - parentR.top + 8 + "px";
+      }
+      function closeAllPopovers() {
+        Object.values(btns).forEach(({ btn, pop }) => {
+          pop.classList.remove("show");
+          btn && btn.setAttribute("aria-expanded", "false");
+        });
+      }
+      function togglePopover(key) {
+        const { btn, pop } = btns[key];
+        const willOpen = !pop.classList.contains("show");
+        closeAllPopovers();
+        if (willOpen) {
+          positionPopover(btn, pop);
+          pop.classList.add("show");
+          btn.setAttribute("aria-expanded", "true");
+        }
+      }
+      Object.entries(btns).forEach(([key, { btn }]) => {
+        if (!btn) return;
+        btn.addEventListener("click", () => togglePopover(key));
+        btn.addEventListener("keydown", (e) => {
+          if (["ArrowDown", "Enter", " "].includes(e.key)) {
+            e.preventDefault();
+            togglePopover(key);
+          }
+        });
+      });
+
+      /* ===== 커스텀 셀렉트(카드사 선택 + 로고) ===== */
+      const issuerWrap = document.getElementById("issuerSelect");
+      const issuerDisp = document.getElementById("issuerDisplay");
+      const issuerTextEl = document.getElementById("issuerText");
+      const issuerMenu = document.getElementById("issuerMenu");
+
+      // 로고 HTML 생성 (선택칸/목록 공용)
+      function logoHTML(bankName) {
+        const map = {
+          KB국민카드: { cls: "kb", txt: "KB" },
+          신한카드: { cls: "shinhan", txt: "SH" },
+          삼성카드: { cls: "samsung", txt: "SS" },
+          현대카드: { cls: "hyundai", txt: "HD" },
+          롯데카드: { cls: "lotte", txt: "LT" },
+          우리카드: { cls: "woori", txt: "WR" },
+          하나카드: { cls: "hana", txt: "HN" },
+          NH농협카드: { cls: "nh", txt: "NH" },
+        };
+        const item = map[bankName];
+        if (!item) return null;
+        return `<span class="bank-logo ${item.cls}">${item.txt}</span><span>${bankName}</span>`;
+      }
+
+      function toggleIssuerMenu(force) {
+        const willOpen =
+          typeof force === "boolean"
+            ? force
+            : !issuerMenu.classList.contains("show");
+        if (willOpen) {
+          issuerMenu.classList.add("show");
+          issuerDisp.setAttribute("aria-expanded", "true");
+        } else {
+          issuerMenu.classList.remove("show");
+          issuerDisp.setAttribute("aria-expanded", "false");
+        }
+      }
+      issuerDisp.addEventListener("click", () => toggleIssuerMenu());
+      issuerDisp.addEventListener("keydown", (e) => {
+        if (["Enter", " "].includes(e.key)) {
+          e.preventDefault();
+          toggleIssuerMenu();
+        }
+      });
+      issuerMenu.addEventListener("click", (e) => {
+        const item = e.target.closest(".select-item");
+        if (!item) return;
+        const val = item.dataset.value || "";
+        if (val) {
+          issuerTextEl.className = "select-value";
+          issuerTextEl.innerHTML = logoHTML(val); // 선택칸에도 로고 표시
+        } else {
+          issuerTextEl.textContent = "카드사 선택";
+          issuerTextEl.className = "select-placeholder";
+        }
+        toggleIssuerMenu(false);
+      });
+
+      /* ===== 성별 선택 ===== */
+      const genderWrap = document.getElementById("genderSelect");
+      const genderDisp = document.getElementById("genderDisplay");
+      const genderTextEl = document.getElementById("genderText");
+      const genderMenu = document.getElementById("genderMenu");
+      function toggleGenderMenu(force) {
+        const willOpen =
+          typeof force === "boolean"
+            ? force
+            : !genderMenu.classList.contains("show");
+        if (willOpen) {
+          genderMenu.classList.add("show");
+          genderDisp.setAttribute("aria-expanded", "true");
+        } else {
+          genderMenu.classList.remove("show");
+          genderDisp.setAttribute("aria-expanded", "false");
+        }
+      }
+      genderDisp.addEventListener("click", () => {
+        if (editing) toggleGenderMenu();
+      });
+      genderDisp.addEventListener("keydown", (e) => {
+        if (!editing) return;
+        if (["Enter", " "].includes(e.key)) {
+          e.preventDefault();
+          toggleGenderMenu();
+        }
+      });
+      genderMenu.addEventListener("click", (e) => {
+        const item = e.target.closest(".select-item");
+        if (!item || !editing) return;
+        const val = item.dataset.value || "";
+        if (val) {
+          genderTextEl.textContent = item.textContent.trim();
+          genderTextEl.className = "select-value";
+          genderTextEl.dataset.value = val;
+        } else {
+          genderTextEl.textContent = "선택하세요";
+          genderTextEl.className = "select-placeholder";
+          delete genderTextEl.dataset.value;
+        }
+        toggleGenderMenu(false);
+      });
+
+      /* ===== 바깥 클릭/ESC 닫기 ===== */
+      document.addEventListener("click", (e) => {
+        const anyOpen = Object.values(btns).some(({ pop }) =>
+          pop.classList.contains("show")
+        );
+        if (anyOpen) {
+          const inside = Object.values(btns).some(
+            ({ btn, pop }) =>
+              pop.contains(e.target) || (btn && btn.contains(e.target))
+          );
+          if (!inside) closeAllPopovers();
+        }
+        if (
+          issuerMenu.classList.contains("show") &&
+          !issuerWrap.contains(e.target)
+        )
+          toggleIssuerMenu(false);
+        if (
+          genderMenu.classList.contains("show") &&
+          !genderWrap.contains(e.target)
+        )
+          toggleGenderMenu(false);
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          closeAllPopovers();
+          toggleIssuerMenu(false);
+          toggleGenderMenu(false);
+        }
+      });
+      window.addEventListener("resize", () => {
+        Object.values(btns).forEach(({ btn, pop }) => {
+          if (pop.classList.contains("show")) positionPopover(btn, pop);
+        });
+      });
+
+      /* ===== 사이드바 → 섹션 스크롤 & 활성화 ===== */
+      const sidebar = document.getElementById("sidebar");
+      const sideItems = Array.from(
+        sidebar.querySelectorAll(".side-item[data-target]")
+      );
+      const sections = sideItems
+        .map((li) => document.getElementById(li.dataset.target))
+        .filter(Boolean);
+
+      function scrollToSection(id) {
+        const target = document.getElementById(id);
+        if (!target) return;
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        target.classList.add("highlight");
+        setTimeout(() => target.classList.remove("highlight"), 900);
+      }
+      sidebar.addEventListener("click", (e) => {
+        const item = e.target.closest(".side-item[data-target]");
+        if (!item) return;
+        scrollToSection(item.dataset.target);
+      });
+      sidebar.addEventListener("keydown", (e) => {
+        const item = e.target.closest(".side-item[data-target]");
+        if (!item) return;
+        if (["Enter", " "].includes(e.key)) {
+          e.preventDefault();
+          scrollToSection(item.dataset.target);
+        }
+      });
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const id = entry.target.id;
+            if (entry.isIntersecting) {
+              sideItems.forEach((li) =>
+                li.classList.toggle("active", li.dataset.target === id)
+              );
+            }
+          });
+        },
+        { root: null, rootMargin: "-35% 0px -55% 0px", threshold: 0.01 }
+      );
+      sections.forEach((sec) => io.observe(sec));
+
+      /* ===== 결제 카드 리스트 인터랙션 ===== */
+      const addCardBtn = document.getElementById("addCardBtn");
+      const cardList = document.getElementById("cardList");
+      addCardBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const row = document.createElement("div");
+        row.className = "row";
+        row.innerHTML = `
+          <div class="icon">🏦</div>
+          <div class="texts">
+            <div class="title">New bank card</div>
+            <div class="sub">•••• •••• ${Math.floor(
+              1000 + Math.random() * 9000
+            )}</div>
+          </div>
+          <div class="radio"></div>`;
+        cardList.insertBefore(row, document.getElementById("withdrawBtn"));
+      });
+      cardList.addEventListener("click", (e) => {
+        const row = e.target.closest(".row");
+        if (!row) return;
+        document
+          .querySelectorAll(".row .radio")
+          .forEach((r) => r.classList.remove("on"));
+        row.querySelector(".radio").classList.add("on");
+      });
+      document.getElementById("withdrawBtn").addEventListener("click", () => {
+        const selected = document.querySelector(".row .radio.on");
+        alert(
+          "Withdrawing to card " +
+            (selected ? "selected ✅" : "not selected ❌")
+        );
+      });
+
+      /* ===== 전화번호 포맷 ===== */
+      const phoneInput = document.getElementById("phone");
+      if (phoneInput) {
+        phoneInput.addEventListener("input", () => {
+          if (phoneInput.readOnly) return;
+          let v = phoneInput.value.replace(/[^\d]/g, "").slice(0, 11);
+          if (v.startsWith("010")) {
+            if (v.length > 7)
+              v = v
+                .replace(/(\d{3})(\d{4})(\d{0,4}).*/, "$1-$2-$3")
+                .replace(/-$/, "");
+            else if (v.length > 3) v = v.replace(/(\d{3})(\d{0,4})/, "$1-$2");
+          } else {
+            if (v.length > 7)
+              v = v
+                .replace(/(\d{3})(\d{3,4})(\d{0,4}).*/, "$1-$2-$3")
+                .replace(/-$/, "");
+            else if (v.length > 3) v = v.replace(/(\d{3})(\d{0,4})/, "$1-$2");
+          }
+          phoneInput.value = v;
+        });
+      }
+
+      /* ===== 이메일 유효성 ===== */
+      const emailInput = document.getElementById("email");
+      if (emailInput) {
+        emailInput.addEventListener("blur", () => {
+          if (emailInput.value && !emailInput.checkValidity())
+            emailInput.reportValidity();
+        });
+      }
+
+      /* ===== 수정하기 토글 ===== */
+      const nameField = document.getElementById("nameField");
+      const birthInput = document.getElementById("birthDate");
+      const birthWrap = document.getElementById("birthWrap");
+      const calendarBtns = document.querySelectorAll(".calendar-btn");
+      const editBtn = document.getElementById("editToggle");
+
+      let editing = false;
+      function setReadOnly(el, ro) {
+        el.readOnly = ro;
+        el.setAttribute("aria-readonly", String(ro));
+        el.classList.toggle("no-focus", ro);
+        el.tabIndex = ro ? -1 : 0;
+      }
+      function setEditing(on) {
+        editing = on;
+        editBtn.textContent = on ? "저장" : "수정하기";
+        editBtn.setAttribute("aria-pressed", String(on));
+
+        setReadOnly(nameField, !on);
+        setReadOnly(phoneInput, !on);
+        setReadOnly(emailInput, !on);
+
+        birthInput.disabled = !on;
+        calendarBtns.forEach((btn) => (btn.disabled = !on));
+        birthWrap.classList.toggle("disabled", !on);
+
+        genderDisp.setAttribute("aria-disabled", String(!on));
+        genderWrap.classList.toggle("disabled", !on);
+        genderDisp.tabIndex = on ? 0 : -1;
+        if (!on) toggleGenderMenu(false);
+
+        if (on) {
+          nameField.focus();
+          nameField.setSelectionRange(
+            nameField.value.length,
+            nameField.value.length
+          );
+        }
+      }
+      editBtn.addEventListener("click", () => {
+        if (editing) {
+          if (emailInput.value && !emailInput.checkValidity()) {
+            emailInput.reportValidity();
+            return;
+          }
+          alert("프로필이 저장되었습니다. ✅");
+        }
+        setEditing(!editing);
+      });
+
+      /* ===== 달력 버튼 ===== */
+      const calBtns = document.querySelectorAll(".calendar-btn");
+      calBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (!editing) return;
+          if (typeof birthInput.showPicker === "function")
+            birthInput.showPicker();
+          else birthInput.focus();
+        });
+      });
+
+      // 초기 상태
+      setEditing(false);
+    </script>
+  </body>
+</html>
