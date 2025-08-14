@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>쇼핑몰</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
   <script src="https://kit.fontawesome.com/5c3afda2cc.js" crossorigin="anonymous"></script>
 </head>
-
 <body>
+  <!-- 상단 바 -->
   <header class="top-bar">
     <div class="top-left">
       <div class="delivery-toggle" role="tablist" aria-label="배송 방식">
@@ -24,10 +23,11 @@
       <span class="phone"><strong>+ 8 800 555-35-35 </strong>Around the clock</span>
     </div>
   </header>
+
+  <!-- 검색/아이콘 영역 -->
   <div class="search-section">
     <button class="catalog-btn" type="button">
-      <i class="fa-regular fa-clone" aria-hidden="true"></i>
-      Catalog
+      <i class="fa-regular fa-clone" aria-hidden="true"></i> Catalog
     </button>
 
     <div class="search-group">
@@ -35,9 +35,8 @@
         <select class="category-select" aria-label="카테고리">
           <option>ALL CATEGORIES</option>
         </select>
-        <input class="search-input" type="text" placeholder="Search in the market" aria-label="검색어 입력">
+        <input class="search-input" type="text" placeholder="Search in the market" aria-label="검색어 입력" />
       </div>
-
       <button class="search-submit" type="button" aria-label="검색">
         <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
       </button>
@@ -50,101 +49,67 @@
       <div class="icon-box" role="button" tabindex="0" aria-label="찜">
         <i class="fa-solid fa-heart" aria-hidden="true"></i>
       </div>
-      <div class="icon-box" role="button" tabindex="0" aria-label="장바구니">
+
+      <!-- 장바구니 아이콘 (드로어 오픈 트리거) -->
+      <div id="cartOpenBtn" class="icon-box" role="button" tabindex="0" aria-label="장바구니" aria-haspopup="dialog" aria-expanded="false">
         <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+        <span id="cartCount" class="badge" aria-live="polite" aria-atomic="true">0</span>
       </div>
+
       <div class="icon-box" role="button" tabindex="0" aria-label="마이페이지">
         <i class="fa-solid fa-user" aria-hidden="true"></i>
       </div>
     </div>
   </div>
 
+  <!-- 배너 -->
   <section class="banner" aria-label="프로모션 배너">
     <div class="banner-text">
-      <h1>BUY NOW <span>PAY LATER</span></h1>
+      <h1><img src="./배너이미지.png" alt="프로모션 배너"></h1>
     </div>
-    <div class="banner-img" aria-hidden="true">💳</div>
   </section>
 
+  <!-- 인기 상품 -->
   <section class="popular" aria-label="인기 상품">
     <div class="section-header">
       <h3>Popular</h3>
       <a href="#">See all</a>
     </div>
-
-  <div class="product-list">
-    <div class="product-card">
-      <button class="wishlist-btn" aria-label="찜하기">
-        <i class="fa-regular fa-heart"></i>
-      </button>
-      <div class="img-wrap">
-        <img src="../../a.jpg" wialt="TV">
-      </div>
-      <p class="product-name">TV</p>
-      <div class="price-row">
-        <span class="price">$800.00</span>
-        <button class="add-btn" aria-label="담기"><i class="fa-solid fa-plus"></i></button>
-      </div>
+    <div class="product-list">
+      <!-- JS에서 카드가 렌더링됩니다 -->
     </div>
-
-    <div class="product-card">
-      <button class="wishlist-btn" aria-label="찜하기"><i class="fa-regular fa-heart"></i></button>
-      <div class="img-wrap"><img src="../../a.jpg"></div>
-      <p class="product-name">Diskette</p>
-      <div class="price-row">
-        <span class="price">$3.00</span>
-        <button class="add-btn" aria-label="담기"><i class="fa-solid fa-plus"></i></button>
-      </div>
-    </div>
-
-    <div class="product-card">
-      <button class="wishlist-btn" aria-label="찜하기"><i class="fa-regular fa-heart"></i></button>
-      <div class="img-wrap"><img src="../../a.jpg"></div>
-      <p class="product-name">Telephone</p>
-      <div class="price-row">
-        <span class="price">$200.00</span>
-        <button class="add-btn" aria-label="담기"><i class="fa-solid fa-plus"></i></button>
-      </div>
-    </div>
-
-    <div class="product-card">
-      <button class="wishlist-btn" aria-label="찜하기"><i class="fa-regular fa-heart"></i></button>
-      <div class="img-wrap"><img src="../../a.jpg"></div>
-      <p class="product-name">Cart</p>
-      <div class="price-row">
-        <span class="price">$50.00</span>
-        <button class="add-btn" aria-label="담기"><i class="fa-solid fa-plus"></i></button>
-      </div>
-    </div>
-        <div class="product-card">
-      <button class="wishlist-btn" aria-label="찜하기"><i class="fa-regular fa-heart"></i></button>
-      <div class="img-wrap"><img src="../../a.jpg"></div>
-      <p class="product-name">Cart</p>
-      <div class="price-row">
-        <span class="price">$50.00</span>
-        <button class="add-btn" aria-label="담기"><i class="fa-solid fa-plus"></i></button>
-      </div>
-    </div>
-        <div class="product-card">
-      <button class="wishlist-btn" aria-label="찜하기"><i class="fa-regular fa-heart"></i></button>
-      <div class="img-wrap"><img src="../../a.jpg"></div>
-      <p class="product-name">Cart</p>
-      <div class="price-row">
-        <span class="price">$50.00</span>
-        <button class="add-btn" aria-label="담기"><i class="fa-solid fa-plus"></i></button>
-      </div>
-    </div>
-        <div class="product-card">
-      <button class="wishlist-btn" aria-label="찜하기"><i class="fa-regular fa-heart"></i></button>
-      <div class="img-wrap"><img src="../../a.jpg"></div>
-      <p class="product-name">Cart</p>
-      <div class="price-row">
-        <span class="price">$50.00</span>
-        <button class="add-btn" aria-label="담기"><i class="fa-solid fa-plus"></i></button>
-      </div>
-    </div>
-
   </section>
 
+  <!-- ===== 장바구니 드로어 ===== -->
+  <!-- 백드롭 -->
+  <div id="cartBackdrop" class="backdrop" hidden></div>
+
+  <!-- 오른쪽 드로어 패널 -->
+  <aside id="cartDrawer" class="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cartTitle" aria-describedby="cartDesc" hidden>
+    <div class="cart-panel">
+      <header class="cart-header">
+        <div>
+          <h3 id="cartTitle">장바구니</h3>
+          <p id="cartDesc" class="muted">담긴 상품을 확인하고 수량을 수정하거나 결제할 수 있습니다.</p>
+        </div>
+        <button id="cartClose" class="cp-close" aria-label="장바구니 닫기">✕</button>
+      </header>
+
+      <ul id="cartItems" class="cart-items" aria-label="장바구니 목록">
+        <!-- 항목이 동적으로 추가됩니다 -->
+      </ul>
+
+      <footer class="cart-footer">
+        <div class="cp-sum">
+          <span>Subtotal</span>
+          <strong id="cpSubtotal">₩0</strong>
+        </div>
+        <button id="checkoutBtn" class="cp-checkout">CHECKOUT NOW</button>
+        <button id="viewCartBtn" class="cp-view">View details</button>
+      </footer>
+    </div>
+  </aside>
+
+  <script src="./main.js"></script>
 </body>
 </html>
