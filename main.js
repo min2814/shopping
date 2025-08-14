@@ -163,7 +163,7 @@ async function loadProducts(){
     data.forEach((item) => {
       const div = document.createElement("div");
       div.className = "product-card";
-      const title = item.title.length > 42 ? item.title.slice(0,42) + "…" : item.title;
+      const title = item.title.length > 10 ? item.title.slice(0,20) + "…" : item.title;
       div.innerHTML = `
         <button class="wishlist-btn" aria-label="찜하기"><i class="fa-regular fa-heart"></i></button>
         <div class="img-wrap"><img src="${item.image}" alt="상품 이미지"></div>
@@ -206,3 +206,122 @@ function updateDeliveryDate() {
   if (el) el.textContent = `: ${dateString}`;
 }
 updateDeliveryDate();
+
+
+// 
+(function () {
+  const heartIcon = document.querySelector('.icons .icon-box i.fa-heart');
+  const box = heartIcon ? heartIcon.parentElement : null;
+  if (!box) return;
+
+  let badge = box.querySelector('#wishCount');
+  if (!badge) {
+    badge = document.createElement('span');
+    badge.id = 'wishCount';
+    badge.className = 'badge badge--pink';
+    badge.textContent = '0';
+    box.appendChild(badge);
+  }
+
+  // 버튼 단위로만 계산 (중복 방지)
+  const calcCount = () =>
+    document.querySelectorAll(
+      '.wishlist-btn.active, .wishlist-btn[aria-pressed="true"]'
+    ).length;
+
+  const updateBadge = () => {
+    badge.textContent = String(calcCount());
+    box.setAttribute('aria-label', `찜 ${badge.textContent}개`);
+  };
+
+  window.addEventListener('DOMContentLoaded', updateBadge);
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.wishlist-btn')) return;
+    setTimeout(updateBadge, 0);
+  });
+})();
+
+(function () {
+  const WISH_KEY = 'wish';
+  const $productList = document.querySelector('.product-list');
+
+  // 저장
+  const readWish = () => {
+    try { return JSON.parse(localStorage.getItem(WISH_KEY)) || {}; }
+    catch { return {}; }
+  };
+  const writeWish = (m) => localStorage.setItem(WISH_KEY, JSON.stringify(m));
+
+  const updateWishBadge = () => {
+    const heartIcon = document.querySelector('.icons .icon-box i.fa-heart');
+    const box = heartIcon ? heartIcon.parentElement : null;
+    const badge = box ? box.querySelector('#wishCount') : null;
+    if (!box || !badge) return;
+    const n = document.querySelectorAll('.wishlist-btn.active, .wishlist-btn[aria-pressed="true"]').length;
+    badge.textContent = String(n);
+    box.setAttribute('aria-label', `찜 ${n}개`);
+  };
+
+  const simpleHash = (str) => { let h=0; for (let i=0;i<str.length;i++){ h=(h<<5)-h+str.charCodeAt(i); h|=0; } return Math.abs(h); };
+  const ensureCardId = (card) => {
+    if (card.dataset.id) return card.dataset.id;
+    const name = card.querySelector('.product-name')?.textContent?.trim() || '';
+    const price = card.querySelector('.price')?.textContent?.trim() || '';
+    const img = card.querySelector('img')?.src || '';
+    const id = 'auto-' + simpleHash(name + '|' + price + '|' + img);
+    card.dataset.id = id;
+    return id;
+  };
+
+  const applyWishState = (card, wishMap) => {
+    const id = ensureCardId(card);
+    const liked = !!wishMap[id];
+    const btn = card.querySelector('.wishlist-btn');
+    const icon = btn?.querySelector('.fa-heart');
+    if (!btn) return;
+    btn.classList.toggle('active', liked);
+    btn.setAttribute('aria-pressed', liked);
+    if (icon) {
+      icon.classList.toggle('fa-solid', liked);
+      icon.classList.toggle('fa-regular', !liked);
+    }
+  };
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const saved = readWish();
+    document.querySelectorAll('.product-card').forEach(card => applyWishState(card, saved));
+    updateWishBadge();
+  });
+
+  if ($productList) {
+    const obs = new MutationObserver((mutations) => {
+      const saved = readWish();
+      mutations.forEach(m => {
+        m.addedNodes.forEach(node => {
+          if (node.nodeType !== 1) return;
+          if (node.classList.contains('product-card')) applyWishState(node, saved);
+          node.querySelectorAll?.('.product-card').forEach(card => applyWishState(card, saved));
+        });
+      });
+      updateWishBadge();
+    });
+    obs.observe($productList, { childList: true, subtree: true });
+  }
+
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.wishlist-btn');
+    if (!btn) return;
+    const card = btn.closest('.product-card');
+    if (!card) return;
+    const id = ensureCardId(card);
+
+    setTimeout(() => {
+      const liked = btn.classList.contains('active') || btn.getAttribute('aria-pressed') === 'true';
+      const saved = readWish();
+      if (liked) saved[id] = true; else delete saved[id];
+      writeWish(saved);
+      updateWishBadge();
+    }, 0);
+  });
+})();

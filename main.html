@@ -4,7 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>쇼핑몰</title>
+
   <link rel="stylesheet" href="style.css" />
+
   <script src="https://kit.fontawesome.com/5c3afda2cc.js" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -17,8 +19,9 @@
       </div>
       <span class="address">Select the delivery address</span>
       <span class="edit-icon" aria-hidden="true"><i class="fa-regular fa-pen-to-square"></i></span>
-      <span class="delivery-time">Nearest delivery <strong id="delivery-time-text"></strong></span>
+      <span class="delivery-time">Nearest delivery : <strong id="delivery-time-text"></strong></span>
     </div>
+
     <div class="top-right">
       <span class="phone"><strong>+ 8 800 555-35-35 </strong>Around the clock</span>
     </div>
@@ -46,14 +49,16 @@
       <div class="icon-box" role="button" tabindex="0" aria-label="배송">
         <i class="fa-solid fa-truck" aria-hidden="true"></i>
       </div>
-      <div class="icon-box" role="button" tabindex="0" aria-label="찜">
+
+      <!-- 찜 아이콘 -->
+      <div id="wishIcon" class="icon-box" role="button" tabindex="0" aria-label="찜 0개">
         <i class="fa-solid fa-heart" aria-hidden="true"></i>
+        <span id="wishCount" class="badge" aria-live="polite" aria-atomic="true">0</span>
       </div>
 
       <!-- 장바구니 아이콘 -->
       <div id="cartOpenBtn" class="icon-box" role="button" tabindex="0" aria-label="장바구니" aria-haspopup="dialog" aria-expanded="false">
         <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
-        <span id="cartCount" class="badge" aria-live="polite" aria-atomic="true">0</span>
       </div>
 
       <div class="icon-box" role="button" tabindex="0" aria-label="마이페이지">
@@ -80,29 +85,92 @@
   </section>
 
   <div id="cartBackdrop" class="backdrop" hidden></div>
-
-    <div class="cart-panel">
-      <header class="cart-header">
-        <div>
-          <h3 id="cartTitle">장바구니</h3>
-          <p id="cartDesc" class="muted">담긴 상품을 확인하고 수량을 수정하거나 결제할 수 있습니다.</p>
-        </div>
-        <button id="cartClose" class="cp-close" aria-label="장바구니 닫기">✕</button>
-      </header>
-
-      <ul id="cartItems" class="cart-items" aria-label="장바구니 목록">
-      </ul>
-
-      <footer class="cart-footer">
-        <div class="cp-sum">
-          <span>Subtotal</span>
-          <strong id="cpSubtotal">₩0</strong>
-        </div>
-        <button id="checkoutBtn" class="cp-checkout">CHECKOUT NOW</button>
-        <button id="viewCartBtn" class="cp-view">View details</button>
-      </footer>
-    </div>
+  <div class="cart-panel">
+    <header class="cart-header">
+      <div>
+        <h3 id="cartTitle">장바구니</h3>
+        <p id="cartDesc" class="muted">담긴 상품을 확인하고 수량을 수정하거나 결제할 수 있습니다.</p>
+      </div>
+      <button id="cartClose" class="cp-close" aria-label="장바구니 닫기">✕</button>
+    </header>
+    <ul id="cartItems" class="cart-items" aria-label="장바구니 목록"></ul>
+    <footer class="cart-footer">
+      <div class="cp-sum">
+        <span>Subtotal</span>
+        <strong id="cpSubtotal">₩0</strong>
+      </div>
+      <button id="checkoutBtn" class="cp-checkout">CHECKOUT NOW</button>
+      <button id="viewCartBtn" class="cp-view">View details</button>
+    </footer>
+  </div>
 
   <script src="./main.js"></script>
+
+  <script>
+    (function () {
+      const WISH_KEY = 'wish';
+      const $wishCount = document.getElementById('wishCount');
+      const $wishIconBox = document.getElementById('wishIcon');
+
+      const readWish = () => {
+        try { return JSON.parse(localStorage.getItem(WISH_KEY)) || {}; }
+        catch { return {}; }
+      };
+      const writeWish = (m) => localStorage.setItem(WISH_KEY, JSON.stringify(m));
+      const countWish = (m) => Object.values(m).filter(Boolean).length;
+      const setBadge = (n) => {
+        if (!$wishCount) return;
+        $wishCount.textContent = n;
+        if ($wishIconBox) $wishIconBox.setAttribute('aria-label', `찜 ${n}개`);
+      };
+
+      window.addEventListener('DOMContentLoaded', () => {
+        const saved = readWish();
+
+        document.querySelectorAll('.product-card').forEach(card => {
+          const id = card.dataset.id;
+          const btn = card.querySelector('.wishlist-btn');
+          const icon = btn?.querySelector('.fa-heart');
+          const liked = !!(id && saved[id]);
+          if (btn) {
+            btn.classList.toggle('active', liked);
+            btn.setAttribute('aria-pressed', liked);
+          }
+          if (icon) {
+            icon.classList.toggle('fa-solid', liked);
+            icon.classList.toggle('fa-regular', !liked);
+          }
+        });
+
+        setBadge(countWish(saved));
+      });
+
+      document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.wishlist-btn');
+        if (!btn) return;
+
+        const icon = btn.querySelector('.fa-heart');
+        const card = btn.closest('.product-card');
+        const id = card?.dataset.id;
+
+        const willLike = !btn.classList.contains('active');
+        btn.classList.toggle('active', willLike);
+        btn.setAttribute('aria-pressed', willLike);
+        if (icon) {
+          icon.classList.toggle('fa-solid', willLike);
+          icon.classList.toggle('fa-regular', !willLike);
+        }
+
+        if (!id) return; 
+
+        const saved = readWish();
+        if (willLike) saved[id] = true;
+        else delete saved[id];
+        writeWish(saved);
+
+        setBadge(countWish(saved));
+      });
+    })();
+  </script>
 </body>
 </html>
