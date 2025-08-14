@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="shopping_cart.css">
+    <link rel="stylesheet" href="../css/shopping_cart.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800;900&display=swap"
@@ -49,7 +49,7 @@
 
         <div class="icons" aria-label="바로가기 아이콘">
             <div class="icon-box" role="button" tabindex="0" aria-label="배송">
-                <i class="fa-solid fa-truck" aria-hidden="true"></i>
+                <a href="#"><i class="fa-solid fa-truck" aria-hidden="true"></i></a>
             </div>
             <div class="icon-box" role="button" tabindex="0" aria-label="찜">
                 <i class="fa-solid fa-heart" aria-hidden="true"></i>
@@ -85,14 +85,15 @@
                     </div>
 
                     <div class="mini-cart__actions">
-                        <button type="button" class="mini-btn ghost" id="mini-view-cart">View cart</button>
+                        <button type="button" class="mini-btn ghost" id="mini-view-cart">
+                            <a href="./shopping_cart.html" class="view_cart">View cart</a></button>
                         <button type="button" class="mini-btn primary" id="mini-checkout">Checkout now</button>
                     </div>
                 </div>
             </div>
             <!--  -->
             <div class="icon-box" role="button" tabindex="0" aria-label="마이페이지">
-                <i class="fa-solid fa-user" aria-hidden="true"></i>
+                <a href="#"><i class="fa-solid fa-user" aria-hidden="true"></i></a>
             </div>
         </div>
     </div>
@@ -150,8 +151,8 @@
                     <div class="accept">
                         <div>We ACCEPT</div>
                         <div>
-                            <img src="./visa.png" alt="">
-                            <img src="./Mastercard-Logo.png" alt="">
+                            <img src="./img/visa.png" alt="">
+                            <img src="./img/Mastercard-Logo.png" alt="">
                         </div>
                     </div>
                     <p>
@@ -169,7 +170,7 @@
             </div>
         </div>
 
-        <script defer src="shopping_cart.js"></script>
+        <script defer src="../js/shopping_cart.js"></script>
         <script src="https://kit.fontawesome.com/5c3afda2cc.js" crossorigin="anonymous"></script>
 </body>
 

@@ -613,10 +613,10 @@ p {
   font-weight: 700;
 }
 
-/* === mini cart panel === */
+/* === mini cart  === */
 .mini-cart {
   position: absolute;
-  top: 52px; /* 아이콘 아래 */
+  top: 52px;
   right: 0;
   width: 340px;
   background: #fff;
@@ -631,7 +631,6 @@ p {
   z-index: 20;
 }
 .mini-cart::before {
-  /* 꼬리 */
   content: "";
   position: absolute;
   top: -8px;
@@ -739,8 +738,14 @@ p {
   font-weight: 700;
 }
 .mini-btn.primary {
-  background: #111;
+  background: #077de2;
   color: #fff;
+  border: none;
+  transition: background-color 0.2s ease-in-out;
+}
+.mini-btn.primary:hover {
+  background-color: #0077b6;
+  transition: background-color 0.2s ease-in-out;
 }
 .mini-btn.ghost {
   background: #fff;
@@ -756,4 +761,20 @@ p {
     width: calc(100vw - 28px);
     right: -6px;
   }
+}
+/*  */
+.view_cart {
+  text-decoration: none;
+  color: #077de2;
+}
+.ghost {
+  border: 2px solid #077de2;
+  transition: background-color 0.3s ease-in-out;
+}
+.ghost:hover {
+  background-color: #077de2;
+  transition: background-color 0.3s ease-in-out;
+}
+.ghost:hover a {
+  color: white;
 }

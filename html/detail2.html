@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <title>나이키 스타일 상품 상세 페이지</title>
-    <link rel="stylesheet" href="detail.css">
+    <link rel="stylesheet" href="../css/detail.css">
     <script src="https://kit.fontawesome.com/5c3afda2cc.js" crossorigin="anonymous"></script>
 </head>
 
@@ -45,16 +45,17 @@
 
         <div class="icons" aria-label="바로가기 아이콘">
             <div class="icon-box" role="button" tabindex="0" aria-label="배송">
-                <i class="fa-solid fa-truck" aria-hidden="true"></i>
+                <a href="#"><i class="fa-solid fa-truck" aria-hidden="true"></i></a>
+
             </div>
             <div class="icon-box" role="button" tabindex="0" aria-label="찜">
-                <i class="fa-solid fa-heart" aria-hidden="true"></i>
+                <a href="#"><i class="fa-solid fa-heart" aria-hidden="true"></i></a>
             </div>
             <div class="icon-box" role="button" tabindex="0" aria-label="장바구니">
-                <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+                <a href="#"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i></a>
             </div>
             <div class="icon-box" role="button" tabindex="0" aria-label="마이페이지">
-                <i class="fa-solid fa-user" aria-hidden="true"></i>
+                <a href=""><i class="fa-solid fa-user" aria-hidden="true"></i></a>
             </div>
         </div>
     </div>
@@ -99,7 +100,7 @@
 
         if (!product) {
             alert("상품 정보가 없습니다. 메인 페이지로 이동합니다.");
-            window.location.href = "index.html"; // 상품 목록 페이지로 이동
+            window.location.href = "list.html"; // 상품 목록 페이지로 이동
         } else {
             // 이미지 표시
             setProductImage(product.image, product.name);
