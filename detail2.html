@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <title>나이키 스타일 상품 상세 페이지</title>
-    <link rel="stylesheet" href="as.css">
+    <link rel="stylesheet" href="detail.css">
     <script src="https://kit.fontawesome.com/5c3afda2cc.js" crossorigin="anonymous"></script>
 </head>
 
@@ -169,6 +169,7 @@
                 alert('색상과 사이즈를 선택해주세요.');
                 return;
             }
+            //cart라는 이름으로 저장돤 JSON 문자열을 가지고 와서 JS객체로 전환
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             cart.push({
                 id: product.id,
@@ -180,8 +181,14 @@
                 size: selectedSize,
                 quantity: 1
             });
+            //cart라는 이름으로 객체를 JSON 문자열로 저장
             localStorage.setItem('cart', JSON.stringify(cart));
             alert('장바구니에 담았습니다!');
+            if(confirm('메인 페이지로 이동하겠습니까?')){
+                if(confirm('정말로?')){
+                    location.href='http://127.0.0.1:5500/shopping_cart.html';
+                }
+            }
         });
     </script>
 </body>
