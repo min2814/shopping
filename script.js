@@ -1,22 +1,26 @@
 document.addEventListener("DOMContentLoaded", function () {
   const products = JSON.parse(localStorage.getItem("products")) || [];
-
+  console.log(products);
   const productList = document.getElementById("product-list");
   const totalAmountSpan = document.getElementById("total-amount");
+  const finalAmountSpan = document.getElementById("final-amount");
   const paymentButton = document.getElementById("payment-button");
   let total = 0;
 
   products.forEach((product) => {
     const li = document.createElement("li");
     li.innerHTML = `
+            <img src="${product.image}">
             <span>${product.title}</span>
             <span>${product.price.toLocaleString()}$</span>
+            <span>${product.quantity}개</span>
         `;
     productList.appendChild(li);
-    total += product.price;
+    total += product.price * product.quantity;
   });
 
   totalAmountSpan.textContent = `${total.toLocaleString()}$`;
+  finalAmountSpan.textContent = `${(total + 5).toLocaleString()}$`; // 배달비 5$ 추가
 
   const paymentLabels = document.querySelectorAll(".payment-options label");
   const cardSelectContainer = document.getElementById("card-select-container");
@@ -46,6 +50,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
       toggleCardSelector();
     });
+  });
+
+  const deliveryRequest = document.getElementById("delivery-request");
+  const customRequest = document.getElementById("custom-request");
+
+  deliveryRequest.addEventListener("change", function () {
+    if (this.value === "기타") {
+      customRequest.classList.remove("hidden");
+      customRequest.required = true;
+    } else {
+      customRequest.classList.add("hidden");
+      customRequest.required = false;
+      customRequest.value = "";
+    }
   });
 
   paymentButton.addEventListener("click", function () {
