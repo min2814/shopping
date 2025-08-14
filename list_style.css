@@ -316,7 +316,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 30px;
 }
 .product-card:hover {
   color: gray;

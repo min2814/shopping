@@ -6,8 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>상품 목록 (카탈로그 토글 필터)</title>
     <script src="https://kit.fontawesome.com/5c3afda2cc.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="./list_style.css">
-    <!-- <link rel="stylesheet" href="./list_style1.css"> -->
+    <link rel="stylesheet" href="list_style.css">
     <style>
         .catalog-panel {
             display: none;
@@ -155,10 +154,11 @@
                 products = data.map(item => ({
                     name: item.title,
                     price: item.price,
-                    rating: (item.rating && item.rating.rate != null) ? item.rating.rate : 0,
+                    rating: (item.rating && item.rating.rate) || 0,
                     image: item.image,
                     category: item.category
                 }));
+
 
                 categories = ["전체", ...new Set(products.map(p => p.category))];
                 createCategoryFilters();
@@ -207,6 +207,11 @@
     `).join('');
         }
 
+        function goToDetail(index) {
+            localStorage.setItem("selectedProduct", JSON.stringify(filteredProducts[index]));
+            window.location.href = "./detail2.html";
+        }
+
         function renderPagination() {
             let buttons = '';
             const maxPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -236,13 +241,48 @@
             catalogBtn.setAttribute('aria-expanded', String(willOpen));
         }
 
+        function renderProducts(page) {
+            const start = (page - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const displayProducts = filteredProducts.slice(start, end);
+
+            const listEl = document.getElementById("product-list");
+            listEl.innerHTML = "";
+
+            displayProducts.forEach((p) => {
+                const card = document.createElement("div");
+                card.className = "product-card";
+                card.innerHTML = `
+                    <img src="${p.image}" alt="${p.name}">
+                    <div class="product-name">${p.name}</div>
+                    <div class="product-price">$${p.price}</div>
+                    <div class="product-rating">⭐ ${p.rating}</div>
+                    `;
+                card.addEventListener("click", () => {
+                    localStorage.setItem("selectedProduct", JSON.stringify(p));
+                    window.location.href = "detail2.html";
+                });
+                listEl.appendChild(card);
+            });
+        }
+
+
+        // 상품 상세 페이지로 이동 + LocalStorage 저장
+        function goToDetail(product) {
+            localStorage.setItem("selectedProduct", JSON.stringify(product));;
+        }
+
+
+
         catalogBtn.addEventListener('click', () => toggleCatalogPanel());
 
         document.addEventListener('click', (e) => {
+            window.location.href = "http://127.0.0.1:5500/detail2.html"
             if (!catalogPanel.classList.contains('open')) return;
             const isInside = catalogPanel.contains(e.target) || catalogBtn.contains(e.target);
             if (!isInside) toggleCatalogPanel(false);
         });
+
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && catalogPanel.classList.contains('open')) {
@@ -250,6 +290,7 @@
                 catalogBtn.focus();
             }
         });
+
 
         fetchProducts();
     </script>

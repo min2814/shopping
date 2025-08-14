@@ -435,8 +435,12 @@ body {
   user-select: none;
 }
 
-.option-buttons button.selected,
-.option-buttons button:hover {
+.option-buttons button.selected {
+  background: #111;
+  color: #fff;
+}
+
+.option-buttons button:not(.selected):hover {
   background: #111;
   color: #fff;
 }
