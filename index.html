@@ -222,12 +222,19 @@ function goToDetail(product) {
 
   catalogBtn.addEventListener('click', () => toggleCatalogPanel());
 
-  document.addEventListener('click', (e) => {
-    window.location.href = "http://127.0.0.1:5501/detail2.html"
-    if (!catalogPanel.classList.contains('open')) return;
-    const isInside = catalogPanel.contains(e.target) || catalogBtn.contains(e.target);
-    if (!isInside) toggleCatalogPanel(false);
-  });
+document.addEventListener('click', (e) => {
+  // 상품 카드 클릭 시만 이동
+  const productCard = e.target.closest('.product-card');
+  if (productCard) {
+    return; // product-card 클릭은 renderProducts에서 처리하므로 여기선 아무것도 안 함
+  }
+
+  // 카탈로그 패널 닫기 로직만 남김
+  if (!catalogPanel.classList.contains('open')) return;
+  const isInside = catalogPanel.contains(e.target) || catalogBtn.contains(e.target);
+  if (!isInside) toggleCatalogPanel(false);
+});
+
   
 
   document.addEventListener('keydown', (e) => {
