@@ -1,6 +1,3 @@
-// ====== 장바구니 렌더링 & 결제 요약 ======
-
-// HTML 요소 가져오기
 const cartListElement = document.querySelector(".shopping__list ul");
 const orderAmountElement = document.querySelectorAll(
   ".payment__top_list span:last-child"
@@ -10,6 +7,7 @@ const deliveryElement = document.querySelectorAll(
 )[1];
 const totalElement = document.querySelector(".payment__price > div:last-child");
 const checkoutButton = document.querySelector(".payment__btn button");
+const paymentContainer = document.querySelector(".payment__container"); // ← 추가
 
 const DELIVERY_FEE = 5; // 배송비
 
@@ -21,32 +19,26 @@ function loadCartFromStorage() {
 // 동일 상품 묶기
 function groupCartItems(rawCart) {
   const groupedItems = {};
-
   rawCart.forEach((item) => {
-    const key = item.id ?? item.title; // 상품 id나 title로 묶기
+    const key = item.id ?? item.title;
     if (!groupedItems[key]) {
       groupedItems[key] = { ...item, quantity: 0, _key: key };
     }
     groupedItems[key].quantity += 1;
   });
-
-  return Object.values(groupedItems); // 배열로 변환
+  return Object.values(groupedItems);
 }
 
-// 묶은 상품을 다시 낱개 배열로 변환해 저장
+// 묶은 상품 배열에 저장 ..
 function saveGroupedItemsToStorage(groupedItems) {
   const expandedItems = [];
-
   groupedItems.forEach(({ quantity, _key, ...rest }) => {
-    for (let i = 0; i < quantity; i++) {
-      expandedItems.push(rest);
-    }
+    for (let i = 0; i < quantity; i++) expandedItems.push(rest);
   });
-
   localStorage.setItem("cart", JSON.stringify(expandedItems));
 }
 
-// 결제 요약 업데이트
+// 결제
 function updatePaymentSummary(items) {
   const orderPrice = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -63,25 +55,40 @@ function updatePaymentSummary(items) {
   checkoutButton.disabled = items.length === 0;
 }
 
-// 장바구니 화면 렌더링
 function renderCart() {
   const rawCart = loadCartFromStorage();
   const groupedItems = groupCartItems(rawCart);
 
-  cartListElement.innerHTML = ""; // 기존 목록 비우기
+  cartListElement.innerHTML = "";
 
   if (groupedItems.length === 0) {
+    if (paymentContainer) paymentContainer.style.display = "none";
+
+    // 장바구니 비었을 때
     cartListElement.innerHTML = `
-      <li style="text-align:center; width:100%; padding:40px; background:#fff; border-radius:20px; border:2px solid #ccc;">
-        장바구니가 비었습니다.
-      </li>`;
+      <div class="cart_empty">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <div>장바구니가 비어있어요.</div>
+        <p>새로운 상품으로 채워주세요.</p>
+        <button type="button" class="go-shopping-btn">새로운 상품 보러가기</button>
+      </div>
+    `;
+
+    const goBtn = document.querySelector(".go-shopping-btn");
+    if (goBtn) {
+      goBtn.addEventListener("click", () => {
+        window.location.href = "../index.html";
+      });
+    }
+
     updatePaymentSummary(groupedItems);
     return;
   }
 
+  if (paymentContainer) paymentContainer.style.display = "";
+
   groupedItems.forEach((item) => {
     const li = document.createElement("li");
-
     li.innerHTML = `
       <img src="${item.image}" alt="${item.title}">
       <div>
@@ -108,14 +115,13 @@ function renderCart() {
         </div>
       </div>
     `;
-
     cartListElement.appendChild(li);
   });
 
   updatePaymentSummary(groupedItems);
 }
 
-// 장바구니 이벤트 (삭제 & 수량 조절)
+// 삭제, 왼 오 버튼
 cartListElement.addEventListener("click", (event) => {
   // 상품 삭제
   if (event.target.classList.contains("fa-circle-xmark")) {
@@ -134,12 +140,10 @@ cartListElement.addEventListener("click", (event) => {
     const key = qtyControl.dataset.key;
     const isPlus = event.target.classList.contains("qty-plus");
     const isMinus = event.target.classList.contains("qty-minus");
-
     if (!isPlus && !isMinus) return;
 
     const groupedItems = groupCartItems(loadCartFromStorage());
     const targetItem = groupedItems.find((it) => it._key === key);
-
     if (!targetItem) return;
 
     if (isPlus) targetItem.quantity += 1;
@@ -155,7 +159,7 @@ cartListElement.addEventListener("click", (event) => {
   }
 });
 
-// 결제 버튼 클릭 이벤트
+// 결제 버튼 클릭
 checkoutButton.addEventListener("click", () => {
   const groupedItems = groupCartItems(loadCartFromStorage());
   if (!groupedItems.length) return;
@@ -182,7 +186,7 @@ checkoutButton.addEventListener("click", () => {
   window.location.href = "./pay.html";
 });
 
-// 배송 날짜 표시
+// 배송 날짜
 function updateDeliveryDate() {
   const now = new Date();
   const year = now.getFullYear();
