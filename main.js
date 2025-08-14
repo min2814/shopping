@@ -193,8 +193,8 @@ async function loadProducts(){
 renderCart();
 loadProducts();
 
-$("#checkoutBtn")?.addEventListener("click", () => alert("결제 플로우로 이동합니다(데모)."));
-$("#viewCartBtn")?.addEventListener("click", () => alert("장바구니 상세 페이지로 이동합니다(데모)."));
+$("#checkoutBtn")?.addEventListener("click", () => alert("결제 플로우로 이동합니다."));
+$("#viewCartBtn")?.addEventListener("click", () => alert("장바구니 상세 페이지로 이동합니다."));
 
 function updateDeliveryDate() {
   const now = new Date();
