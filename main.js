@@ -188,3 +188,17 @@ loadProducts();
 /* 선택: 결제/상세 버튼 데모 */
 $("#checkoutBtn")?.addEventListener("click", () => alert("결제 플로우로 이동합니다(데모)."));
 $("#viewCartBtn")?.addEventListener("click", () => alert("장바구니 상세 페이지로 이동합니다(데모)."));
+
+function updateDeliveryDate() {
+  const now = new Date();
+
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+
+  const dateString = `${year}-${month}-${day}`;
+  document.getElementById("delivery-time-text").textContent = `: ${dateString}`;
+}
+
+// 페이지 로드 시 실행
+updateDeliveryDate();
