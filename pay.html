@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>결제 페이지</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+</head>
+
+<body>
+  <div class="container">
+    <h2>주문/결제</h2>
+
+    <div class="order-summary">
+      <h3>주문 상품 정보</h3>
+      <ul id="product-list"></ul>
+    </div>
+
+    <div class="shipping-info">
+      <h3>배송 정보</h3>
+      <form id="shipping-form">
+        <label for="name">이름</label>
+        <input type="text" id="name" required>
+
+        <label for="address">주소</label>
+        <div class="address-group">
+          <input type="text" id="postcode" placeholder="우편번호" readonly required>
+          <button type="button" id="search-address">주소 검색</button>
+        </div>
+        <input type="text" id="address" placeholder="기본 주소" readonly required>
+        <input type="text" id="detail-address" placeholder="상세 주소 (동, 호수)" required>
+
+        <label for="phone">연락처</label>
+        <input type="tel" id="phone" required>
+
+        <!-- 배송 요청사항 -->
+        <label for="delivery-request">배송 요청사항</label>
+        <select id="delivery-request" required>
+          <option value="" disabled selected>선택하세요</option>
+          <option value="문 앞">문 앞</option>
+          <option value="직접 받고">직접 받고</option>
+          <option value="부재 시 문 앞">부재 시 문 앞</option>
+          <option value="경비실">경비실</option>
+          <option value="택배함">택배함</option>
+          <option value="기타">기타사항</option>
+        </select>
+
+        <!-- 기타사항 입력창 (기본 숨김) -->
+        <input type="text" id="custom-request" class="hidden" placeholder="요청사항을 입력하세요">
+
+      </form>
+    </div>
+
+    <div class="payment-info">
+      <h3>결제 방법</h3>
+      <div class="payment-options">
+        <label><input type="radio" name="payment-method" value="credit-card" checked> <span>신용·체크카드</span></label>
+        <label><input type="radio" name="payment-method" value="naver-pay"><span>네이버페이</span></label>
+        <label><input type="radio" name="payment-method" value="kakao-pay"><span>카카오페이</span></label>
+        <label><input type="radio" name="payment-method" value="payco"><span>페이코</span></label>
+        <label><input type="radio" name="payment-method" value="toss-pay"><span>토스페이</span></label>
+        <label><input type="radio" name="payment-method" value="bank-transfer"> 무통장입금</label>
+        <label><input type="radio" name="payment-method" value="phone-payment"><span>휴대폰 결제</span></label>
+      </div>
+
+      <div id="card-select-container" class="hidden">
+        <select id="card-selector">
+          <option value="" disabled selected>카드사 선택</option>
+          <option value="kb">KB국민카드</option>
+          <option value="shinhan">신한카드</option>
+          <option value="samsung">삼성카드</option>
+          <option value="hyundai">현대카드</option>
+          <option value="lotte">롯데카드</option>
+          <option value="woori">우리카드</option>
+          <option value="hana">하나카드</option>
+          <option value="nh">NH농협카드</option>
+        </select>
+      </div>
+
+      <div class="payment-terms">
+        <label>
+          <input type="checkbox" required>
+          <span><span class="required">[필수]</span> 결제 서비스 이용 약관, 개인정보 처리 동의</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="total-price">
+      <h3>총 결제 금액</h3>
+      <span id="total-amount">0원</span>
+    </div>
+
+    <button id="payment-button">결제하기</button>
+  </div>
+
+  <script>
+    document.getElementById("search-address").addEventListener("click", function () {
+      new daum.Postcode({
+        oncomplete: function (data) {
+          let fullAddr = data.address;
+          let extraAddr = '';
+
+          if (data.addressType === 'R') {
+            if (data.bname !== '') {
+              extraAddr += data.bname;
+            }
+            if (data.buildingName !== '') {
+              extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+            }
+            fullAddr += (extraAddr !== '' ? ' (' + extraAddr + ')' : '');
+          }
+
+          document.getElementById("postcode").value = data.zonecode;
+          document.getElementById("address").value = fullAddr;
+          document.getElementById("detail-address").focus();
+        }
+      }).open();
+    });
+  </script>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
