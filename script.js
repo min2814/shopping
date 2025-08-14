@@ -9,11 +9,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   products.forEach((product) => {
     const li = document.createElement("li");
+    // 제품명에 색상과 사이즈를 포함하여 표시
+    const productTitle = `${product.title} (${product.color}, ${product.size})`;
+
     li.innerHTML = `
             <img src="${product.image}">
-            <span>${product.title}</span>
-            <span>${product.price.toLocaleString()}$</span>
-            <span>${product.quantity}개</span>
+            <span class="product-title">${productTitle}</span>
+            <span class="product-quantity">수량 ${product.quantity}개</span>
+            <span class="product-price">${product.price.toLocaleString()}$</span>
         `;
     productList.appendChild(li);
     total += product.price * product.quantity;
