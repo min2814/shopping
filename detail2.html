@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <title>나이키 스타일 상품 상세 페이지</title>
-    <link rel="stylesheet" href="as.css">
+    <link rel="stylesheet" href="detail.css">
     <script src="https://kit.fontawesome.com/5c3afda2cc.js" crossorigin="anonymous"></script>
 </head>
 
@@ -143,6 +143,7 @@
                             selectedSize = null;
                         }
                     } else {
+                        
                         onClick(option)
                     }
 
@@ -196,6 +197,12 @@
             localStorage.setItem('cart', JSON.stringify(cart));
             console.log(localStorage);
             alert('장바구니에 담았습니다!');
+            
+            if(confirm('메인 페이지로 이동하겠습니까?')){            
+                if(confirm('정말로??')){
+                 location.href="http://127.0.0.1:5500/shopping_cart.html";   
+                }
+            }
         });
     </script>
 
