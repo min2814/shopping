@@ -473,3 +473,32 @@ p {
   visibility: visible;
   transform: translateX(-50%) translateY(0);
 }
+
+/* left right btn */
+.qty-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+}
+
+.qty-btn {
+  border: 1px solid #ccc;
+  background: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.qty-btn:active {
+  transform: translateY(1px);
+}
+
+.qty-value {
+  min-width: 20px;
+  text-align: center;
+  font-weight: 600;
+}

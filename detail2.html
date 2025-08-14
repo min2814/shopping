@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>나이키 스타일 상품 상세 페이지</title>
+    <link rel="stylesheet" href="as.css">
+    <script src="https://kit.fontawesome.com/5c3afda2cc.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <header class="top-bar">
+        <div class="top-left">
+            <div class="delivery-toggle" role="tablist" aria-label="배송 방식">
+                <button class="nav-btn active" role="tab" aria-selected="true">Delivery</button>
+                <button class="nav-btn" role="tab" aria-selected="false">Pickup</button>
+            </div>
+            <span class="address">Select the delivery address</span>
+            <span class="edit-icon" aria-hidden="true"><i class="fa-regular fa-pen-to-square"></i></span>
+            <span class="delivery-time">Nearest delivery <strong>today is 13:00-14:00</strong></span>
+        </div>
+        <div class="top-right">
+            <span class="phone"><strong>+ 8 800 555-35-35 </strong>Around the clock</span>
+        </div>
+    </header>
+    <div class="search-section">
+        <button class="catalog-btn" type="button">
+            <i class="fa-regular fa-clone" aria-hidden="true"></i>
+            Catalog
+        </button>
+
+        <div class="search-group">
+            <div class="search-pill">
+                <select class="category-select" aria-label="카테고리">
+                    <option>ALL CATEGORIES</option>
+                </select>
+                <input class="search-input" type="text" placeholder="Search in the market" aria-label="검색어 입력">
+            </div>
+
+            <button class="search-submit" type="button" aria-label="검색">
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            </button>
+        </div>
+
+        <div class="icons" aria-label="바로가기 아이콘">
+            <div class="icon-box" role="button" tabindex="0" aria-label="배송">
+                <i class="fa-solid fa-truck" aria-hidden="true"></i>
+            </div>
+            <div class="icon-box" role="button" tabindex="0" aria-label="찜">
+                <i class="fa-solid fa-heart" aria-hidden="true"></i>
+            </div>
+            <div class="icon-box" role="button" tabindex="0" aria-label="장바구니">
+                <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+            </div>
+            <div class="icon-box" role="button" tabindex="0" aria-label="마이페이지">
+                <i class="fa-solid fa-user" aria-hidden="true"></i>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="product-container">
+        <div class="image-section">
+            <p id="loading-text">이미지 로딩 중...</p>
+            <img id="product-image" src="" alt="상품 이미지" style="display: none;" />
+        </div>
+        <div class="info-section">
+            <h1 class="product-title" id="product-title"></h1>
+            <div class="product-price" id="product-price"></div>
+            <div class="product-description" id="product-description"></div>
+
+            <div class="options">
+                <div class="option-group">
+                    <label>색상</label>
+                    <div class="option-buttons" id="color-options">
+                        <!-- 동적 생성 -->
+                    </div>
+                </div>
+                <div class="option-group">
+                    <label>사이즈</label>
+                    <div class="option-buttons" id="size-options">
+                        <!-- 동적 생성 -->
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-add-cart" id="add-cart-btn">장바구니에 담기</button>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get('id') || '1';
+
+        const colors = ['검정', '흰색', '빨강', '파랑'];
+        const sizes = ['S', 'M', 'L', 'XL'];
+
+        let selectedColor = null;
+        let selectedSize = null;
+
+        let product = null; // fetch에서 들고온 상품 정보
+
+        const imgElement = document.getElementById('product-image');
+        const loadingText = document.getElementById('loading-text');
+
+        fetch(`https://fakestoreapi.com/products/${productId}`)
+            .then(res => res.json())
+            .then(data => {
+                product = data;
+                // 이미지 로드 처리
+                setProductImage(product.image, product.title);
+
+                document.getElementById('product-title').textContent = product.title;
+                document.getElementById('product-price').textContent = '$' + product.price;
+                document.getElementById('product-description').textContent = product.description;
+
+                createOptionButtons('color-options', colors, (color) => {
+                    selectedColor = color;
+                    updateSelected('color-options', color);
+
+                    // 색상 변경 시 이미지도 다시 로드
+                    // 실제 서비스라면 색상별 이미지 URL 매핑 필요
+                    // const newImageUrl = product.image + `?color=${encodeURIComponent(color)}`;
+                    // setProductImage(newImageUrl, `${product.title} - ${color}`);
+                });
+
+                createOptionButtons('size-options', sizes, (size) => {
+                    selectedSize = size;
+                    updateSelected('size-options', size);
+                });
+            });
+
+        function createOptionButtons(containerId, options, onClick) {
+            const container = document.getElementById(containerId);
+            options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.textContent = option;
+                btn.addEventListener('click', () => {
+                    const isSelected = btn.classList.contains('selected');
+                    if (isSelected) {
+                        btn.classList.remove('selected');
+                        if (containerId === 'color-options') {
+                            selectedColor = null;
+                        } else if (containerId === 'size-options') {
+                            selectedSize = null;
+                        }
+                    } else {
+                        onClick(option)
+                    }
+
+                });
+                container.appendChild(btn);
+            });
+        }
+
+        function updateSelected(containerId, selectedValue) {
+            const container = document.getElementById(containerId);
+            [...container.children].forEach(btn => {
+                btn.classList.toggle('selected', btn.textContent === selectedValue);
+            });
+        }
+
+        function setProductImage(url, alt) {
+            loadingText.style.display = 'block';
+            imgElement.style.display = 'none';
+            imgElement.alt = alt;
+
+            imgElement.onload = () => {
+                loadingText.style.display = 'none';
+                imgElement.style.display = 'block';
+            };
+
+            imgElement.onerror = () => {
+                loadingText.textContent = '이미지를 불러오지 못했습니다.';
+            };
+
+            imgElement.src = url;
+        }
+
+        document.getElementById('add-cart-btn').addEventListener('click', () => {
+            if (!selectedColor || !selectedSize) {
+                alert('색상과 사이즈를 선택해주세요.');
+                return;
+            }
+            //cart라는 이름으로 저당된 json 문자열을 가지고 와서 js 객체로 전환
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart.push({
+                id: productId,
+                title: product.title, // 상품 제목
+                image: product.image, // 상품 이미지
+                category: product.category, // 상품 카테고리
+                price: product.price, // 상품 가격
+                color: selectedColor,
+                size: selectedSize,
+                quantity: 1
+            });
+            //cart라는 이름으로 js 객체를 다시 json 문자열로 저장
+            localStorage.setItem('cart', JSON.stringify(cart));
+            console.log(localStorage);
+            alert('장바구니에 담았습니다!');
+        });
+    </script>
+
+
+</body>
+
+</html>
