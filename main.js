@@ -1,6 +1,3 @@
-/* =========================
-   간단 장바구니 상태/유틸
-========================= */
 const $ = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
 
@@ -20,68 +17,84 @@ const currencyKRW = (n) =>
 
 const subtotal = (items) => items.reduce((s, it) => s + it.price * it.qty, 0);
 
-/* =========================
-   요소 참조
-========================= */
 const openBtn = $("#cartOpenBtn");
 const cartCount = $("#cartCount");
 const drawer = $("#cartDrawer");
 const backdrop = $("#cartBackdrop");
 const closeBtn = $("#cartClose");
+const panel = drawer?.querySelector(".cart-panel");
 const listEl = $("#cartItems");
 const subtotalEl = $("#cpSubtotal");
 
-/* =========================
-   드로어 열기/닫기 + 포커스
-========================= */
+function placePopover(){
+  if (!openBtn || !panel) return;
+  const r = openBtn.getBoundingClientRect();
+  const gap = 10;
+  const panelW = panel.offsetWidth || 420;
+  const vw = document.documentElement.clientWidth;
+  const sx = window.scrollX, sy = window.scrollY;
+
+  let idealLeft = sx + (r.left + r.right)/2 - panelW/2;
+  const minLeft = sx + 12;
+  const maxLeft = sx + vw - panelW - 12;
+  const left = Math.max(minLeft, Math.min(maxLeft, idealLeft));
+  const top  = sy + r.bottom + gap;
+
+  const arrowX = sx + (r.left + r.right)/2 - left;
+  const arrowClamp = Math.max(16, Math.min(panelW - 24, arrowX));
+
+  panel.style.top  = `${top}px`;
+  panel.style.left = `${left}px`;
+  panel.style.setProperty("--arrow-left", `${arrowClamp - 8}px`);
+}
+
 let lastFocused;
 function openDrawer(){
   lastFocused = document.activeElement;
   drawer.hidden = false;
   backdrop.hidden = false;
+  renderCart();
   requestAnimationFrame(() => {
     drawer.classList.add("open");
     backdrop.classList.add("show");
+    placePopover(); 
   });
   openBtn?.setAttribute("aria-expanded", "true");
   closeBtn?.focus();
   window.addEventListener("keydown", onEscClose);
+  window.addEventListener("resize", placePopover);
+  window.addEventListener("scroll", placePopover, { passive: true });
 }
 function closeDrawer(){
   drawer.classList.remove("open");
   backdrop.classList.remove("show");
   openBtn?.setAttribute("aria-expanded", "false");
   window.removeEventListener("keydown", onEscClose);
+  window.removeEventListener("resize", placePopover);
+  window.removeEventListener("scroll", placePopover);
   setTimeout(() => {
     drawer.hidden = true;
     backdrop.hidden = true;
     if (lastFocused) lastFocused.focus();
-  }, 280);
+  }, 180);
 }
 function onEscClose(e){ if(e.key === "Escape") closeDrawer(); }
 
-/* 트리거 */
-openBtn?.addEventListener("click", openDrawer);
-openBtn?.addEventListener("keydown", (e)=>{ if(e.key === "Enter" || e.key === " ") { e.preventDefault(); openDrawer(); }});
+document.addEventListener("click", (e) => {
+  if (e.target.closest("#cartOpenBtn")) { e.preventDefault(); openDrawer(); }
+});
 closeBtn?.addEventListener("click", closeDrawer);
 backdrop?.addEventListener("click", closeDrawer);
 
-/* =========================
-   장바구니 렌더링
-========================= */
 function renderCart(){
-  // 배지 갱신
-  cartCount.textContent = cart.reduce((s, it) => s + it.qty, 0);
+  if (cartCount) cartCount.textContent = cart.reduce((s, it) => s + it.qty, 0);
+  if (subtotalEl) subtotalEl.textContent = currencyKRW(subtotal(cart) * 1400);
 
-  // 합계
-  subtotalEl.textContent = currencyKRW(subtotal(cart) * 1400); // 데모 환산(달러->원 대략)
-
-  // 목록
+  if (!listEl) return;
   if(cart.length === 0){
     listEl.innerHTML = `<li class="muted" style="padding:12px;">장바구니가 비어 있습니다.</li>`;
     return;
   }
-
   listEl.innerHTML = "";
   cart.forEach((it, idx) => {
     const li = document.createElement("li");
@@ -103,8 +116,7 @@ function renderCart(){
   });
 }
 
-/* 수량/삭제 버튼 위임 */
-listEl.addEventListener("click", (e) => {
+listEl?.addEventListener("click", (e) => {
   const btn = e.target.closest("button");
   if(!btn) return;
   const act = btn.dataset.act;
@@ -117,20 +129,16 @@ listEl.addEventListener("click", (e) => {
 
   saveCart(cart);
   renderCart();
+  placePopover(); 
 });
 
-/* =========================
-   담기 동작(위임)
-   - .add-to-cart 버튼 사용
-   - data-* : id, name, price, image
-========================= */
 document.addEventListener("click", (e) => {
   const btn = e.target.closest(".add-to-cart");
   if(!btn) return;
 
   const id = String(btn.dataset.id);
   const name = btn.dataset.name || "상품";
-  const price = Number(btn.dataset.price || 0);  // USD(데모)
+  const price = Number(btn.dataset.price || 0);  
   const image = btn.dataset.image || "";
 
   const found = cart.find((x) => x.id === id);
@@ -141,23 +149,21 @@ document.addEventListener("click", (e) => {
   renderCart();
 });
 
-/* =========================
-   데모용 상품 카드 로드
-========================= */
 const productList = document.querySelector(".product-list");
 
 async function loadProducts(){
   try{
+    if(!productList) return;
+    if (productList.querySelector(".product-card")) return;
+
     const res = await fetch("https://fakestoreapi.com/products?limit=8");
     const data = await res.json();
 
-    productList.innerHTML = "";
+    const frag = document.createDocumentFragment();
     data.forEach((item) => {
       const div = document.createElement("div");
       div.className = "product-card";
-
       const title = item.title.length > 42 ? item.title.slice(0,42) + "…" : item.title;
-
       div.innerHTML = `
         <button class="wishlist-btn" aria-label="찜하기"><i class="fa-regular fa-heart"></i></button>
         <div class="img-wrap"><img src="${item.image}" alt="상품 이미지"></div>
@@ -174,31 +180,29 @@ async function loadProducts(){
           </button>
         </div>
       `;
-      productList.appendChild(div);
+      frag.appendChild(div);
     });
+    productList.appendChild(frag);
   }catch(e){
-    productList.innerHTML = `<div class="muted">상품을 불러오지 못했습니다.</div>`;
+    if (!productList.children.length) {
+      productList.innerHTML = `<div class="muted">상품을 불러오지 못했습니다.</div>`;
+    }
   }
 }
 
-/* 초기 렌더 */
 renderCart();
 loadProducts();
 
-/* 선택: 결제/상세 버튼 데모 */
 $("#checkoutBtn")?.addEventListener("click", () => alert("결제 플로우로 이동합니다(데모)."));
 $("#viewCartBtn")?.addEventListener("click", () => alert("장바구니 상세 페이지로 이동합니다(데모)."));
 
 function updateDeliveryDate() {
   const now = new Date();
-
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const day = String(now.getDate()).padStart(2, "0");
-
   const dateString = `${year}-${month}-${day}`;
-  document.getElementById("delivery-time-text").textContent = `: ${dateString}`;
+  const el = document.getElementById("delivery-time-text");
+  if (el) el.textContent = `: ${dateString}`;
 }
-
-// 페이지 로드 시 실행
 updateDeliveryDate();
