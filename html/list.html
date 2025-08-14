@@ -293,6 +293,236 @@
 
 
         fetchProducts();
+        // search ========================
+        function getQueryParam(param) {
+            const params = new URLSearchParams(window.location.search);
+            return params.get(param);
+        }
+
+        async function fetchProducts() {
+            try {
+                const res = await fetch("https://fakestoreapi.com/products");
+                const data = await res.json();
+
+                products = data.map(item => ({
+                    name: item.title,
+                    price: item.price,
+                    rating: (item.rating && item.rating.rate) || 0,
+                    image: item.image,
+                    category: item.category
+                }));
+
+                categories = ["전체", ...new Set(products.map(p => p.category))];
+                createCategoryFilters();
+
+                const searchQuery = getQueryParam('query');
+                if (searchQuery) {
+                    filteredProducts = products.filter(p =>
+                        p.name.toLowerCase().includes(searchQuery.toLowerCase())
+                    );
+                } else {
+                    filteredProducts = products;
+                }
+
+                goToPage(1);
+            } catch (err) {
+                console.error("상품 데이터를 불러오는 중 오류 발생:", err);
+            }
+        }
+
+        // search ...
+        /* --- 기존 변수/함수(products, filteredProducts 등)는 그대로 두고 아래만 추가/수정 --- */
+
+        const searchInput2 = document.querySelector('.search-input');
+        const searchBtn2 = document.querySelector('.search-submit');
+
+        /* ▼ 드롭다운 DOM */
+        const suggest2 = document.createElement('ul');
+        suggest2.className = 'suggest-list';
+        suggest2.id = 'list-search-suggest';
+        suggest2.setAttribute('role', 'listbox');
+        suggest2.setAttribute('aria-label', '연관 검색어');
+        document.querySelector('.search-group').appendChild(suggest2);
+
+        let terms2 = [];
+        let active2 = -1;
+
+        function normalize(s) {
+            return s.toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, '').trim();
+        }
+
+        function debounce(fn, ms) {
+            let id;
+            return (...a) => {
+                clearTimeout(id);
+                id = setTimeout(() => fn(...a), ms);
+            };
+        }
+
+        function goSearchOnList(forceValue) {
+            const q = (forceValue || searchInput2.value).trim();
+
+
+            const base = location.pathname.split('/').pop() || 'list.html';
+            const url = `${base}?query=${encodeURIComponent(q)}`;
+            history.pushState({}, '', url); // 새로고침 없이 URL 반영(선택)
+            // 필터 적용
+            applySearchFilter(q);
+        }
+
+        function applySearchFilter(q) {
+            if (!q) {
+                filteredProducts = products;
+            } else {
+                const nq = normalize(q);
+                filteredProducts = products.filter(p =>
+                    normalize(p.name).includes(nq) || normalize(p.category).includes(nq)
+                );
+            }
+            goToPage(1);
+        }
+
+        /* Suggest seeds: products 로드 후 만들어짐 */
+        function buildTerms2() {
+            const set = new Set();
+            products.forEach(p => {
+                set.add(p.name);
+                normalize(p.name).split(/\s+/).forEach(w => {
+                    if (w.length >= 3) set.add(w);
+                });
+                if (p.category) set.add(p.category);
+            });
+            terms2 = Array.from(set);
+        }
+
+        function renderSuggest2(items) {
+            suggest2.innerHTML = '';
+            active2 = -1;
+            if (!items.length) {
+                close2();
+                return;
+            }
+            items.forEach(text => {
+                const li = document.createElement('li');
+                li.setAttribute('role', 'option');
+                li.dataset.value = text;
+                li.innerHTML = `<i class="fa-solid fa-magnifying-glass"></i><span>${text}</span>`;
+                li.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    searchInput2.value = text;
+                    goSearchOnList(text);
+                    close2();
+                });
+                suggest2.appendChild(li);
+            });
+            suggest2.style.display = 'block';
+        }
+
+        function close2() {
+            suggest2.style.display = 'none';
+            suggest2.innerHTML = '';
+            active2 = -1;
+        }
+
+        function paint2() {
+            [...suggest2.children].forEach((li, idx) => {
+                li.setAttribute('aria-selected', idx === active2 ? 'true' : 'false');
+                if (idx === active2) li.scrollIntoView({
+                    block: 'nearest'
+                });
+            });
+        }
+
+        function handleInput2() {
+            const q = normalize(searchInput2.value);
+            if (!q) {
+                close2();
+                return;
+            }
+            const starts = [],
+                includes = [];
+            for (const t of terms2) {
+                const n = normalize(t);
+                if (n.startsWith(q)) starts.push(t);
+                else if (n.includes(q)) includes.push(t);
+                if (starts.length >= 6 && includes.length >= 4) break;
+            }
+            renderSuggest2([...starts, ...includes].slice(0, 10));
+        }
+
+        const debounced2 = debounce(handleInput2, 120);
+        searchInput2.addEventListener('input', debounced2);
+
+        searchBtn2.addEventListener('click', () => goSearchOnList());
+
+        searchInput2.addEventListener('keydown', (e) => {
+            const count = suggest2.style.display === 'block' ? suggest2.children.length : 0;
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (count > 0 && active2 >= 0) {
+                    const li = suggest2.children[active2];
+                    searchInput2.value = li.dataset.value;
+                    goSearchOnList(li.dataset.value);
+                } else {
+                    goSearchOnList();
+                }
+                close2();
+            } else if (e.key === 'ArrowDown' && count) {
+                e.preventDefault();
+                active2 = (active2 + 1) % count;
+                paint2();
+            } else if (e.key === 'ArrowUp' && count) {
+                e.preventDefault();
+                active2 = (active2 - 1 + count) % count;
+                paint2();
+            } else if (e.key === 'Escape') {
+                close2();
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!suggest2.contains(e.target) && e.target !== searchInput2) close2();
+        });
+
+        /* URL query 유지 & products 로딩 후 시드 생성 */
+        function getQueryParam(param) {
+            const params = new URLSearchParams(location.search);
+            return params.get(param);
+        }
+
+        /* 기존 fetchProducts 끝부분을 살짝 바꿔주세요:
+           - buildTerms2() 호출
+           - URL query를 입력창에 채우고 필터 적용  */
+        async function fetchProducts() {
+            try {
+                const res = await fetch("https://fakestoreapi.com/products");
+                const data = await res.json();
+
+                products = data.map(item => ({
+                    name: item.title,
+                    price: item.price,
+                    rating: (item.rating && item.rating.rate) || 0,
+                    image: item.image,
+                    category: item.category
+                }));
+
+                categories = ["전체", ...new Set(products.map(p => p.category))];
+                createCategoryFilters();
+
+                buildTerms2(); // 🔹 시드 만들기
+
+                const q = getQueryParam('query') || '';
+                if (q) {
+                    searchInput2.value = q; // 🔹 검색창에 유지
+                    applySearchFilter(q); // 🔹 바로 필터 적용
+                } else {
+                    filteredProducts = products;
+                    goToPage(1);
+                }
+            } catch (err) {
+                console.error("상품 데이터를 불러오는 중 오류 발생:", err);
+            }
+        }
     </script>
 </body>
 

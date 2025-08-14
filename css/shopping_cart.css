@@ -778,3 +778,137 @@ p {
 .ghost:hover a {
   color: white;
 }
+a {
+  text-decoration: none;
+}
+/* search */
+.suggest-list {
+  position: absolute;
+  left: 0;
+  right: 48px; /* 돋보기 버튼 영역 피해줌 */
+  margin-top: 6px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 6px;
+  list-style: none;
+  max-height: 280px;
+  overflow: auto;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  z-index: 20;
+  display: none;
+}
+.suggest-list li {
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.suggest-list li[aria-selected="true"],
+.suggest-list li:hover {
+  background: #f3f4f6;
+}
+.search-group {
+  position: relative;
+}
+/*... */
+:root {
+  --topbar-h: 52px;
+  --searchbar-h: 64px;
+}
+
+.top-bar {
+  min-height: var(--topbar-h);
+  padding: 0 20px;
+}
+.search-section {
+  top: var(--topbar-h) !important;
+  min-height: var(--searchbar-h);
+}
+
+body {
+  padding-top: calc(var(--topbar-h) + var(--searchbar-h) + 16px) !important;
+}
+
+.search-group {
+  position: relative !important;
+  min-width: 0 !important;
+}
+
+.suggest-list {
+  left: 0;
+  right: 0;
+  width: auto;
+  z-index: 30;
+  display: none;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+}
+
+.search-submit {
+  position: relative;
+  z-index: 31; /* 드롭다운보다 1 높게 → 버튼 클릭 가능 */
+}
+
+.suggest-list li[aria-selected="true"],
+.suggest-list li:hover {
+  background: #eef3ff;
+}
+
+@media (max-width: 768px) {
+  .category-select {
+    display: none;
+  }
+  .search-pill {
+    border-radius: 18px;
+  }
+  .search-submit {
+    border-radius: 18px;
+  }
+}
+
+.nav-btn {
+  border: none;
+  background: transparent;
+  color: #e9eaee;
+  padding: 9px 18px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+  border-radius: 14px;
+}
+.nav-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+.nav-btn.active {
+  background: #fff;
+  color: #0f1115;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 6px 14px rgba(0, 0, 0, 0.35);
+}
+
+@media (max-width: 1024px) {
+  .shopping__cart_container {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .payment__container {
+    width: 100%;
+    margin-left: 0;
+    transform: none !important;
+  }
+}
+.search-group {
+  position: relative !important;
+}
+
+.suggest-list {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  margin-top: 0;
+  z-index: 30;
+}
