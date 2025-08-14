@@ -70,17 +70,25 @@
             <div class="product-description" id="product-description"></div>
 
             <div class="options">
-                <div class="option-group">
-                    <label>색상</label>
+                <div class="option-group" id="color-group">
+                    <label>색상</label> 
                     <div class="option-buttons" id="color-options"></div>
                 </div>
-                <div class="option-group">
+                <div class="option-group" id="size-group">
                     <label>사이즈</label>
                     <div class="option-buttons" id="size-options"></div>
                 </div>
             </div>
 
             <button class="btn-add-cart" id="add-cart-btn">장바구니에 담기</button>
+            <!-- 모달 -->
+            <dialog id="cartDialog">
+                <p>장바구니에 담았습니다.<br>계속 쇼핑하겠습니까?</p>
+                <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
+                    <button id="yesBtn">예</button>
+                    <button id="noBtn">아니오</button>
+                </div>
+            </dialog>
         </div>
     </div>
 
@@ -88,8 +96,18 @@
         // 목록 페이지에서 저장한 상품 정보 불러오기
         const product = JSON.parse(localStorage.getItem("selectedProduct"));
 
-        const colors = ['검정', '흰색', '빨강', '파랑'];
-        const sizes = ['S', 'M', 'L', 'XL'];
+        const cartDialog = document.getElementById('cartDialog');
+        const colorGroup = document.getElementById('color-group') || document.querySelector('.options .option-group:nth-child(1)');
+        const sizeGroup = document.getElementById('size-group') || document.querySelector('.options .option-group:nth-child(2)');
+
+        const OPTION_RULES = {
+            "men's clothing": { colors: ['black', 'white', 'navy','beige'], sizes: ['S', 'M', 'L', 'XL'] },
+            "women's clothing": { colors: ['black', 'white', 'purple', 'red','navy'], sizes: ['S', 'M', 'L'] },
+            "electronics": { colors: ['black', 'silver'], sizes: [] },
+            "jewelery": { colors: [], sizes: [] },
+        };
+
+        const getRule = (cat) => OPTION_RULES[cat] || { colors: [], sizes: [] };
 
         let selectedColor = null;
         let selectedSize = null;
@@ -109,17 +127,33 @@
             document.getElementById('product-price').textContent = '$' + product.price;
             document.getElementById('product-description').textContent = product.description || '';
 
-            // 옵션 버튼 생성
-            createOptionButtons('color-options', colors, (color) => {
-                selectedColor = color;
-                updateSelected('color-options', color);
-            });
+            //카테고리 별 color, size 배열들 관리(rule은 카테고리 별 color size 여부)
+            const rule = getRule(product.category);
 
-            createOptionButtons('size-options', sizes, (size) => {
-                selectedSize = size;
-                updateSelected('size-options', size);
-            });
+            // 옵션 버튼 생성
+            // 카테고리별 colors의 길이가 있으면 버튼을(rule.colors) 생성
+            if (rule.colors.length) {
+                createOptionButtons('color-options', rule.colors, (color) => {
+                    selectedColor = color;
+                    updateSelected('color-options', color);
+                });
+            }
+            else{
+                document.querySelector('#color-group label').style.display='none';
+            }
+            // 카테고리별 sizes의 길이가 있으면 버튼을(rule.sizes) 생성
+            if (rule.sizes.length) {
+                createOptionButtons('size-options', rule.sizes, (size) => {
+                    selectedSize = size;
+                    updateSelected('size-options', size);
+                });
+            }
+            else{
+             document.querySelector('#size-group label').style.display='none'; 
+            }
         }
+        // rule의 colors나 sizes 배열이 없으면 label(색상,사이즈) 숨김
+
 
         function createOptionButtons(containerId, options, onClick) {
             const container = document.getElementById(containerId);
@@ -179,17 +213,25 @@
                 price: product.price,
                 color: selectedColor,
                 size: selectedSize,
-                quantity: 1
             });
             //cart라는 이름으로 객체를 JSON 문자열로 저장
             localStorage.setItem('cart', JSON.stringify(cart));
-            alert('장바구니에 담았습니다!');
-            if(confirm('메인 페이지로 이동하겠습니까?')){
-                if(confirm('정말로?')){
-                    location.href='http://127.0.0.1:5500/shopping_cart.html';
-                }
-            }
+
+            cartDialog.showModal();
         });
+
+        document.getElementById('yesBtn').addEventListener('click', () => {
+            cartDialog.close();
+        })
+
+        document.getElementById('noBtn').addEventListener('click', () => {
+            cartDialog.close();
+            if (confirm('장바구니로 이동하겠습니까?')) {
+                location.href = "http://127.0.0.1:5500/shopping_cart.html"
+            }
+
+        })
     </script>
 </body>
+
 </html>
