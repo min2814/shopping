@@ -7,6 +7,7 @@
     <title>상품 목록 (카탈로그 토글 필터)</title>
     <script src="https://kit.fontawesome.com/5c3afda2cc.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../css/list.css">
+    <link rel="stylesheet" href="../css/shopping_cart.css">
     <style>
         .catalog-panel {
             display: none;
@@ -77,6 +78,7 @@
 </head>
 
 <body>
+    <!-- header (cart와 동일) -->
     <header class="top-bar">
         <div class="top-left">
             <div class="delivery-toggle" role="tablist" aria-label="배송 방식">
@@ -85,7 +87,7 @@
             </div>
             <span class="address">Select the delivery address</span>
             <span class="edit-icon" aria-hidden="true"><i class="fa-regular fa-pen-to-square"></i></span>
-            <span class="delivery-time">Nearest delivery <strong>today is 13:00-14:00</strong></span>
+            <span class="delivery-time">Nearest delivery <strong id="delivery-time-text"></strong></span>
         </div>
         <div class="top-right">
             <span class="phone"><strong>+ 8 800 555-35-35 </strong>Around the clock</span>
@@ -93,7 +95,7 @@
     </header>
 
     <div class="search-section">
-        <button class="catalog-btn" type="button" aria-expanded="false" aria-controls="catalog-panel">
+        <button class="catalog-btn" type="button">
             <i class="fa-regular fa-clone" aria-hidden="true"></i>
             Catalog
         </button>
@@ -112,20 +114,44 @@
         </div>
 
         <div class="icons" aria-label="바로가기 아이콘">
-            <div class="icon-box" role="button" tabindex="0" aria-label="배송">
-                <i class="fa-solid fa-truck" aria-hidden="true"></i>
-            </div>
+            <a href="./main.html">
+                <div class="icon-box" role="button" tabindex="0" aria-label="배송">
+                    <i class="fa-solid fa-house" aria-hidden="true"></i>
+                </div>
+            </a>
             <div class="icon-box" role="button" tabindex="0" aria-label="찜">
                 <i class="fa-solid fa-heart" aria-hidden="true"></i>
             </div>
-            <div class="icon-box" role="button" tabindex="0" aria-label="장바구니">
+            <div class="icon-box cart-icon" role="button" tabindex="0" aria-label="장바구니">
                 <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+                <span class="cart-badge" id="cart-count">0</span>
+
+                <div class="mini-cart" id="mini-cart" aria-hidden="true">
+                    <div class="mini-cart__header">
+                        <strong>Checkout Goods</strong>
+                        <button class="mini-cart__close" aria-label="닫기">&times;</button>
+                    </div>
+                    <ul class="mini-cart__list" id="mini-cart-list"></ul>
+                    <div class="mini-cart__summary">
+                        <div class="row"><span>Order Amount</span><span id="mini-order">$0.00</span></div>
+                        <div class="row"><span>Delivery</span><span id="mini-delivery">$0.00</span></div>
+                        <div class="row total"><span>Total</span><span id="mini-total">$0.00</span></div>
+                    </div>
+                    <div class="mini-cart__actions">
+                        <button type="button" class="mini-btn ghost" id="mini-view-cart"><a href="./shopping_cart.html"
+                                class="view_cart">View cart</a></button>
+                        <button type="button" class="mini-btn primary" id="mini-checkout">Checkout now</button>
+                    </div>
+                </div>
             </div>
-            <div class="icon-box" role="button" tabindex="0" aria-label="마이페이지">
-                <i class="fa-solid fa-user" aria-hidden="true"></i>
-            </div>
+            <a href="./mypage.html">
+                <div class="icon-box" role="button" tabindex="0" aria-label="마이페이지">
+                    <i class="fa-solid fa-user" aria-hidden="true"></i>
+                </div>
+            </a>
         </div>
     </div>
+
 
     <div id="catalog-panel" class="catalog-panel" role="region" aria-label="카테고리 필터">
         <!-- <h3>카테고리</h3> -->
@@ -523,6 +549,132 @@
                 console.error("상품 데이터를 불러오는 중 오류 발생:", err);
             }
         }
+
+        // header ..
+
+        // === 장바구니 공용 유틸 ===
+        const DELIVERY_FEE = 5;
+
+        function loadCartFromStorage() {
+            return JSON.parse(localStorage.getItem("cart")) || [];
+        }
+
+        function groupCartItems(rawCart) {
+            const grouped = {};
+            rawCart.forEach((it) => {
+                const key = it.id || it.title;
+
+                if (!grouped[key]) grouped[key] = {
+                    ...it,
+                    quantity: 0,
+                    _key: key
+                };
+                grouped[key].quantity += 1;
+            });
+            return Object.values(grouped);
+        }
+
+        // === 미니카트 요소 ===
+        const cartIcon = document.querySelector(".cart-icon");
+        const miniCart = document.getElementById("mini-cart");
+        const miniList = document.getElementById("mini-cart-list");
+        const miniOrder = document.getElementById("mini-order");
+        const miniDelivery = document.getElementById("mini-delivery");
+        const miniTotal = document.getElementById("mini-total");
+        const miniCheckoutBtn = document.getElementById("mini-checkout");
+        const miniViewCartBtn = document.getElementById("mini-view-cart");
+        const miniCloseBtn = document.querySelector(".mini-cart__close");
+        const cartCountBadge = document.getElementById("cart-count");
+
+        function updateCartBadge() {
+            const cnt = loadCartFromStorage().length;
+            cartCountBadge.textContent = cnt;
+            cartCountBadge.style.display = cnt > 0 ? "inline-block" : "none";
+        }
+
+        function renderMiniCart() {
+            const grouped = groupCartItems(loadCartFromStorage());
+            miniList.innerHTML = "";
+            grouped.forEach((item) => {
+                const li = document.createElement("li");
+                li.className = "mini-cart__item";
+                li.innerHTML = `
+        <img class="mini-cart__thumb" src="${item.image}" alt="${item.title}">
+        <div class="mini-cart__meta">
+          <div class="mini-cart__title">${item.title}</div>
+          <div class="mini-cart__sub">x${item.quantity} · ${item.category || ""}</div>
+        </div>
+        <div class="mini-cart__price">$${(item.price * item.quantity).toFixed(2)}</div>
+      `;
+                miniList.appendChild(li);
+            });
+
+            const order = grouped.reduce((s, i) => s + i.price * i.quantity, 0);
+            const delv = grouped.length === 0 ? 0 : DELIVERY_FEE;
+            const total = order + delv;
+            miniOrder.textContent = `$${order.toFixed(2)}`;
+            miniDelivery.textContent = `$${delv.toFixed(2)}`;
+            miniTotal.textContent = `$${total.toFixed(2)}`;
+            miniCheckoutBtn.disabled = grouped.length === 0;
+        }
+
+        function proceedCheckout() {
+            const grouped = groupCartItems(loadCartFromStorage());
+            if (!grouped.length) return;
+
+            const productsForPayment = grouped.map(({
+                _key,
+                ...rest
+            }) => rest);
+            localStorage.setItem("products", JSON.stringify(productsForPayment));
+
+            const order = grouped.reduce((s, it) => s + it.price * it.quantity, 0);
+            const delivery = grouped.length === 0 ? 0 : DELIVERY_FEE;
+            const total = order + delivery;
+
+            localStorage.setItem("summary", JSON.stringify({
+                order: Number(order.toFixed(2)),
+                delivery: Number(delivery.toFixed(2)),
+                total: Number(total.toFixed(2)),
+            }));
+
+            window.location.href = "./pay.html";
+        }
+
+        // 이벤트 바인딩
+        cartIcon.addEventListener("click", (e) => {
+            e.stopPropagation();
+            cartIcon.classList.toggle("open");
+            renderMiniCart();
+        });
+        miniCloseBtn.addEventListener("click", () => cartIcon.classList.remove("open"));
+        document.addEventListener("click", (e) => {
+            if (!cartIcon.contains(e.target)) cartIcon.classList.remove("open");
+        });
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") cartIcon.classList.remove("open");
+        });
+
+        miniCheckoutBtn.addEventListener("click", proceedCheckout);
+        if (miniViewCartBtn) {
+            miniViewCartBtn.addEventListener("click", () => {
+                window.location.href = "./shopping_cart.html";
+            });
+        }
+
+        // 배송 날짜 표시 (cart와 동일)
+        (function updateDeliveryDate() {
+            const now = new Date();
+            const yyyy = now.getFullYear();
+            const mm = String(now.getMonth() + 1).padStart(2, "0");
+            const dd = String(now.getDate()).padStart(2, "0");
+            const el = document.getElementById("delivery-time-text");
+            if (el) el.textContent = `: ${yyyy}-${mm}-${dd}`;
+        })();
+
+        // 초기 렌더
+        updateCartBadge();
+        renderMiniCart();
     </script>
 </body>
 
