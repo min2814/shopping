@@ -17,7 +17,8 @@
             </div>
             <span class="address">Select the delivery address</span>
             <span class="edit-icon" aria-hidden="true"><i class="fa-regular fa-pen-to-square"></i></span>
-            <span class="delivery-time">Nearest delivery <strong>today is 13:00-14:00</strong></span>
+            <!-- ↓ 장바구니 페이지와 동일: 날짜는 JS가 #delivery-time-text에 채움 -->
+            <span class="delivery-time">Nearest delivery <strong id="delivery-time-text"></strong></span>
         </div>
         <div class="top-right">
             <span class="phone"><strong>+ 8 800 555-35-35 </strong>Around the clock</span>
@@ -37,28 +38,54 @@
                 </select>
                 <input class="search-input" type="text" placeholder="Search in the market" aria-label="검색어 입력">
             </div>
-
             <button class="search-submit" type="button" aria-label="검색">
                 <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
             </button>
         </div>
 
+        <!-- ↓ icons: 구조를 장바구니 페이지와 동일하게 (특히 .cart-icon 내부 미니카트 포함) -->
         <div class="icons" aria-label="바로가기 아이콘">
-            <div class="icon-box" role="button" tabindex="0" aria-label="배송">
-                <a href="#"><i class="fa-solid fa-truck" aria-hidden="true"></i></a>
+            <a href="./main.html">
+                <div class="icon-box" role="button" tabindex="0" aria-label="배송">
+                    <i class="fa-solid fa-house" aria-hidden="true"></i>
+                </div>
+            </a>
 
-            </div>
             <div class="icon-box" role="button" tabindex="0" aria-label="찜">
-                <a href="#"><i class="fa-solid fa-heart" aria-hidden="true"></i></a>
+                <i class="fa-solid fa-heart" aria-hidden="true"></i>
             </div>
-            <div class="icon-box" role="button" tabindex="0" aria-label="장바구니">
-                <a href="#"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i></a>
+
+            <div class="icon-box cart-icon" role="button" tabindex="0" aria-label="장바구니">
+                <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+                <span class="cart-badge" id="cart-count">0</span>
+                <!-- mini cart panel -->
+                <div class="mini-cart" id="mini-cart" aria-hidden="true">
+                    <div class="mini-cart__header">
+                        <strong>Checkout Goods</strong>
+                        <button class="mini-cart__close" aria-label="닫기">&times;</button>
+                    </div>
+                    <ul class="mini-cart__list" id="mini-cart-list"></ul>
+                    <div class="mini-cart__summary">
+                        <div class="row"><span>Order Amount</span><span id="mini-order">$0.00</span></div>
+                        <div class="row"><span>Delivery</span><span id="mini-delivery">$0.00</span></div>
+                        <div class="row total"><span>Total</span><span id="mini-total">$0.00</span></div>
+                    </div>
+                    <div class="mini-cart__actions">
+                        <button type="button" class="mini-btn ghost" id="mini-view-cart">
+                            <a href="./shopping_cart.html" class="view_cart">View cart</a></button>
+                        <button type="button" class="mini-btn primary" id="mini-checkout">Checkout now</button>
+                    </div>
+                </div>
             </div>
-            <div class="icon-box" role="button" tabindex="0" aria-label="마이페이지">
-                <a href=""><i class="fa-solid fa-user" aria-hidden="true"></i></a>
-            </div>
+
+            <a href="./mypage.html">
+                <div class="icon-box" role="button" tabindex="0" aria-label="마이페이지">
+                    <i class="fa-solid fa-user" aria-hidden="true"></i>
+                </div>
+            </a>
         </div>
     </div>
+
 
     <div class="container" id="product-container">
         <div class="image-section">
@@ -191,6 +218,152 @@
                 }
             }
         });
+        // header m ,,
+        const DELIVERY_FEE = 5;
+
+        function loadCartFromStorage() {
+            return JSON.parse(localStorage.getItem("cart")) || [];
+        }
+
+        function groupCartItems(raw) {
+            const map = {};
+            for (const it of raw) {
+                const key = (it.id !== null && it.id !== undefined) ? it.id : it.title;
+
+                if (!map[key]) map[key] = {
+                    ...it,
+                    quantity: 0,
+                    _key: key
+                };
+                map[key].quantity += 1;
+            }
+            return Object.values(map);
+        }
+
+        // ---- 배지/미니카트 ----
+        const cartIcon = document.querySelector(".cart-icon");
+        const miniCart = document.getElementById("mini-cart");
+        const miniList = document.getElementById("mini-cart-list");
+        const miniOrder = document.getElementById("mini-order");
+        const miniDelivery = document.getElementById("mini-delivery");
+        const miniTotal = document.getElementById("mini-total");
+        const miniCheckoutBtn = document.getElementById("mini-checkout");
+        const miniViewCartBtn = document.getElementById("mini-view-cart");
+        const miniCloseBtn = document.querySelector(".mini-cart__close");
+        const cartCountBadge = document.getElementById("cart-count");
+
+        function updateCartBadge() {
+            const cnt = loadCartFromStorage().length;
+            if (cartCountBadge) {
+                cartCountBadge.textContent = cnt;
+                cartCountBadge.style.display = cnt > 0 ? "inline-block" : "none";
+            }
+        }
+
+        function renderMiniCart() {
+            if (!miniList) return;
+            const grouped = groupCartItems(loadCartFromStorage());
+            miniList.innerHTML = "";
+            grouped.forEach(item => {
+                const li = document.createElement("li");
+                li.className = "mini-cart__item";
+                li.innerHTML = `
+        <img class="mini-cart__thumb" src="${item.image}" alt="${item.title}">
+        <div class="mini-cart__meta">
+            <div class="mini-cart__title">${item.title}</div>
+            <div class="mini-cart__sub">x${item.quantity} · ${item.category || ""}</div>
+        </div>
+        <div class="mini-cart__price">$${(item.price*item.quantity).toFixed(2)}</div>
+        `;
+                miniList.appendChild(li);
+            });
+            const order = grouped.reduce((s, i) => s + i.price * i.quantity, 0);
+            const delv = grouped.length === 0 ? 0 : DELIVERY_FEE;
+            const total = order + delv;
+            if (miniOrder) miniOrder.textContent = `$${order.toFixed(2)}`;
+            if (miniDelivery) miniDelivery.textContent = `$${delv.toFixed(2)}`;
+            if (miniTotal) miniTotal.textContent = `$${total.toFixed(2)}`;
+            if (miniCheckoutBtn) miniCheckoutBtn.disabled = grouped.length === 0;
+        }
+
+        function proceedCheckout() {
+            const grouped = groupCartItems(loadCartFromStorage());
+            if (!grouped.length) return;
+            const productsForPayment = grouped.map(({
+                _key,
+                ...rest
+            }) => rest);
+            localStorage.setItem("products", JSON.stringify(productsForPayment));
+            const order = grouped.reduce((s, i) => s + i.price * i.quantity, 0);
+            const delv = grouped.length === 0 ? 0 : DELIVERY_FEE;
+            const total = order + delv;
+            localStorage.setItem("summary", JSON.stringify({
+                order: Number(order.toFixed(2)),
+                delivery: Number(delv.toFixed(2)),
+                total: Number(total.toFixed(2))
+            }));
+            window.location.href = "./pay.html";
+        }
+
+        // 이벤트: 아이콘/닫기/ESC/바깥클릭
+        if (cartIcon) {
+            cartIcon.addEventListener("click", (e) => {
+                e.stopPropagation();
+                cartIcon.classList.toggle("open");
+                renderMiniCart();
+            });
+            document.addEventListener("click", (e) => {
+                if (!cartIcon.contains(e.target)) cartIcon.classList.remove("open");
+            });
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape") cartIcon.classList.remove("open");
+            });
+        }
+        if (miniCloseBtn) miniCloseBtn.addEventListener("click", () => cartIcon.classList.remove("open"));
+        if (miniCheckoutBtn) miniCheckoutBtn.addEventListener("click", proceedCheckout);
+        if (miniViewCartBtn) miniViewCartBtn.addEventListener("click", () => {
+            if (location.pathname.endsWith("shopping_cart.html") || location.pathname.endsWith("cart.html")) {
+                cartIcon.classList.remove("open");
+            } else {
+                location.href = "./shopping_cart.html";
+            }
+        });
+
+        // ---- 검색 이동만 (자동완성은 원하면 장바구니 코드 재사용 가능) ----
+        const searchInput = document.querySelector(".search-input");
+        const searchButton = document.querySelector(".search-submit");
+
+        function goSearch(q) {
+            const s = (
+                q !== null && q !== undefined ?
+                q :
+                (searchInput && searchInput.value) || ""
+            ).trim();
+
+            if (s) window.location.href = `list.html?query=${encodeURIComponent(s)}`;
+        }
+        if (searchButton) searchButton.addEventListener("click", () => goSearch());
+        if (searchInput) searchInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                goSearch();
+            }
+        });
+
+        // ---- 배송 날짜 텍스트 (#delivery-time-text) ----
+        (function updateDeliveryDate() {
+            const el = document.getElementById("delivery-time-text");
+            if (!el) return;
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = String(now.getMonth() + 1).padStart(2, "0");
+            const d = String(now.getDate()).padStart(2, "0");
+            el.textContent = `: ${y}-${m}-${d}`;
+        })();
+
+        // 초기 동기화
+        updateCartBadge();
+        renderMiniCart();
     </script>
 </body>
 

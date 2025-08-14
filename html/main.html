@@ -59,10 +59,32 @@
       </div>
 
       <!-- 장바구니 아이콘 -->
-      <div id="cartOpenBtn" class="icon-box" role="button" tabindex="0" aria-label="장바구니" aria-haspopup="dialog"
-        aria-expanded="false">
+      <!-- 장바구니 아이콘 -->
+      <div id="cartOpenBtn" class="icon-box cart-icon" role="button" tabindex="0" aria-label="장바구니"
+        aria-haspopup="dialog" aria-expanded="false">
         <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+        <span class="cart-badge" id="cart-count">0</span>
+
+        <!-- mini-cart -->
+        <div class="mini-cart" id="mini-cart" aria-hidden="true">
+          <div class="mini-cart__header">
+            <strong>Checkout Goods</strong>
+            <button class="mini-cart__close" aria-label="닫기">&times;</button>
+          </div>
+          <ul class="mini-cart__list" id="mini-cart-list"></ul>
+          <div class="mini-cart__summary">
+            <div class="row"><span>Order Amount</span><span id="mini-order">$0.00</span></div>
+            <div class="row"><span>Delivery</span><span id="mini-delivery">$0.00</span></div>
+            <div class="row total"><span>Total</span><span id="mini-total">$0.00</span></div>
+          </div>
+          <div class="mini-cart__actions">
+            <button type="button" class="mini-btn ghost" id="mini-view-cart">
+              <a href="./shopping_cart.html" class="view_cart">View cart</a></button>
+            <button type="button" class="mini-btn primary" id="mini-checkout">Checkout now</button>
+          </div>
+        </div>
       </div>
+
 
       <div class="icon-box" role="button" tabindex="0" aria-label="마이페이지">
         <i class="fa-solid fa-user" aria-hidden="true"></i>
