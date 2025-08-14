@@ -223,7 +223,6 @@ updateDeliveryDate();
     box.appendChild(badge);
   }
 
-  // 버튼 단위로만 계산 (중복 방지)
   const calcCount = () =>
     document.querySelectorAll(
       '.wishlist-btn.active, .wishlist-btn[aria-pressed="true"]'
@@ -324,4 +323,254 @@ updateDeliveryDate();
       updateWishBadge();
     }, 0);
   });
+})();
+
+
+(function () {
+  const MAP_KEY  = 'wish';   
+  const DATA_KEY = 'wish.items.v1'; 
+
+  const readMap   = () => { try { return JSON.parse(localStorage.getItem(MAP_KEY))  || {}; } catch { return {}; } };
+  const readData  = () => { try { return JSON.parse(localStorage.getItem(DATA_KEY)) || {}; } catch { return {}; } };
+  const writeData = (m)  => localStorage.setItem(DATA_KEY, JSON.stringify(m));
+  const fmtUSD = (n) => `$${Number(n).toFixed(2)}`;
+
+  if (!document.getElementById('wishPopoverCSS')) {
+    const css = document.createElement('style');
+    css.id = 'wishPopoverCSS';
+    css.textContent = `
+      .wish-popover{position:fixed;inset:0;pointer-events:none;z-index:41}
+      .wish-popover.open{pointer-events:auto}
+      .wish-popover[hidden]{display:none}
+      .wish-panel{position:absolute; width:360px; max-width:88vw; background:#fff;
+        border:1px solid #e6e6ea; border-radius:14px;
+        box-shadow:0 18px 50px rgba(15,23,42,.22); transform:scale(.98); opacity:0;
+        transition:transform .18s ease,opacity .18s ease; display:flex;flex-direction:column}
+
+      .wish-panel::before{content:"";position:absolute;top:-8px;left:var(--wp-arrow-left,40px);
+        width:16px;height:16px;background:#fff;transform:rotate(45deg);
+        border-left:1px solid #e6e6ea;border-top:1px solid #e6e6ea}
+      .wish-header,.wish-footer{padding:14px 16px;border-bottom:1px solid #e6e6ea;display:flex;align-items:center;gap:8px}
+      .wish-header{justify-content:space-between}
+      .wish-footer{border-top:1px solid #e6e6ea;border-bottom:0}
+      .wish-items{list-style:none;margin:0;padding:8px 0;max-height:260px;overflow:auto}
+      .wish-row{display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;
+        padding:10px;border-bottom:1px solid #f5f5f5}
+      .wish-thumb{width:56px;height:56px;object-fit:contain}
+      .wish-title{font-size:14px;}
+      .wish-price{font-weight:700;margin:0}
+      .wish-remove{border:none;background:transparent;font-size:18px;cursor:pointer}
+      .wp-sum{margin-right:auto;display:flex;gap:10px;align-items:baseline}
+      .wp-checkout{margin-left:auto;padding:10px 14px;border:none;border-radius:12px;background:#2f80ed;color:#fff;cursor:pointer}
+      .wp-close{border:none;background:transparent;font-size:22px;cursor:pointer}
+      .wish-row--empty{grid-template-columns:1fr !important;padding:14px 16px}
+      .wish-row--empty .wish-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    `;
+    document.head.appendChild(css);
+  }
+
+  function ensureDOM() {
+    if (!document.getElementById('wishBackdrop')) {
+      const bd = document.createElement('div');
+      bd.id = 'wishBackdrop';
+      bd.className = 'backdrop';
+      bd.hidden = true;
+      document.body.appendChild(bd);
+    }
+    if (!document.getElementById('wishPopover')) {
+      const wrap = document.createElement('div');
+      wrap.id = 'wishPopover';
+      wrap.className = 'wish-popover';
+      wrap.hidden = true;
+      wrap.innerHTML = `
+        <div class="wish-panel" role="dialog" aria-labelledby="wishPopTitle">
+          <header class="wish-header">
+            <h3 id="wishPopTitle">Wishlist (<span id="wishPopCount">0</span>)</h3>
+            <button id="wishPopClose" class="wp-close" aria-label="닫기">×</button>
+          </header>
+          <ul id="wishPopItems" class="wish-items" role="list"></ul>
+          <footer class="wish-footer">
+            <div class="wp-sum"><span>Total</span><strong id="wishPopTotal">$0.00</strong></div>
+          </footer>
+        </div>`;
+      document.body.appendChild(wrap);
+    }
+  }
+  ensureDOM();
+
+  // 참조
+  let anchor = document.getElementById('wishIcon');                         // ★ 변경: 뒤에서 재할당되므로 let
+  const popover  = document.getElementById('wishPopover');
+  const panel    = popover?.querySelector('.wish-panel');
+  const listEl   = document.getElementById('wishPopItems');
+  const countEl  = document.getElementById('wishPopCount');
+  const totalEl  = document.getElementById('wishPopTotal');
+  const closeWishBtn = document.getElementById('wishPopClose');             // ★ 변경: 변수명 혼동 방지
+  const wishBackdrop = document.getElementById('wishBackdrop');             // ★ 변경: 전역 backdrop과 구분
+
+  const pickFromCard = (id) => {
+    const card  = document.querySelector(`.product-card[data-id="${CSS.escape(id)}"]`);
+    if (!card) return null;
+    const title = card.querySelector('.product-name, [data-title], .title, h4, h3')?.textContent?.trim() || '';
+    const img   = card.querySelector('img')?.getAttribute('src') || '';
+    const ptxt  = card.querySelector('.price, [data-price]')?.textContent || '';
+    const m     = String(ptxt).replace(/,/g,'').match(/-?\d+(\.\d+)?/);
+    const price = m ? Number(m[0]) : NaN;
+    return { id, title, img, price };
+  };
+
+  const ensureSnapshots = (ids) => {
+    const data = readData();
+    ids.forEach(id => { if (!data[id]) { const p = pickFromCard(id); if (p) data[id] = p; } });
+    writeData(data);
+    return data;
+  };
+
+  function renderWish(){
+    const map  = readMap();
+    const ids  = Object.keys(map).filter(k => !!map[k]);
+    const data = ensureSnapshots(ids);
+    const items = ids.map(id => data[id]).filter(Boolean);
+
+    countEl.textContent = String(items.length);
+
+    if (items.length === 0) {
+      listEl.innerHTML = `
+        <li class="wish-row wish-row--empty">
+          <div class="wish-title">찜한 상품이 없습니다.</div>
+        </li>`;
+      totalEl.textContent = fmtUSD(0);
+      return;
+    }
+
+    listEl.innerHTML = items.map(it => `
+      <li class="wish-row" data-id="${it.id}">
+        <img class="wish-thumb" src="${it.img || ''}" alt="">
+        <div>
+          <p class="wish-title">${it.title || '(이름 미확인)'}</p>
+          <p class="wish-price">${isNaN(it.price) ? '' : fmtUSD(it.price)}</p>
+        </div>
+        <button class="wish-remove" aria-label="삭제">×</button>
+      </li>
+    `).join('');
+
+    const total = items.reduce((s,v) => s + (isNaN(v.price)?0:Number(v.price)), 0);
+    totalEl.textContent = fmtUSD(total);
+  }
+
+  function placeWishPopover(){                                              // ★ 변경: 함수명 충돌 방지
+    if (!anchor || !panel) return;
+    const r  = anchor.getBoundingClientRect();
+    const gap = 10;
+    const panelW = panel.offsetWidth || 360;                                // ★ 변경: 실제 패널 폭 반영
+    const vw = document.documentElement.clientWidth;
+    const sx = window.scrollX, sy = window.scrollY;
+
+    let idealLeft = sx + (r.left + r.right)/2 - panelW/2;
+    const minLeft = sx + 12;
+    const maxLeft = sx + vw - panelW - 12;
+    const left = Math.max(minLeft, Math.min(maxLeft, idealLeft));
+    const top  = sy + r.bottom + gap;
+
+    panel.style.left = `${left}px`;
+    panel.style.top  = `${top}px`;
+
+    const arrowX = sx + (r.left + r.right)/2 - left;
+    const clamp  = Math.max(16, Math.min(panelW - 24, arrowX));
+    panel.style.setProperty('--wp-arrow-left', `${clamp}px`);
+  }
+
+  function openWish(){
+    renderWish();
+    popover.hidden = false;
+    wishBackdrop.hidden = false;
+    requestAnimationFrame(() => {
+      popover.classList.add('open');
+      wishBackdrop.classList.add('show');
+      placeWishPopover();                                                  // ★ 변경
+    });
+    anchor?.setAttribute('aria-expanded', 'true');                          // ★ 변경
+    window.addEventListener('resize', placeWishPopover);
+    window.addEventListener('scroll', placeWishPopover, { passive:true });
+    window.addEventListener('keydown', onEsc);
+  }
+  function closeWish(){
+    popover.classList.remove('open');
+    wishBackdrop.classList.remove('show');
+    anchor?.setAttribute('aria-expanded', 'false');                         // ★ 변경
+    window.removeEventListener('resize', placeWishPopover);
+    window.removeEventListener('scroll', placeWishPopover);
+    window.removeEventListener('keydown', onEsc);
+    setTimeout(() => { popover.hidden = true; wishBackdrop.hidden = true; }, 150);
+  }
+  function onEsc(e){ if (e.key === 'Escape') closeWish(); }
+
+  /* ---------------------------
+   * 하트 아이콘(#wishIcon) 토글
+   * (1) 노드 복제로 과거 리스너 제거
+   * (2) 캡처 단계에서 토글 + 전파 완전 차단
+   * --------------------------- */
+  if (anchor) {                                                             // ★ 변경: 기존 리스너 정리
+    const cloned = anchor.cloneNode(true);
+    anchor.parentNode.replaceChild(cloned, anchor);
+    anchor = cloned;
+  }
+
+  anchor?.addEventListener('click', (e) => {                                // ★ 변경: 토글 + 차단
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    e.stopPropagation();
+    const isOpen = popover.classList.contains('open') && !popover.hidden;
+    if (isOpen) closeWish();
+    else openWish();
+  }, { capture: true });
+
+  closeWishBtn?.addEventListener('click', closeWish);                        // ★ 변경: 변수명
+  wishBackdrop?.addEventListener('click', closeWish);                        // ★ 변경: 변수명
+
+  listEl?.addEventListener('click', (e) => {
+    const rm = e.target.closest('.wish-remove');
+    if (!rm) return;
+    const row = rm.closest('.wish-row');
+    const id = row?.dataset.id;
+    if (!id) return;
+
+    const map = readMap(); delete map[id]; localStorage.setItem(MAP_KEY, JSON.stringify(map));
+    const data = readData(); delete data[id]; writeData(data);
+
+    const btn = document.querySelector(`.product-card[data-id="${CSS.escape(id)}"] .wishlist-btn`);
+    const icon = btn?.querySelector('.fa-heart');
+    if (btn) { btn.classList.remove('active'); btn.setAttribute('aria-pressed','false'); }
+    if (icon){ icon.classList.remove('fa-solid'); icon.classList.add('fa-regular'); }
+
+    const n = Object.values(map).filter(Boolean).length;
+    const badge = document.getElementById('wishCount');
+    const box = document.getElementById('wishIcon');
+    if (badge) badge.textContent = String(n);
+    box?.setAttribute('aria-label', `찜 ${n}개`);
+
+    renderWish();
+    placeWishPopover();                                                     // ★ 변경
+  });
+
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.wishlist-btn');
+    if (!btn) return;
+    const card = btn.closest('.product-card');
+    if (!card) return;
+    const id = card.dataset.id;
+    setTimeout(() => {
+      const map = readMap();
+      const data = readData();
+      if (map[id]) {
+        const snap = pickFromCard(id);
+        if (snap) data[id] = snap;
+      } else {
+        delete data[id];
+      }
+      writeData(data);
+      if (!popover.hidden) renderWish();
+    }, 0);
+  });
+
 })();
