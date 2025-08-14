@@ -77,7 +77,7 @@ function renderCart() {
     const goBtn = document.querySelector(".go-shopping-btn");
     if (goBtn) {
       goBtn.addEventListener("click", () => {
-        window.location.href = "../index.html";
+        window.location.href = "./list.html";
       });
     }
 
