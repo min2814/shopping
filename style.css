@@ -25,7 +25,6 @@ body { margin: 0; font-family: Arial, sans-serif; background: #f9f9f9; }
 .delivery-time { color: rgba(255,255,255,.7); padding: 0 15px; }
 .delivery-time strong { color: #fff; }
 
-/* 검색/아이콘 */
 .search-section {
   background: #fff; display: flex; align-items: center; gap: 12px;
   padding: 12px 20px; border-bottom: 1px solid #ddd; position: relative; z-index: 1;
@@ -73,14 +72,12 @@ body { margin: 0; font-family: Arial, sans-serif; background: #f9f9f9; }
 }
 .search-submit:hover { filter: brightness(1.05); }
 
-/* 배너 */
 .banner {
   background: #077de2; color: #fff; display: flex; justify-content: space-between; align-items: center;
   padding: 30px; border-radius: 12px; margin: 20px; height: 200px;
   background-image: url("./banner.png"); background-size: cover; overflow: hidden;
 }
 
-/* 인기 상품 */
 .popular { padding: 20px; }
 .section-header { display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
 .section-header h3 { font-size: 25px; }
@@ -126,6 +123,11 @@ body { margin: 0; font-family: Arial, sans-serif; background: #f9f9f9; }
   background: #fff; border: 1px solid #e6e6ea; border-radius: 16px;
   box-shadow: 0 18px 50px rgba(15,23,42,.22); transform: scale(.98); opacity: 0;
   transition: transform .18s ease, opacity .18s ease; pointer-events: auto; display: flex; flex-direction: column;
+  z-index: 41;
+}
+.cart-panel.open{
+  transform: scale(1);
+  opacity: 1;
 }
 .cart-drawer.open .cart-panel{ transform: scale(1); opacity: 1; }
 .cart-panel:before{
@@ -188,6 +190,17 @@ body { margin: 0; font-family: Arial, sans-serif; background: #f9f9f9; }
   display:flex; flex-direction:column;
 }
 .wish-popover.open .wish-panel{ transform:scale(1); opacity:1; }
+.wish-popover--fixed .wish-panel{
+  position: fixed !important;
+  width: 360px !important;  
+  max-width: 360px !important;
+  left: var(--wp-fixed-left) !important;
+  top:  var(--wp-fixed-top)  !important;
+}
+
+.wish-popover--fixed .wish-panel::before{
+  left: var(--wp-fixed-arrow-left, 40px) !important;
+}
 .wish-panel::before{
   content:""; position:absolute; top:-8px; left:var(--wp-arrow-left, 40px);
   width:16px; height:16px; background:#fff; transform:rotate(45deg);
@@ -221,4 +234,15 @@ body { margin: 0; font-family: Arial, sans-serif; background: #f9f9f9; }
 }
 .wish-popover .wish-panel {
   pointer-events: auto !important; 
+}
+
+.cart-panel .cart-item .thumb{
+  width:56px; height:56px;   
+  flex: 0 0 56px;
+  overflow:hidden; border-radius:10px;  
+}
+.cart-panel .cart-item .thumb img{
+  width:100% !important;
+  height:100% !important;
+  object-fit:contain !important;  
 }

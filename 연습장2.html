@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Account (with New Top Header)</title>
+
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://kit.fontawesome.com/5c3afda2cc.js" crossorigin="anonymous"></script>
+
+  <style>
+    :root{ --bg:#f5f7fb; --card:#fff; --line:#e9eef5; --text:#1c2230;
+      --primary:#1357ff; --primary-700:#0f46cc; --shadow:0 10px 30px rgba(24,39,75,.08); --radius:16px; --muted:#9aa3b2; }
+    body{ background:var(--bg); color:var(--text); margin:0; scroll-behavior:smooth; }
+
+    .section-title{width:min(1400px,98vw);margin:0 auto 12px;padding:0 2px}
+    .section-title h1{margin:0;font-size:32px;line-height:1.2;font-weight:800;letter-spacing:-.3px;color:#1c2230;text-align:left}
+
+    .page{width:min(1400px,98vw);margin:0 auto 40px;display:grid;grid-template-columns:320px 1fr;gap:24px}
+
+    .sidebar{ background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px 0;height:fit-content;position:sticky;top:16px }
+    .side-list{list-style:none;margin:0;padding:8px}
+    .side-item{display:flex;align-items:center;gap:12px;padding:12px 14px;margin:4px 8px;border-radius:12px;color:#2b3240;cursor:pointer;user-select:none}
+    .side-item:hover{background:#f6f8fe}
+    .side-item.active{background:#f5f8ff;outline:1px solid #e4ebff;color:#1141c7}
+    .side-sep{height:1px;background:var(--line);margin:10px 14px}
+    .signout{display:flex;align-items:center;gap:10px;padding:14px 18px;color:#d14747;font-weight:600;margin-top:4px;cursor:pointer}
+
+    .content{display:flex;flex-direction:column;gap:16px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;scroll-margin-top:16px}
+    .card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px}
+    .h2{font-size:22px;font-weight:800}
+   .card.highlight{animation:pop 900ms ease;outline:2px solid rgba(19,87,255,.25)}
+    @keyframes pop{0%{transform:translateY(-2px);box-shadow:0 12px 30px rgba(19,87,255,.15)}100%{transform:none;box-shadow:var(--shadow)}}
+
+    .profile{margin-top:16px;width:100px;height:100px;border-radius:50%;background-color:transparent;border:2px solid black;margin-bottom:16px;background-image:url("유연상.png");background-size:cover;background-position:center}
+    .label{font-size:14px;color:#667085;margin:8px 0 8px}
+    .date-field{display:inline-flex;align-items:center;height:48px;background:#fff;border:1px solid #e4e9f3;border-radius:12px;overflow:hidden;max-width:450px}
+    .date-field input[type="date"]{height:100%;border:0;outline:0;padding:0 12px;font-size:15px;min-width:200px;background:#fff;color:#111827}
+    .calendar-btn{width:48px;height:48px;border:0;background:transparent;cursor:pointer;display:grid;place-items:center}
+    .calendar-btn:hover{background:#f6f8fe}
+    .link{color:#2563eb;text-decoration:none;font-weight:600;font-size:14px}
+    .link:hover{text-decoration:underline}
+    .btn-edit{appearance:none;border:1px solid #d6def0;background:#f7f9ff;color:#1141c7;height:36px;padding:0 14px;border-radius:10px;font-weight:700;cursor:pointer}
+    .btn-edit:hover{background:#eef4ff}
+
+    .input,.select-display{height:56px;border-radius:12px;border:1px solid #e4e9f3;background:#fff;display:flex;align-items:center;padding:0 14px;box-shadow:inset 0 1px 0 rgba(17,24,39,.02);max-width:450px}
+    .input{font-size:16px;font-weight:700;color:#111827}
+    .input .prefix{margin-right:8px;color:#6b7280;font-weight:800}
+    .select-wrap{position:relative;max-width:450px}
+    .select-display{justify-content:space-between;cursor:pointer}
+    .select-placeholder{color:var(--muted);font-weight:600}
+    .select-value{color:#111827;font-weight:700;display:inline-flex;align-items:center;gap:8px}
+    .chevron{width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:7px solid var(--muted);margin-left:10px}
+    .select-menu{position:absolute;left:0;right:0;top:calc(100% + 8px);background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:6px;display:none;z-index:35}
+    .select-menu.show{display:block}
+    .select-item{padding:10px 12px;border-radius:8px;cursor:pointer;font-size:14px;color:#1c2230;display:flex;align-items:center;gap:10px}
+    .select-item.muted{color:var(--muted)}
+    .select-item:hover{background:#f6f8fe}
+
+    .bank-logo{width:20px;height:20px;border-radius:6px;display:grid;place-items:center;font-size:11px;font-weight:800;color:#fff;letter-spacing:.3px;flex:0 0 20px}
+    .bank-logo.kb{background:#f0c400;color:#2b2b2b}.bank-logo.shinhan{background:#003474}.bank-logo.samsung{background:#1428a0}.bank-logo.hyundai{background:#111}.bank-logo.lotte{background:#ed1c24}.bank-logo.woori{background:#1e6ed2}.bank-logo.hana{background:#008485}.bank-logo.nh{background:#00a64e}
+
+    .wallet{margin-top:16px;user-select:none}
+    .pay-head{display:flex;align-items:center;gap:10px;padding:8px 2px;border-bottom:1px solid #eef2f8;margin-bottom:10px;font-weight:700}
+    .pay-radio{width:18px;height:18px;border:2px solid #c9d4ea;border-radius:50%;display:grid;place-items:center}
+    .pay-radio.on{border-color:#2e58ff}.pay-radio.on::after{content:"";width:10px;height:10px;background:#2e58ff;border-radius:50%}
+
+    .carousel{position:relative;padding:8px 48px}
+    .carousel .nav{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:72px;border:0;border-radius:12px;background:#f3f5fb;color:#26324d;cursor:pointer;box-shadow:0 3px 10px rgba(17,24,39,.08)}
+    .carousel .nav:hover{background:#e9efff}
+    .carousel .prev{left:4px}.carousel .next{right:4px}
+    .track{overflow:hidden}
+    .slides{display:flex;gap:16px;align-items:stretch;transition:transform .35s ease}
+    .slide{flex:0 0 74%;max-width:640px;aspect-ratio:16/9;border-radius:20px;position:relative;background:#e9eef7;box-shadow:0 10px 25px rgba(23,45,98,.1);transform:scale(.92);opacity:.6;filter:saturate(.75)}
+    .slide.is-center{transform:scale(1);opacity:1;filter:none}
+    .slide img{width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block}
+    .slide .sub{position:absolute;left:16px;bottom:14px;font-size:12px;padding:6px 10px;border-radius:10px;color:#fff;background:rgba(0,0,0,.22)}
+    .dots{display:flex;justify-content:center;gap:8px;margin-top:10px}
+    .dot{width:6px;height:6px;border-radius:999px;background:#c8d2e6;opacity:.85}
+    .dot.on{width:20px;border-radius:6px;background:#2e58ff;opacity:1}
+
+    .cta{margin-top:18px;max-width:900px;height:56px;border-radius:12px;border:none;background:var(--primary);color:#fff;font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(19,87,255,.25);cursor:pointer}
+    .cta:hover{background:var(--primary-700)} .cta:active{transform:translateY(1px)}
+
+    @media (max-width:720px){.carousel{padding:8px 36px}.slide{flex-basis:86%}}
+    @media (max-width:960px){
+      .section-title{width:min(100%,98vw);padding:0 12px}
+      .page{grid-template-columns:1fr;width:min(100%,98vw)}
+      .input,.select-wrap,.date-field{max-width:100%}
+    }
+
+    .badge--pink, .badge.badge--pink { background:#2f80ed !important; }
+  </style>
+</head>
+<body>
+  <header class="top-bar">
+    <div class="top-left">
+      <div class="delivery-toggle" role="tablist" aria-label="배송 방식">
+        <button class="nav-btn active" role="tab" aria-selected="true">Delivery</button>
+        <button class="nav-btn" role="tab" aria-selected="false">Pickup</button>
+      </div>
+      <span class="address">Select the delivery address</span>
+      <span class="edit-icon" aria-hidden="true"><i class="fa-regular fa-pen-to-square"></i></span>
+      <span class="delivery-time">Nearest delivery : <strong id="delivery-time-text"></strong></span>
+    </div>
+    <div class="top-right"><span class="phone"><strong>+ 8 800 555-35-35 </strong>Around the clock</span></div>
+  </header>
+
+  <div class="search-section">
+    <button class="catalog-btn" type="button"><i class="fa-regular fa-clone" aria-hidden="true"></i> Catalog</button>
+
+    <div class="search-group">
+      <div class="search-pill">
+        <select class="category-select" aria-label="카테고리"><option>ALL CATEGORIES</option></select>
+        <input class="search-input" type="text" placeholder="Search in the market" aria-label="검색어 입력" />
+      </div>
+      <button class="search-submit" type="button" aria-label="검색"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+    </div>
+
+    <div class="icons" aria-label="바로가기 아이콘">
+      <div class="icon-box" role="button" tabindex="0" aria-label="홈"><i class="fa-solid fa-house" aria-hidden="true"></i></div>
+
+      <div id="wishIcon" class="icon-box" role="button" tabindex="0" aria-label="찜 0개" aria-haspopup="dialog" aria-expanded="false">
+        <i class="fa-solid fa-heart" aria-hidden="true"></i>
+        <span id="wishCount" class="badge">0</span>
+      </div>
+
+      <div id="cartOpenBtn" class="icon-box" role="button" tabindex="0" aria-label="장바구니" aria-haspopup="dialog" aria-expanded="false">
+        <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+        <span id="cartCount" class="badge">0</span>
+      </div>
+
+      <a id="myPageLink" class="icon-box" href="./연습장2.html" aria-label="마이페이지">
+        <i class="fa-solid fa-user" aria-hidden="true"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="section-title" aria-labelledby="page-title">
+    <h1 id="page-title">My page</h1>
+  </div>
+
+  <main class="page">
+    <aside class="sidebar" id="sidebar" aria-label="내 계정 섹션 목록">
+      <ul class="side-list">
+        <li class="side-item active" data-target="profileCard" aria-controls="profileCard">마이 프로필</li>
+        <li class="side-item" data-target="paymentsCard" aria-controls="paymentsCard">결제관리</li>
+        <li class="side-item" data-target="ordersCard" aria-controls="ordersCard">주문내역</li>
+        <li class="side-item" data-target="csCard" aria-controls="csCard">취소/반품/교환</li>
+        <li class="side-item" data-target="recentCard" aria-controls="recentCard">최근 본 상품</li>
+        <li class="side-item" data-target="noticeCard" aria-controls="noticeCard">공지사항</li>
+      </ul>
+      <div class="side-sep"></div>
+      <div class="signout" data-id="signout">⎋&nbsp;&nbsp;Sign Out</div>
+    </aside>
+
+    <section class="content" id="content">
+      <div class="card" id="profileCard">
+        <div class="card-head">
+          <div class="h2">프로필 정보</div>
+          <button type="button" id="editToggle" class="btn-edit" aria-pressed="false">수정하기</button>
+        </div>
+        <div class="profile" aria-label="프로필 이미지"></div>
+      </div>
+
+      <div class="card" id="paymentsCard">
+        <div class="card-head"><div class="h2">결제관리</div><a href="#" class="link" id="addCardBtn">+Add New Card</a></div>
+        <button class="cta" id="withdrawBtn">Withdraw</button>
+      </div>
+
+      <div class="card" id="ordersCard"><div class="card-head"><div class="h2">주문내역</div></div><p>최근 주문내역이 여기에 표시됩니다.</p></div>
+      <div class="card" id="csCard"><div class="card-head"><div class="h2">취소/반품/교환</div></div><p>취소/반품/교환 진행 현황을 확인할 수 있습니다.</p></div>
+      <div class="card" id="recentCard"><div class="card-head"><div class="h2">최근 본 상품</div></div><p>최근 확인한 상품 목록입니다.</p></div>
+      <div class="card" id="noticeCard"><div class="card-head"><div class="h2">공지사항</div></div><p>중요한 공지사항을 확인하세요.</p></div>
+    </section>
+  </main>
+
+  <div id="cartBackdrop" class="backdrop" hidden></div>
+  <div class="cart-panel" hidden>
+    <header class="cart-header">
+      <div>
+        <h3 id="cartTitle">장바구니</h3>
+        <p id="cartDesc" class="muted">담긴 상품을 확인하고 수량을 수정하거나 결제할 수 있습니다.</p>
+      </div>
+      <button id="cartClose" class="cp-close" aria-label="장바구니 닫기">✕</button>
+    </header>
+    <ul id="cartItems" class="cart-items" aria-label="장바구니 목록"></ul>
+    <footer class="cart-footer">
+      <div class="cp-sum"><span>Total</span><strong id="cpSubtotal">₩0</strong></div>
+      <button id="checkoutBtn" class="cp-checkout">CHECKOUT NOW</button>
+      <button id="viewCartBtn" class="cp-view">View details</button>
+    </footer>
+  </div>
+
+  <script>
+    (function(){
+      const now=new Date(), y=now.getFullYear(), m=String(now.getMonth()+1).padStart(2,"0"), d=String(now.getDate()).padStart(2,"0");
+      const el=document.getElementById("delivery-time-text"); if(el) el.textContent=`${y}-${m}-${d}`;
+    })();
+  </script>
+
+  <script>
+    (function(){
+      const homeBtn=document.querySelector('.icons .icon-box[aria-label="홈"]');
+      if(!homeBtn) return;
+      const go=()=>{ window.location.href='./main.html'; };
+      homeBtn.addEventListener('click', (e)=>{ e.preventDefault(); go(); });
+      homeBtn.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); }});
+    })();
+  </script>
+
+  <script src="./main.js"></script>
+</body>
+</html>
