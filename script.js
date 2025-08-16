@@ -10,7 +10,29 @@ document.addEventListener("DOMContentLoaded", function () {
   products.forEach((product) => {
     const li = document.createElement("li");
     // 제품명에 색상과 사이즈를 포함하여 표시
-    const productTitle = `${product.title} (${product.color}, ${product.size})`;
+    products.forEach((product) => {
+  const li = document.createElement("li");
+
+  // color, size 중 null이 아닌 값만 모으기
+  const options = [];
+  if (product.color && product.color !== "null") options.push(product.color);
+  if (product.size && product.size !== "null") options.push(product.size);
+
+  // 옵션이 하나라도 있으면 괄호 포함, 없으면 그냥 상품명만 출력
+  const productTitle = options.length > 0
+    ? `${product.title} (${options.join(", ")})`
+    : product.title;
+
+  li.innerHTML = `
+      <img src="${product.image}">
+      <span class="product-title">${productTitle}</span>
+      <span class="product-quantity">수량 ${product.quantity}개</span>
+      <span class="product-price">${product.price.toLocaleString()}$</span>
+  `;
+  productList.appendChild(li);
+  total += product.price * product.quantity;
+});
+
 
     li.innerHTML = `
             <img src="${product.image}">
