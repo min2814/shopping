@@ -1,3 +1,7 @@
+// main.js
+/* =========================
+   기존 코드 + 안정성 보강
+========================= */
 const $ = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
 
@@ -15,31 +19,31 @@ const currencyKRW = (n) =>
   new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW", maximumFractionDigits: 0 })
     .format(Number(n));
 
+/* [추가] USD 그대로 표시용 포맷터 */
 const currencyUSD = (n) =>
-  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 })
+  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" })
     .format(Number(n));
+
+/* [추가] 포커스 이동 시 자동 스크롤 방지 헬퍼 */
+const focusNoScroll = (el) => {
+  try { el?.focus({ preventScroll: true }); }
+  catch { el?.focus?.(); }
+};
 
 const subtotal = (items) => items.reduce((s, it) => s + it.price * it.qty, 0);
 
 const openBtn = $("#cartOpenBtn");
 const cartCount = $("#cartCount");
+
+// 드로어 래퍼(#cartDrawer)가 없으면 .cart-panel 자체를 드로어로 사용
 const drawer = $("#cartDrawer") || document.querySelector(".cart-panel");
 const backdrop = $("#cartBackdrop");
 const closeBtn = $("#cartClose");
+// 패널 요소 (래퍼 내부 .cart-panel or 래퍼가 없으면 drawer 자체)
 const panel = drawer?.querySelector?.(".cart-panel") || drawer;
+
 const listEl = $("#cartItems");
 const subtotalEl = $("#cpSubtotal");
-
-function focusWithoutScroll(el){
-  if (!el) return;
-  try {
-    el.focus({ preventScroll: true });
-    return;
-  } catch(_) {}
-  const x = window.scrollX, y = window.scrollY;
-  el.focus();
-  window.scrollTo(x, y);
-}
 
 function placePopover(){
   if (!openBtn || !panel) return;
@@ -70,13 +74,21 @@ function openDrawer(){
   drawer.hidden = false;
   backdrop && (backdrop.hidden = false);
   renderCart();
+
+  // [추가] 패널 포커스 가능 보장(스크롤 없이 패널로 포커스 이동할 때 사용)
+  if (panel && !panel.hasAttribute('tabindex')) panel.setAttribute('tabindex','-1');
+
   requestAnimationFrame(() => {
     drawer.classList.add("open");
     backdrop && backdrop.classList.add("show");
-    placePopover();
+    placePopover(); 
+
+    // [변경] 포커스 이동 시 자동 스크롤 방지
+    if (closeBtn) focusNoScroll(closeBtn);
+    else focusNoScroll(panel);
   });
   openBtn?.setAttribute("aria-expanded", "true");
-  focusWithoutScroll(closeBtn);
+
   window.addEventListener("keydown", onEscClose);
   window.addEventListener("resize", placePopover);
   window.addEventListener("scroll", placePopover, { passive: true });
@@ -92,20 +104,28 @@ function closeDrawer(){
   setTimeout(() => {
     drawer.hidden = true;
     backdrop && (backdrop.hidden = true);
-    if (lastFocused) focusWithoutScroll(lastFocused);
+    // [변경] 복귀 포커스 시에도 자동 스크롤 방지
+    if (lastFocused) focusNoScroll(lastFocused);
   }, 180);
 }
 function onEscClose(e){ if(e.key === "Escape") closeDrawer(); }
 
+// [변경] 열기 버튼 클릭 시 다른 핸들러 개입/기본 동작을 모두 차단
 document.addEventListener("click", (e) => {
-  if (e.target.closest("#cartOpenBtn")) { e.preventDefault(); openDrawer(); }
+  if (e.target.closest("#cartOpenBtn")) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    openDrawer();
+  }
 });
 closeBtn?.addEventListener("click", closeDrawer);
 backdrop?.addEventListener("click", closeDrawer);
 
 function renderCart(){
   if (cartCount) cartCount.textContent = cart.reduce((s, it) => s + it.qty, 0);
-  // ✅ USD 그대로
+
+  /* [변경] 소계: 상품 금액 그대로(USD) */
   if (subtotalEl) subtotalEl.textContent = currencyUSD(subtotal(cart));
 
   if (!listEl) return;
@@ -128,6 +148,7 @@ function renderCart(){
           <button class="remove-btn" data-act="remove" data-idx="${idx}">삭제</button>
         </div>
       </div>
+      <!-- [변경] 아이템 합계: USD 그대로 -->
       <div><strong>${currencyUSD(it.price * it.qty)}</strong></div>
     `;
     listEl.appendChild(li);
@@ -156,7 +177,7 @@ document.addEventListener("click", (e) => {
 
   const id = String(btn.dataset.id);
   const name = btn.dataset.name || "상품";
-  const price = Number(btn.dataset.price || 0); 
+  const price = Number(btn.dataset.price || 0);  
   const image = btn.dataset.image || "";
 
   const found = cart.find((x) => x.id === id);
@@ -221,10 +242,13 @@ function updateDeliveryDate() {
   const day   = String(now.getDate()).padStart(2, "0");
   const dateString = `${year}-${month}-${day}`;
   const el = document.getElementById("delivery-time-text");
-  if (el) el.textContent = dateString;
+  if (el) el.textContent = dateString; // ✅ 콜론 제거, 날짜만 넣기
 }
 updateDeliveryDate();
 
+
+
+// 찜 배지(하트) 실시간 업데이트
 (function () {
   const heartIcon = document.querySelector('.icons .icon-box i.fa-heart');
   const box = heartIcon ? heartIcon.parentElement : null;
@@ -250,6 +274,7 @@ updateDeliveryDate();
   };
 
   window.addEventListener('DOMContentLoaded', updateBadge);
+
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.wishlist-btn')) return;
     setTimeout(updateBadge, 0);
@@ -271,7 +296,7 @@ updateDeliveryDate();
     const box = heartIcon ? heartIcon.parentElement : null;
     const badge = box ? box.querySelector('#wishCount') : null;
     if (!box || !badge) return;
-    const n = Object.values(readWish()).filter(Boolean).length;
+    const n = document.querySelectorAll('.wishlist-btn.active, .wishlist-btn[aria-pressed="true"]').length;
     badge.textContent = String(n);
     box.setAttribute('aria-label', `찜 ${n}개`);
   };
@@ -339,9 +364,10 @@ updateDeliveryDate();
   });
 })();
 
+
 (function () {
-  const MAP_KEY  = 'wish';
-  const DATA_KEY = 'wish.items.v1';
+  const MAP_KEY  = 'wish';   
+  const DATA_KEY = 'wish.items.v1'; 
 
   const readMap   = () => { try { return JSON.parse(localStorage.getItem(MAP_KEY))  || {}; } catch { return {}; } };
   const readData  = () => { try { return JSON.parse(localStorage.getItem(DATA_KEY)) || {}; } catch { return {}; } };
@@ -359,6 +385,7 @@ updateDeliveryDate();
         border:1px solid #e6e6ea; border-radius:14px;
         box-shadow:0 18px 50px rgba(15,23,42,.22); transform:scale(.98); opacity:0;
         transition:transform .18s ease,opacity .18s ease; display:flex;flex-direction:column}
+
       .wish-panel::before{content:"";position:absolute;top:-8px;left:var(--wp-arrow-left,40px);
         width:16px;height:16px;background:#fff;transform:rotate(45deg);
         border-left:1px solid #e6e6ea;border-top:1px solid #e6e6ea}
@@ -410,14 +437,14 @@ updateDeliveryDate();
   }
   ensureDOM();
 
-  let anchor = document.getElementById('wishIcon');
+  let anchor = document.getElementById('wishIcon');                   
   const popover  = document.getElementById('wishPopover');
   const panel    = popover?.querySelector('.wish-panel');
   const listEl   = document.getElementById('wishPopItems');
   const countEl  = document.getElementById('wishPopCount');
   const totalEl  = document.getElementById('wishPopTotal');
-  const closeWishBtn = document.getElementById('wishPopClose');
-  const wishBackdrop = document.getElementById('wishBackdrop');
+  const closeWishBtn = document.getElementById('wishPopClose');     
+  const wishBackdrop = document.getElementById('wishBackdrop');    
 
   const pickFromCard = (id) => {
     const card  = document.querySelector(`.product-card[data-id="${CSS.escape(id)}"]`);
@@ -469,25 +496,26 @@ updateDeliveryDate();
     totalEl.textContent = fmtUSD(total);
   }
 
-  function placeWishPopover(){
+  function placeWishPopover(){                 
     if (!anchor || !panel) return;
     const r  = anchor.getBoundingClientRect();
     const gap = 10;
-    const panelW = panel.offsetWidth || 360;
+    const panelW = panel.offsetWidth || 360;     
     const vw = document.documentElement.clientWidth;
+    const sx = window.scrollX, sy = window.scrollY;
 
-    let idealLeft = (r.left + r.right)/2 - panelW/2;
-    const minLeft = 12;
-    const maxLeft = vw - panelW - 12;
+    let idealLeft = sx + (r.left + r.right)/2 - panelW/2;
+    const minLeft = sx + 12;
+    const maxLeft = sx + vw - panelW - 12;
     const left = Math.max(minLeft, Math.min(maxLeft, idealLeft));
-    const top  = Math.max(12, r.bottom + gap);
+    const top  = sy + r.bottom + gap;
 
-    panel.style.left = `${Math.round(left)}px`;
-    panel.style.top  = `${Math.round(top)}px`;
+    panel.style.left = `${left}px`;
+    panel.style.top  = `${top}px`;
 
-    const arrowX = (r.left + r.right)/2 - left;
+    const arrowX = sx + (r.left + r.right)/2 - left;
     const clamp  = Math.max(16, Math.min(panelW - 24, arrowX));
-    panel.style.setProperty('--wp-arrow-left', `${Math.round(clamp)}px`);
+    panel.style.setProperty('--wp-arrow-left', `${clamp}px`);
   }
 
   function openWish(){
@@ -497,29 +525,31 @@ updateDeliveryDate();
     requestAnimationFrame(() => {
       popover.classList.add('open');
       wishBackdrop.classList.add('show');
-      placeWishPopover();
+      placeWishPopover();       
     });
-    anchor?.setAttribute('aria-expanded', 'true');
+    anchor?.setAttribute('aria-expanded', 'true');   
     window.addEventListener('resize', placeWishPopover);
+    window.addEventListener('scroll', placeWishPopover, { passive:true });
     window.addEventListener('keydown', onEsc);
   }
   function closeWish(){
     popover.classList.remove('open');
     wishBackdrop.classList.remove('show');
-    anchor?.setAttribute('aria-expanded', 'false');
+    anchor?.setAttribute('aria-expanded', 'false');  
     window.removeEventListener('resize', placeWishPopover);
+    window.removeEventListener('scroll', placeWishPopover);
     window.removeEventListener('keydown', onEsc);
     setTimeout(() => { popover.hidden = true; wishBackdrop.hidden = true; }, 150);
   }
   function onEsc(e){ if (e.key === 'Escape') closeWish(); }
 
-  if (anchor) {
+  if (anchor) {                                                
     const cloned = anchor.cloneNode(true);
     anchor.parentNode.replaceChild(cloned, anchor);
     anchor = cloned;
   }
 
-  anchor?.addEventListener('click', (e) => {
+  anchor?.addEventListener('click', (e) => {    
     e.preventDefault();
     e.stopImmediatePropagation();
     e.stopPropagation();
@@ -528,8 +558,8 @@ updateDeliveryDate();
     else openWish();
   }, { capture: true });
 
-  closeWishBtn?.addEventListener('click', closeWish);
-  wishBackdrop?.addEventListener('click', closeWish);
+  closeWishBtn?.addEventListener('click', closeWish);  
+  wishBackdrop?.addEventListener('click', closeWish);    
 
   listEl?.addEventListener('click', (e) => {
     const rm = e.target.closest('.wish-remove');
@@ -561,7 +591,8 @@ updateDeliveryDate();
     if (!btn) return;
     const card = btn.closest('.product-card');
     if (!card) return;
-    const id = card.dataset.id;
+    const id = ensureCardId(card);
+
     setTimeout(() => {
       const map = readMap();
       const data = readData();
@@ -576,24 +607,45 @@ updateDeliveryDate();
     }, 0);
   });
 
-  window.addEventListener('storage', (e) => {
-    if (e.key !== MAP_KEY && e.key !== DATA_KEY) return;
-    const map = readMap();
-    const n = Object.values(map).filter(Boolean).length;
-    const badge = document.getElementById('wishCount');
-    const box = document.getElementById('wishIcon');
-    if (badge) badge.textContent = String(n);
-    box?.setAttribute('aria-label', `찜 ${n}개`);
-    if (!popover.hidden) { renderWish(); placeWishPopover(); }
-  });
-
 })();
 
-(function(){
-  const el = document.querySelector('.icons .icon-box[aria-label="마이페이지"]');
-  if (!el) return;
-  if (el.tagName.toLowerCase() === 'a' && el.getAttribute('href')) return;
-  const go = () => { window.location.href = './연습장2.html'; };
-  el.addEventListener('click', go);
-  el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); }});
+
+/* ============================================================
+   [추가] 마이페이지에 저장된 이름으로 "추천 상품" 제목 교체
+   - 키: 'shop.profile.v1'
+   - 대상: #recommendTitle
+   - 다른 탭에서 변경 시(storage 이벤트) 자동 반영
+============================================================ */
+(function () {
+  const PROFILE_KEY = 'shop.profile.v1';
+  const TITLE_ID = 'recommendTitle';
+
+  function getNameFromProfile() {
+    try {
+      const raw = localStorage.getItem(PROFILE_KEY);
+      if (!raw) return '';
+      const obj = JSON.parse(raw);
+      const name = (obj && typeof obj.name === 'string') ? obj.name.trim() : '';
+      return name.length > 24 ? name.slice(0, 24) + '…' : name;
+    } catch {
+      return '';
+    }
+  }
+
+  function applyRecommendTitle() {
+    const el = document.getElementById(TITLE_ID);
+    if (!el) return;
+    const name = getNameFromProfile();
+    el.textContent = name ? `${name}님을 위한 추천 상품` : '추천 상품';
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', applyRecommendTitle, { once: true });
+  } else {
+    applyRecommendTitle();
+  }
+  window.addEventListener('load', applyRecommendTitle, { once: true });
+  window.addEventListener('storage', (e) => {
+    if (e.key === PROFILE_KEY) applyRecommendTitle();
+  });
 })();

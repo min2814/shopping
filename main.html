@@ -33,15 +33,20 @@
       <button class="search-submit" type="button" aria-label="검색"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
     </div>
     <div class="icons" aria-label="바로가기 아이콘">
+      <!-- 홈 -->
       <div class="icon-box" role="button" tabindex="0" aria-label="배송"><i class="fa-solid fa-house" aria-hidden="true"></i></div>
+
+      <!-- 찜 -->
       <div id="wishIcon" class="icon-box" role="button" tabindex="0" aria-label="찜 0개" aria-haspopup="dialog" aria-expanded="false">
-        <i class="fa-solid fa-heart" aria-hidden="true"></i><span id="wishCount" class="badge" aria-live="polite" aria-atomic="true">0</span>
+        <i class="fa-solid fa-heart" aria-hidden="true"></i>
+        <span id="wishCount" class="badge" aria-live="polite" aria-atomic="true">0</span>
       </div>
-      <div id="cartOpenBtn" class="icon-box" role="button" tabindex="0"
-       aria-label="장바구니 0개" aria-haspopup="dialog" aria-expanded="false">
-    <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
-    <span id="cartCount" class="badge" aria-live="polite" aria-atomic="true">0</span>
-  </div>
+
+      <!-- 장바구니 -->
+      <div id="cartOpenBtn" class="icon-box" role="button" tabindex="0" aria-label="장바구니 0개" aria-haspopup="dialog" aria-expanded="false">
+        <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+        <span id="cartCount" class="badge" aria-live="polite" aria-atomic="true">0</span>
+      </div>
 
       <a id="myPageLink" class="icon-box" href="./연습장2.html" aria-label="마이페이지">
         <i class="fa-solid fa-user" aria-hidden="true"></i>
@@ -58,13 +63,14 @@
   <section class="popular" aria-label="인기 상품">
     <div class="section-header">
       <h3 id="recommendTitle">추천 상품</h3>
-      <a href="#">See all</a>
+      <!-- ✅ 수정: index.html로 이동 -->
+      <a id="seeAllLink" href="./index.html" aria-label="전체 상품 보기">See all</a>
     </div>
     <div class="product-list"></div>
   </section>
 
+  <!-- 카트 팝오버용 백드롭 + 패널 -->
   <div id="cartBackdrop" class="backdrop" hidden></div>
-
   <div class="cart-panel" hidden>
     <header class="cart-header">
       <div>
@@ -74,51 +80,29 @@
     </header>
     <ul id="cartItems" class="cart-items" aria-label="장바구니 목록"></ul>
     <footer class="cart-footer">
-      <div class="cp-sum"><span>Total</span><strong id="cpSubtotal">$0</strong></div>
+      <div class="cp-sum"><span>Total</span><strong id="cpSubtotal">₩0</strong></div>
       <button id="checkoutBtn" class="cp-checkout">CHECKOUT NOW</button>
       <button id="viewCartBtn" class="cp-view">View details</button>
     </footer>
   </div>
 
+  <!-- 기존 메인 스크립트 -->
   <script src="./main.js"></script>
 
+  <!-- 장바구니 배지 동기화(안전망) -->
   <script>
-    (function () {
-      const WISH_KEY = 'wish';
-      const $wishCount = document.getElementById('wishCount');
-      const $wishIconBox = document.getElementById('wishIcon');
-      const readWish = () => { try { return JSON.parse(localStorage.getItem(WISH_KEY)) || {}; } catch { return {}; } };
-      const writeWish = (m) => localStorage.setItem(WISH_KEY, JSON.stringify(m));
-      const countWish = (m) => Object.values(m).filter(Boolean).length;
-      const setBadge = (n) => { if (!$wishCount) return; $wishCount.textContent = n; if ($wishIconBox) $wishIconBox.setAttribute('aria-label', `찜 ${n}개`); };
-
-      window.addEventListener('DOMContentLoaded', () => {
-        const saved = readWish();
-        document.querySelectorAll('.product-card').forEach(card => {
-          const id = card.dataset.id;
-          const btn = card.querySelector('.wishlist-btn');
-          const icon = btn?.querySelector('.fa-heart');
-          const liked = !!(id && saved[id]);
-          if (btn) { btn.classList.toggle('active', liked); btn.setAttribute('aria-pressed', liked); }
-          if (icon) { icon.classList.toggle('fa-solid', liked); icon.classList.toggle('fa-regular', !liked); }
-        });
-        setBadge(countWish(saved));
-      });
-
-      document.addEventListener('click', (e) => {
-        const btn = e.target.closest('.wishlist-btn'); if (!btn) return;
-        const icon = btn.querySelector('.fa-heart');
-        const card = btn.closest('.product-card'); const id = card?.dataset.id;
-        const willLike = !btn.classList.contains('active');
-        btn.classList.toggle('active', willLike); btn.setAttribute('aria-pressed', willLike);
-        if (icon) { icon.classList.toggle('fa-solid', willLike); icon.classList.toggle('fa-regular', !willLike); }
-        if (!id) return;
-        const saved = readWish(); if (willLike) saved[id] = true; else delete saved[id];
-        writeWish(saved); setBadge(countWish(saved));
-      });
+    (function(){
+      const CART_KEY='cart_drawer_demo_v1';
+      const $box=document.getElementById('cartOpenBtn');
+      const $badge=document.getElementById('cartCount');
+      function readQty(){try{const a=JSON.parse(localStorage.getItem(CART_KEY))||[];return a.reduce((s,x)=>s+(+x.qty||0),0);}catch{return 0;}}
+      function sync(){if(!$box||!$badge)return;const n=readQty();$badge.textContent=String(n);$box.setAttribute('aria-label',`장바구니 ${n}개`);}
+      if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync,{once:true});else sync();
+      window.addEventListener('storage',e=>{if(e.key===CART_KEY)sync();});
     })();
   </script>
 
+  <!-- 위시리스트 팝오버 (메인에 이미 있던 것 유지) -->
   <div id="wishBackdrop" class="backdrop" hidden></div>
   <div id="wishPopover" class="wish-popover" aria-hidden="true" role="dialog" aria-labelledby="wishPopTitle" hidden>
     <div class="wish-panel">
@@ -133,20 +117,19 @@
     </div>
   </div>
 
+  <!-- 홈 아이콘: 메인일 땐 새로고침, 다른 페이지면 main.html로 이동 -->
   <script>
     (function(){
       const icon = document.querySelector('.icons .icon-box i.fa-house');
       const homeBtn = icon ? icon.parentElement : null;
       if (!homeBtn) return;
       const goHome = () => {
-        const onMain = /(^|\/)main\.html(\?|#|$)/.test(window.location.href);
-        if (onMain) window.location.reload();
-        else window.location.href = './main.html';
+        const onMain = /(^|\/)main\.html(\?|#|$)/.test(location.href);
+        if (onMain) location.reload(); else location.href='./main.html';
       };
-      homeBtn.setAttribute('aria-label', '홈');
-      homeBtn.setAttribute('role', 'link');
-      homeBtn.addEventListener('click', (e) => { e.preventDefault(); goHome(); });
-      homeBtn.addEventListener('keydown', (e) => { if (e.key==='Enter'||e.key===' ') { e.preventDefault(); goHome(); }});
+      homeBtn.setAttribute('aria-label','홈'); homeBtn.setAttribute('role','link');
+      homeBtn.addEventListener('click', e=>{e.preventDefault();goHome();});
+      homeBtn.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();goHome();} });
     })();
   </script>
 </body>
