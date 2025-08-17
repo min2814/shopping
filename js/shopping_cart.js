@@ -13,7 +13,9 @@ const DELIVERY_FEE = 5; // 배송비
 
 // 장바구니 데이터 불러오기
 function loadCartFromStorage() {
-  return JSON.parse(localStorage.getItem("cart")) || [];
+  const a = JSON.parse(localStorage.getItem("cart")) || [];
+  const b = JSON.parse(localStorage.getItem("cartItems")) || [];
+  return a.length ? a : b;
 }
 
 // 동일 상품 묶기
@@ -121,6 +123,8 @@ function renderCart() {
 
   updatePaymentSummary(groupedItems);
 }
+updateCartBadge();
+renderMiniCart();
 
 // 삭제, 왼 오 버튼
 cartListElement.addEventListener("click", (event) => {
@@ -207,6 +211,7 @@ updateDeliveryDate();
 const boxes = document.querySelectorAll(".icon-box");
 
 boxes.forEach((box) => {
+  if (box.id === "wishIcon") return;
   box.addEventListener("click", (e) => {
     e.stopPropagation();
     box.classList.toggle("tooltip-show");
@@ -384,29 +389,6 @@ renderMiniCart();
   tick();
 })();
 
-// search==================================
-// const searchInput = document.querySelector(".search-input");
-// const searchButton = document.querySelector(".search-submit");
-
-// function goSearch() {
-//   const query = searchInput.value.trim();
-//   if (query) {
-//     window.location.href = `list.html?query=${encodeURIComponent(query)}`;
-//   }
-// }
-
-// // 버튼 클릭 시 검색
-// searchButton.addEventListener("click", goSearch);
-
-// // 엔터 키 눌렀을 때 검색
-// searchInput.addEventListener("keydown", (e) => {
-//   if (e.key === "Enter") {
-//     e.preventDefault(); // 폼 제출 방지
-//     goSearch();
-//   }
-// });
-// search ...
-
 const searchInput = document.querySelector(".search-input");
 const searchButton = document.querySelector(".search-submit");
 
@@ -563,4 +545,32 @@ function debounce(fn, ms) {
   } catch (e) {
     console.warn("suggest seed fetch fail", e);
   }
+})();
+// heart
+// --- wishlist click: prevent scroll jump without blocking main.js ---
+(function () {
+  var wishIcon = document.getElementById("wishIcon");
+  if (!wishIcon) return;
+
+  var sx = 0,
+    sy = 0;
+  function saveScroll() {
+    sx = window.pageXOffset || document.documentElement.scrollLeft || 0;
+    sy = window.pageYOffset || document.documentElement.scrollTop || 0;
+  }
+
+  wishIcon.addEventListener("pointerdown", saveScroll, { passive: true });
+  wishIcon.addEventListener("mousedown", saveScroll, { passive: true });
+  wishIcon.addEventListener("touchstart", saveScroll, { passive: true });
+
+  // 캡처 단계에서 실행하지만 전파는 막지 않음 → main.js 토글 정상 작동
+  wishIcon.addEventListener(
+    "click",
+    function () {
+      setTimeout(function () {
+        window.scrollTo(sx, sy);
+      }, 0);
+    },
+    true
+  );
 })();

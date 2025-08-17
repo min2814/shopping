@@ -156,28 +156,39 @@
   <!-- 홈 아이콘: 메인일 땐 새로고침, 다른 페이지면 main.html로 이동 -->
   <script>
     (function () {
-      const icon = document.querySelector('.icons .icon-box i.fa-house');
-      const homeBtn = icon ? icon.parentElement : null;
-      if (!homeBtn) return;
-      const goHome = () => {
-        const onMain = /(^|\/)main\.html(\?|#|$)/.test(location.href);
-        if (onMain) location.reload();
-        else location.href = './main.html';
-      };
-      homeBtn.setAttribute('aria-label', '홈');
-      homeBtn.setAttribute('role', 'link');
-      homeBtn.addEventListener('click', e => {
-        e.preventDefault();
-        goHome();
-      });
-      homeBtn.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          goHome();
+      const CART_KEY = 'cart'; // main.js와 동일 키로 맞추는 게 안전
+      const $box = document.querySelector('.cart-icon');
+      const $badge = document.getElementById('cart-count');
+
+      function readQty() {
+        try {
+          const a = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+          return a.reduce((s, x) => s + (+x.quantity || +x.qty || 0), 0);
+        } catch {
+          return 0;
         }
+      }
+
+      function sync() {
+        if (!$box || !$badge) return;
+        const n = readQty();
+        $badge.textContent = String(n);
+        $box.setAttribute('aria-label', `장바구니 ${n}개`);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', sync, {
+          once: true
+        });
+      } else {
+        sync();
+      }
+      window.addEventListener('storage', e => {
+        if (e.key === CART_KEY) sync();
       });
     })();
   </script>
+
 </body>
 
 </html>
