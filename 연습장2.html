@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Account (with New Top Header)</title>
+
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://kit.fontawesome.com/5c3afda2cc.js" crossorigin="anonymous"></script>
+
+  <style>
+    :root{
+      --bg:#f5f7fb; --card:#fff; --line:#e9eef5; --text:#1c2230;
+      --primary:#1357ff; --primary-700:#0f46cc; --shadow:0 10px 30px rgba(24,39,75,.08); --radius:16px; --muted:#9aa3b2;
+    }
+    body{ background:var(--bg); color:var(--text); margin:0; scroll-behavior:smooth; }
+
+    .section-title{width:min(1400px,98vw);margin:0 auto 12px;padding:0 2px}
+    .section-title h1{margin:0;font-size:32px;line-height:1.2;font-weight:800;letter-spacing:-.3px;color:#1c2230;text-align:left}
+
+    .page{width:min(1400px,98vw);margin:0 auto 40px;display:grid;grid-template-columns:320px 1fr;gap:24px}
+
+    .sidebar{
+      background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px 0;height:fit-content;position:sticky;top:16px
+    }
+    .side-list{list-style:none;margin:0;padding:8px}
+    .side-item{display:flex;align-items:center;gap:12px;padding:12px 14px;margin:4px 8px;border-radius:12px;color:#2b3240;cursor:pointer;user-select:none}
+    .side-item:hover{background:#f6f8fe}
+    .side-item.active{background:#f5f8ff;outline:1px solid #e4ebff;color:#1141c7}
+    .side-sep{height:1px;background:var(--line);margin:10px 14px}
+    .signout{display:flex;align-items:center;gap:10px;padding:14px 18px;color:#d14747;font-weight:600;margin-top:4px;cursor:pointer}
+
+    .content{display:flex;flex-direction:column;gap:16px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;scroll-margin-top:16px}
+    .card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px}
+    .h2{font-size:22px;font-weight:800}
+    .card.highlight{animation:pop 900ms ease;outline:2px solid rgba(19,87,255,.25)}
+    @keyframes pop{0%{transform:translateY(-2px);box-shadow:0 12px 30px rgba(19,87,255,.15)}100%{transform:none;box-shadow:var(--shadow)}}
+
+    .profile{margin-top:16px;width:100px;height:100px;border-radius:50%;background-color:transparent;border:2px solid black;margin-bottom:16px;background-image:url("유연상.png");background-size:cover;background-position:center}
+    .label{font-size:14px;color:#667085;margin:8px 0 8px}
+    .date-field{display:inline-flex;align-items:center;height:48px;background:#fff;border:1px solid #e4e9f3;border-radius:12px;overflow:hidden;max-width:450px}
+    .date-field input[type="date"]{height:100%;border:0;outline:0;padding:0 12px;font-size:15px;min-width:200px;background:#fff;color:#111827}
+    .calendar-btn{width:48px;height:48px;border:0;background:transparent;cursor:pointer;display:grid;place-items:center}
+    .calendar-btn:hover{background:#f6f8fe}
+    .link{color:#2563eb;text-decoration:none;font-weight:600;font-size:14px}
+    .link:hover{text-decoration:underline}
+    .btn-edit{appearance:none;border:1px solid #d6def0;background:#f7f9ff;color:#1141c7;height:36px;padding:0 14px;border-radius:10px;font-weight:700;cursor:pointer}
+    .btn-edit:hover{background:#eef4ff}
+
+    .input,.select-display{height:56px;border-radius:12px;border:1px solid #e4e9f3;background:#fff;display:flex;align-items:center;padding:0 14px;box-shadow:inset 0 1px 0 rgba(17,24,39,.02);max-width:450px}
+    .input{font-size:16px;font-weight:700;color:#111827}
+    .input .prefix{margin-right:8px;color:#6b7280;font-weight:800}
+    .select-wrap{position:relative;max-width:450px}
+    .select-display{justify-content:space-between;cursor:pointer}
+    .select-placeholder{color:var(--muted);font-weight:600}
+    .select-value{color:#111827;font-weight:700;display:inline-flex;align-items:center;gap:8px}
+    .chevron{width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:7px solid var(--muted);margin-left:10px}
+    .select-menu{position:absolute;left:0;right:0;top:calc(100% + 8px);background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:6px;display:none;z-index:35}
+    .select-menu.show{display:block}
+    .select-item{padding:10px 12px;border-radius:8px;cursor:pointer;font-size:14px;color:#1c2230;display:flex;align-items:center;gap:10px}
+    .select-item.muted{color:var(--muted)}
+    .select-item:hover{background:#f6f8fe}
+
+    .bank-logo{width:20px;height:20px;border-radius:6px;display:grid;place-items:center;font-size:11px;font-weight:800;color:#fff;letter-spacing:.3px;flex:0 0 20px}
+    .bank-logo.kb{background:#f0c400;color:#2b2b2b}.bank-logo.shinhan{background:#003474}.bank-logo.samsung{background:#1428a0}.bank-logo.hyundai{background:#111}.bank-logo.lotte{background:#ed1c24}.bank-logo.woori{background:#1e6ed2}.bank-logo.hana{background:#008485}.bank-logo.nh{background:#00a64e}
+
+    .wallet{margin-top:16px;user-select:none}
+    .pay-head{display:flex;align-items:center;gap:10px;padding:8px 2px;border-bottom:1px solid #eef2f8;margin-bottom:10px;font-weight:700}
+    .pay-radio{width:18px;height:18px;border:2px solid #c9d4ea;border-radius:50%;display:grid;place-items:center}
+    .pay-radio.on{border-color:#2e58ff}.pay-radio.on::after{content:"";width:10px;height:10px;background:#2e58ff;border-radius:50%}
+
+    .carousel{position:relative;padding:8px 48px}
+    .carousel .nav{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:72px;border:0;border-radius:12px;background:#f3f5fb;color:#26324d;cursor:pointer;box-shadow:0 3px 10px rgba(17,24,39,.08)}
+    .carousel .nav:hover{background:#e9efff}
+    .carousel .prev{left:4px}.carousel .next{right:4px}
+    .track{overflow:hidden}
+    .slides{display:flex;gap:16px;align-items:stretch;transition:transform .35s ease}
+    .slide{flex:0 0 74%;max-width:640px;aspect-ratio:16/9;border-radius:20px;position:relative;background:#e9eef7;box-shadow:0 10px 25px rgba(23,45,98,.1);transform:scale(.92);opacity:.6;filter:saturate(.75)}
+    .slide.is-center{transform:scale(1);opacity:1;filter:none}
+    .slide img{width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block}
+    .slide .sub{position:absolute;left:16px;bottom:14px;font-size:12px;padding:6px 10px;border-radius:10px;color:#fff;background:rgba(0,0,0,.22)}
+    .dots{display:flex;justify-content:center;gap:8px;margin-top:10px}
+    .dot{width:6px;height:6px;border-radius:999px;background:#c8d2e6;opacity:.85}
+    .dot.on{width:20px;border-radius:6px;background:#2e58ff;opacity:1}
+
+    .cta{margin-top:18px;max-width:900px;height:56px;border-radius:12px;border:none;background:var(--primary);color:#fff;font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(19,87,255,.25);cursor:pointer}
+    .cta:hover{background:var(--primary-700)} .cta:active{transform:translateY(1px)}
+    .no-focus{pointer-events:none;caret-color:transparent}
+    .disabled .select-display{background:#f8fafc;color:var(--muted);cursor:default}
+    .date-field.disabled{background:#f8fafc}
+
+    @media (max-width:720px){.carousel{padding:8px 36px}.slide{flex-basis:86%}}
+    @media (max-width:960px){
+      .section-title{width:min(100%,98vw);padding:0 12px}
+      .page{grid-template-columns:1fr;width:min(100%,98vw)}
+      .input,.select-wrap,.date-field{max-width:100%}
+    }
+
+    .badge--pink, .badge.badge--pink { background:#2f80ed !important; }
+  </style>
+</head>
+<body>
+  <header class="top-bar">
+    <div class="top-left">
+      <div class="delivery-toggle" role="tablist" aria-label="배송 방식">
+        <button class="nav-btn active" role="tab" aria-selected="true">Delivery</button>
+        <button class="nav-btn" role="tab" aria-selected="false">Pickup</button>
+      </div>
+      <span class="address">Select the delivery address</span>
+      <span class="edit-icon" aria-hidden="true"><i class="fa-regular fa-pen-to-square"></i></span>
+      <span class="delivery-time">Nearest delivery : <strong id="delivery-time-text"></strong></span>
+    </div>
+    <div class="top-right"><span class="phone"><strong>+ 8 800 555-35-35 </strong>Around the clock</span></div>
+  </header>
+
+  <div class="search-section">
+    <button class="catalog-btn" type="button"><i class="fa-regular fa-clone" aria-hidden="true"></i> Catalog</button>
+    <div class="search-group">
+      <div class="search-pill">
+        <select class="category-select" aria-label="카테고리"><option>ALL CATEGORIES</option></select>
+        <input class="search-input" type="text" placeholder="Search in the market" aria-label="검색어 입력" />
+      </div>
+      <button class="search-submit" type="button" aria-label="검색"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+    </div>
+    <div class="icons" aria-label="바로가기 아이콘">
+      <a id="homeLink" class="icon-box" href="./main.html" aria-label="홈">
+        <i class="fa-solid fa-house" aria-hidden="true"></i>
+      </a>
+
+      <div id="wishIcon" class="icon-box" role="button" tabindex="0" aria-label="찜 0개" aria-haspopup="dialog" aria-expanded="false">
+        <i class="fa-solid fa-heart" aria-hidden="true"></i>
+        <span id="wishCount" class="badge" aria-live="polite" aria-atomic="true">0</span>
+      </div>
+
+      <div id="cartOpenBtn" class="icon-box" role="button" tabindex="0" aria-label="장바구니 0개" aria-haspopup="dialog" aria-expanded="false">
+        <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+        <span id="cartCount" class="badge" aria-live="polite" aria-atomic="true">0</span>
+      </div>
+
+      <a id="myPageLink" class="icon-box" href="./연습장2.html" aria-label="마이페이지">
+        <i class="fa-solid fa-user" aria-hidden="true"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="section-title" aria-labelledby="page-title">
+    <h1 id="page-title">My page</h1>
+  </div>
+
+  <main class="page">
+    <aside class="sidebar" id="sidebar" aria-label="내 계정 섹션 목록">
+      <ul class="side-list">
+        <li class="side-item active" tabindex="0" data-target="profileCard" aria-controls="profileCard">마이 프로필</li>
+        <li class="side-item" tabindex="0" data-target="paymentsCard" aria-controls="paymentsCard">결제관리</li>
+        <li class="side-item" tabindex="0" data-target="ordersCard" aria-controls="ordersCard">주문내역</li>
+        <li class="side-item" tabindex="0" data-target="csCard" aria-controls="csCard">취소/반품/교환</li>
+        <li class="side-item" tabindex="0" data-target="recentCard" aria-controls="recentCard">최근 본 상품</li>
+        <li class="side-item" tabindex="0" data-target="noticeCard" aria-controls="noticeCard">공지사항</li>
+      </ul>
+      <div class="side-sep"></div>
+      <div class="signout" tabindex="0" data-id="signout">⎋&nbsp;&nbsp;Sign Out</div>
+    </aside>
+
+    <section class="content" id="content">
+      <div class="card" id="profileCard">
+        <div class="card-head">
+          <div class="h2">프로필 정보</div>
+          <button type="button" id="editToggle" class="btn-edit" aria-pressed="false">수정하기</button>
+        </div>
+
+        <div class="profile" aria-label="프로필 이미지"></div>
+
+        <div class="label">이름</div>
+        <div class="input">
+          <input id="nameField" type="text" value="유연상" aria-label="이름" class="no-focus" tabindex="-1" readonly aria-readonly="true" style="flex:1;border:0;outline:0;height:100%;font-size:16px;font-weight:700;color:#111827;background:transparent;" />
+        </div>
+
+        <div class="label" style="margin-top:10px">생년월일</div>
+        <div class="date-field" id="birthWrap">
+          <input type="date" id="birthDate" value="2001-09-18" disabled />
+          <button type="button" class="calendar-btn" aria-label="달력 열기" disabled>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+              <path d="M7 2v2M17 2v2M3 9h18M4 7h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="label" style="margin-top:10px">성별</div>
+        <div class="select-wrap disabled" id="genderSelect">
+          <div class="select-display" id="genderDisplay" aria-haspopup="listbox" aria-expanded="false" aria-disabled="true" tabindex="-1">
+            <span class="select-value" id="genderText" data-value="male">남성</span>
+            <span class="chevron" aria-hidden="true"></span>
+          </div>
+          <div class="select-menu" id="genderMenu" role="listbox">
+            <div class="select-item muted" data-value="">선택하세요</div>
+            <div class="select-item" data-value="female">여성</div>
+            <div class="select-item" data-value="male">남성</div>
+            <div class="select-item" data-value="other">기타/밝히지 않음</div>
+          </div>
+        </div>
+
+        <div class="label" style="margin-top:10px">전화번호</div>
+        <div class="input" aria-live="polite">
+          <span class="prefix">+82</span>
+          <input id="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="010-1234-5678" aria-label="전화번호" value="010-4140-1166" class="no-focus" tabindex="-1" readonly aria-readonly="true" style="flex:1;border:0;outline:0;height:100%;font-size:16px;font-weight:700;color:#111827;background:transparent;" />
+        </div>
+
+        <div class="label" style="margin-top:10px">이메일</div>
+        <div class="input">
+          <input id="email" type="email" autocomplete="email" placeholder="name@example.com" aria-label="이메일" value="yscome1159@naver.com " class="no-focus" tabindex="-1" readonly aria-readonly="true" style="flex:1;border:0;outline:0;height:100%;font-size:16px;font-weight:700;color:#111827;background:transparent;" />
+        </div>
+      </div>
+
+      <div class="card" id="paymentsCard">
+        <div class="card-head">
+          <div class="h2">결제관리</div>
+          <a href="#" class="link" id="addCardBtn">+Add New Card</a>
+        </div>
+
+        <div class="label" style="margin-top:10px">Bank</div>
+        <div class="select-wrap" id="issuerSelect">
+          <div class="select-display" id="issuerDisplay" aria-haspopup="listbox" aria-expanded="false" tabindex="0">
+            <span class="select-placeholder" id="issuerText">카드사 선택</span>
+            <span class="chevron" aria-hidden="true"></span>
+          </div>
+          <div class="select-menu" id="issuerMenu" role="listbox">
+            <div class="select-item muted" data-value=""><span class="bank-logo" style="background:#e5e7eb;color:#374151">–</span>카드사 선택</div>
+            <div class="select-item" data-value="KB국민카드"><span class="bank-logo kb">KB</span>KB국민카드</div>
+            <div class="select-item" data-value="신한카드"><span class="bank-logo shinhan">SH</span>신한카드</div>
+            <div class="select-item" data-value="삼성카드"><span class="bank-logo samsung">SS</span>삼성카드</div>
+            <div class="select-item" data-value="현대카드"><span class="bank-logo hyundai">HD</span>현대카드</div>
+            <div class="select-item" data-value="롯데카드"><span class="bank-logo lotte">LT</span>롯데카드</div>
+            <div class="select-item" data-value="우리카드"><span class="bank-logo woori">WR</span>우리카드</div>
+            <div class="select-item" data-value="하나카드"><span class="bank-logo hana">HN</span>하나카드</div>
+            <div class="select-item" data-value="NH농협카드"><span class="bank-logo nh">NH</span>NH농협카드</div>
+          </div>
+        </div>
+
+        <div class="wallet" id="wallet">
+          <div class="pay-head"><span class="pay-radio on" id="payRadio"></span><span>카카오페이</span></div>
+          <div class="carousel" id="cardCarousel" tabindex="0" aria-roledescription="carousel">
+            <button class="nav prev" aria-label="이전 카드">&lt;</button>
+            <div class="track"><div class="slides" id="slides"></div></div>
+            <button class="nav next" aria-label="다음 카드">&gt;</button>
+          </div>
+          <div class="dots" id="cardDots" aria-label="페이지 표시점"></div>
+        </div>
+
+        <button class="cta" id="withdrawBtn">Withdraw</button>
+      </div>
+
+      <div class="card" id="ordersCard">
+        <div class="card-head"><div class="h2">주문내역</div></div>
+        <p>최근 주문내역이 여기에 표시됩니다.</p>
+      </div>
+      <div class="card" id="csCard">
+        <div class="card-head"><div class="h2">취소/반품/교환</div></div>
+        <p>취소/반품/교환 진행 현황을 확인할 수 있습니다.</p>
+      </div>
+      <div class="card" id="recentCard">
+        <div class="card-head"><div class="h2">최근 본 상품</div></div>
+        <p>최근 확인한 상품 목록입니다.</p>
+      </div>
+      <div class="card" id="noticeCard">
+        <div class="card-head"><div class="h2">공지사항</div></div>
+        <p>중요한 공지사항을 확인하세요.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function updateDeliveryDate() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, "0");
+      const d = String(now.getDate()).padStart(2, "0");
+      const el = document.getElementById("delivery-time-text");
+      if (el) el.textContent = `${y}-${m}-${d}`;
+    })();
+  </script>
+
+  <script>
+    const issuerWrap   = document.getElementById("issuerSelect");
+    const issuerDisp   = document.getElementById("issuerDisplay");
+    const issuerTextEl = document.getElementById("issuerText");
+    const issuerMenu   = document.getElementById("issuerMenu");
+
+    function logoHTML(bankName){
+      const map = {
+        KB국민카드:{cls:"kb",txt:"KB"}, 신한카드:{cls:"shinhan",txt:"SH"},
+        삼성카드:{cls:"samsung",txt:"SS"}, 현대카드:{cls:"hyundai",txt:"HD"},
+        롯데카드:{cls:"lotte",txt:"LT"}, 우리카드:{cls:"woori",txt:"WR"},
+        하나카드:{cls:"hana",txt:"HN"}, NH농협카드:{cls:"nh",txt:"NH"},
+      };
+      const item = map[bankName]; if(!item) return null;
+      return `<span class="bank-logo ${item.cls}">${item.txt}</span><span>${bankName}</span>`;
+    }
+    function toggleIssuerMenu(force){
+      const willOpen = typeof force==="boolean" ? force : !issuerMenu.classList.contains("show");
+      if(willOpen){ issuerMenu.classList.add("show"); issuerDisp.setAttribute("aria-expanded","true"); }
+      else{ issuerMenu.classList.remove("show"); issuerDisp.setAttribute("aria-expanded","false"); }
+    }
+    issuerDisp?.addEventListener("click", ()=>toggleIssuerMenu());
+    issuerDisp?.addEventListener("keydown",(e)=>{ if(["Enter"," "].includes(e.key)){ e.preventDefault(); toggleIssuerMenu(); }});
+    issuerMenu?.addEventListener("click",(e)=>{
+      const item = e.target.closest(".select-item"); if(!item) return;
+      const val = item.dataset.value || "";
+      if(val){ issuerTextEl.className="select-value"; issuerTextEl.innerHTML = logoHTML(val); }
+      else{ issuerTextEl.textContent="카드사 선택"; issuerTextEl.className="select-placeholder"; }
+      toggleIssuerMenu(false);
+    });
+
+    const slidesEl = document.getElementById("slides");
+    const dotsEl   = document.getElementById("cardDots");
+
+    const cards = [
+      { bank:"토스뱅크", last4:"4821", theme:"toss" },
+      { bank:"NH채움",   last4:"1103", theme:"nh"   },
+      { bank:"KB국민",   last4:"2878", theme:"kb"   },
+      { bank:"신한",     last4:"9042", theme:"shinhan" },
+    ];
+    function cardSVGData({bank,last4,theme}){
+      const themes = {
+        toss:{c1:"#1673ff",c2:"#0b59ff",text:"#ffffff",chip:"#f1f5ff"},
+        nh:{c1:"#00a64e",c2:"#0f9a44",text:"#ffffff",chip:"#e6ffe6"},
+        kb:{c1:"#f0c400",c2:"#f0b400",text:"#273238",chip:"#fff6d7"},
+        shinhan:{c1:"#003474",c2:"#0b3b94",text:"#ffffff",chip:"#e2ecff"},
+        custom:{c1:"#6b7cff",c2:"#5a67d8",text:"#ffffff",chip:"#f3f4ff"},
+      };
+      const t = themes[theme] || themes.custom;
+      const svg = `
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="420" viewBox="0 0 680 420">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="${t.c1}"/><stop offset="1" stop-color="${t.c2}"/></linearGradient></defs>
+  <rect width="680" height="420" rx="28" fill="url(#g)"/>
+  <rect x="48" y="78" width="72" height="52" rx="10" fill="${t.chip}" opacity="0.9"/>
+  <circle cx="565" cy="94" r="6" fill="${t.text}" opacity="0.95"/>
+  <text x="48" y="170" fill="${t.text}" font-family="Inter,'Noto Sans KR',sans-serif" font-size="28" font-weight="700" opacity="0.9">bank</text>
+  <text x="48" y="238" fill="${t.text}" font-family="Inter,'Noto Sans KR',sans-serif" font-size="38" font-weight="800">${bank}</text>
+  <text x="48" y="300" fill="${t.text}" font-family="Inter,monospace" font-size="26" letter-spacing="6">•••• •••• ${last4}</text>
+  <text x="632" y="356" fill="${t.text}" font-family="Inter,sans-serif" font-size="14" opacity="0.8" text-anchor="end">${bank}</text>
+</svg>`;
+      return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+    }
+
+    let current = 0;
+    function renderSlides(){
+      if(!slidesEl || !dotsEl) return;
+      slidesEl.innerHTML = "";
+      cards.forEach((c,idx)=>{
+        const wrap = document.createElement("div");
+        wrap.className = "slide" + (idx===current ? " is-center" : "");
+        wrap.innerHTML = `<img alt="${c.bank} 카드 **** ${c.last4}" src="${cardSVGData(c)}"/><div class="sub">${c.bank} •••• ${c.last4}</div>`;
+        wrap.addEventListener("click", ()=>goTo(idx));
+        slidesEl.appendChild(wrap);
+      });
+      dotsEl.innerHTML = "";
+      cards.forEach((_,idx)=>{
+        const d = document.createElement("div");
+        d.className = "dot" + (idx===current ? " on" : "");
+        d.addEventListener("click", ()=>goTo(idx));
+        dotsEl.appendChild(d);
+      });
+      updateTransform();
+    }
+    function updateTransform(){
+      const first = slidesEl?.querySelector(".slide"); if(!first) return;
+      const slideWidth = first.getBoundingClientRect().width + 16;
+      slidesEl.style.transform = `translateX(${-slideWidth * current}px)`;
+      slidesEl.querySelectorAll(".slide").forEach((s,i)=>s.classList.toggle("is-center", i===current));
+      dotsEl.querySelectorAll(".dot").forEach((d,i)=>d.classList.toggle("on", i===current));
+    }
+    function goTo(idx){
+      current = Math.max(0, Math.min(cards.length-1, idx));
+      updateTransform();
+    }
+    document.querySelector("#cardCarousel .prev")?.addEventListener("click", ()=>goTo(current-1));
+    document.querySelector("#cardCarousel .next")?.addEventListener("click", ()=>goTo(current+1));
+    document.getElementById("cardCarousel")?.addEventListener("keydown",(e)=>{
+      if(e.key==="ArrowLeft")  goTo(current-1);
+      if(e.key==="ArrowRight") goTo(current+1);
+    });
+    window.addEventListener("resize", updateTransform);
+    renderSlides();
+
+    document.getElementById("addCardBtn")?.addEventListener("click",(e)=>{
+      e.preventDefault();
+      const last4 = String(Math.floor(1000 + Math.random()*9000));
+      cards.push({ bank:"새 카드", last4, theme:"custom" });
+      current = cards.length - 1;
+      renderSlides();
+    });
+
+    document.getElementById("withdrawBtn")?.addEventListener("click", ()=>{
+      const c = cards[current];
+      alert(`Withdrawing to card: ${c.bank} **** ${c.last4} ✅`);
+    });
+
+    const emailInput   = document.getElementById("email");
+    if(emailInput){
+      emailInput.addEventListener("blur", ()=>{
+        if(emailInput.value && !emailInput.checkValidity()) emailInput.reportValidity();
+      });
+    }
+    const nameField    = document.getElementById("nameField");
+    const phoneInput   = document.getElementById("phone");
+    const birthInput   = document.getElementById("birthDate");
+    const birthWrap    = document.getElementById("birthWrap");
+    const calendarBtns = document.querySelectorAll(".calendar-btn");
+    const editBtn      = document.getElementById("editToggle");
+    const genderWrap   = document.getElementById("genderSelect");
+    const genderDisp   = document.getElementById("genderDisplay");
+    const genderTextEl = document.getElementById("genderText");
+    const genderMenu   = document.getElementById("genderMenu");
+    let editing = false;
+
+    const PROFILE_KEY = 'shop.profile.v1';
+    function loadProfile(){ try{ const raw = localStorage.getItem(PROFILE_KEY); return raw ? JSON.parse(raw) : null; } catch{ return null; } }
+    function saveProfile(obj){ try{ localStorage.setItem(PROFILE_KEY, JSON.stringify(obj)); } catch{} }
+
+    (function hydrateProfileFromStorage(){
+      const saved = loadProfile();
+      if(saved){
+        if(saved.name)  nameField.value  = saved.name;
+        if(saved.phone) phoneInput.value = saved.phone;
+        if(saved.email) emailInput.value = saved.email;
+        if(saved.birth) birthInput.value = saved.birth;
+        if(saved.gender){
+          genderTextEl.dataset.value = saved.gender;
+          genderTextEl.textContent =
+            saved.gender==='female' ? '여성' :
+            saved.gender==='male'   ? '남성' :
+            saved.gender==='other'  ? '기타/밝히지 않음' : '선택하세요';
+        }
+      }else{
+        saveProfile({
+          name: nameField.value.trim(),
+          phone: phoneInput.value.trim(),
+          email: emailInput.value.trim(),
+          birth: birthInput.value,
+          gender: (genderTextEl.dataset.value || "").trim()
+        });
+      }
+    })();
+
+    function setReadOnly(el, ro){
+      el.readOnly = ro;
+      el.setAttribute("aria-readonly", String(ro));
+      el.classList.toggle("no-focus", ro);
+      el.tabIndex = ro ? -1 : 0;
+    }
+    function toggleGenderMenu(force){
+      const willOpen = typeof force==="boolean" ? force : !genderMenu.classList.contains("show");
+      if(willOpen){ genderMenu.classList.add("show"); genderDisp.setAttribute("aria-expanded","true"); }
+      else{ genderMenu.classList.remove("show"); genderDisp.setAttribute("aria-expanded","false"); }
+    }
+    function setEditing(on){
+      editing = on;
+      editBtn.textContent = on ? "저장" : "수정하기";
+      editBtn.setAttribute("aria-pressed", String(on));
+      setReadOnly(nameField, !on);
+      setReadOnly(phoneInput, !on);
+      setReadOnly(emailInput, !on);
+      birthInput.disabled = !on;
+      calendarBtns.forEach(btn => btn.disabled = !on);
+      birthWrap.classList.toggle("disabled", !on);
+      genderDisp.setAttribute("aria-disabled", String(!on));
+      genderWrap.classList.toggle("disabled", !on);
+      genderDisp.tabIndex = on ? 0 : -1;
+      if(!on) toggleGenderMenu(false);
+      if(on){
+        nameField.focus();
+        nameField.setSelectionRange(nameField.value.length, nameField.value.length);
+      }
+    }
+
+    genderDisp?.addEventListener("click", ()=>{ if(!editing) return; toggleGenderMenu(); });
+    genderDisp?.addEventListener("keydown",(e)=>{ if(!editing) return; if(["Enter"," "].includes(e.key)){ e.preventDefault(); toggleGenderMenu(); }});
+    genderMenu?.addEventListener("click",(e)=>{
+      const item = e.target.closest(".select-item"); if(!item || !editing) return;
+      const val = item.dataset.value || "";
+      genderTextEl.dataset.value = val;
+      genderTextEl.textContent =
+        val==='female' ? '여성' :
+        val==='male'   ? '남성' :
+        val==='other'  ? '기타/밝히지 않음' : '선택하세요';
+      toggleGenderMenu(false);
+    });
+
+    editBtn?.addEventListener("click", ()=>{
+      if(editing && emailInput.value && !emailInput.checkValidity()){ emailInput.reportValidity(); return; }
+      if(editing){
+        saveProfile({
+          name:  nameField.value.trim(),
+          phone: phoneInput.value.trim(),
+          email: emailInput.value.trim(),
+          birth: birthInput.value,
+          gender: (genderTextEl.dataset.value || "").trim()
+        });
+        alert("프로필이 저장되었습니다. ✅");
+      }
+      setEditing(!editing);
+    });
+    document.querySelectorAll(".calendar-btn").forEach(btn =>
+      btn.addEventListener("click", ()=>{
+        if(!editing) return;
+        if(typeof birthInput.showPicker==="function") birthInput.showPicker();
+        else birthInput.focus();
+      })
+    );
+
+    if(phoneInput){
+      phoneInput.addEventListener("input", ()=>{
+        if(phoneInput.readOnly) return;
+        let v = phoneInput.value.replace(/[^\d]/g,"").slice(0,11);
+        if(v.startsWith("010")){
+          if(v.length>7) v = v.replace(/(\d{3})(\d{4})(\d{0,4}).*/, "$1-$2-$3").replace(/-$/,"");
+          else if(v.length>3) v = v.replace(/(\d{3})(\d{0,4})/, "$1-$2");
+        }else{
+          if(v.length>7) v = v.replace(/(\d{3})(\d{3,4})(\d{0,4}).*/, "$1-$2-$3").replace(/-$/,"");
+          else if(v.length>3) v = v.replace(/(\d{3})(\d{0,4})/, "$1-$2");
+        }
+        phoneInput.value = v;
+      });
+    }
+
+    nameField?.addEventListener('blur', ()=>{
+      const cur = loadProfile() || {};
+      const nextName = nameField.value.trim();
+      if((cur.name || '') !== nextName){ cur.name = nextName; saveProfile(cur); }
+    });
+
+    setEditing(false);
+  </script>
+
+  <script>
+    (function(){
+      const WISH_KEY = 'wish';
+      const $box   = document.getElementById('wishIcon');
+      const $badge = document.getElementById('wishCount');
+
+      const readWish  = () => { try { return JSON.parse(localStorage.getItem(WISH_KEY)) || {}; } catch { return {}; } };
+      const countWish = () => Object.values(readWish()).filter(Boolean).length;
+      const setBadge  = () => {
+        if (!$box || !$badge) return;
+        const n = countWish();
+        $badge.textContent = String(n);
+        $box.setAttribute('aria-label', `찜 ${n}개`);
+      };
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setBadge, { once:true });
+      } else {
+        setBadge();
+      }
+      window.addEventListener('storage', (e) => { if (e.key === WISH_KEY) setBadge(); });
+    })();
+  </script>
+
+  <script>
+    (function(){
+      const el = document.querySelector('.icons .icon-box[aria-label="홈"]');
+      if (!el) return;
+      if (el.tagName.toLowerCase() === 'a' && el.getAttribute('href')) return; 
+      const go = () => { window.location.href = './main.html'; };
+      el.addEventListener('click', go);
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); }
+      });
+    })();
+  </script>
+
+  <script>
+    (function(){
+      const items = document.querySelectorAll('.side-item[data-target]');
+      const cards = Array.from(document.querySelectorAll('.content .card[id]'));
+
+      function scrollToCard(id){
+        const el = document.getElementById(id);
+        if(!el) return;
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      items.forEach(li=>{
+        li.addEventListener('click', ()=>{
+          const id = li.getAttribute('data-target');
+          if(id) scrollToCard(id);
+        });
+        li.addEventListener('keydown', (e)=>{
+          if(e.key==='Enter' || e.key===' '){
+            e.preventDefault();
+            const id = li.getAttribute('data-target');
+            if(id) scrollToCard(id);
+          }
+        });
+      });
+
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){
+            const id = entry.target.id;
+            items.forEach(li=> li.classList.toggle('active', li.getAttribute('data-target')===id));
+          }
+        });
+      }, { root:null, rootMargin:'-30% 0px -60% 0px', threshold:0.01 });
+
+      cards.forEach(c=>io.observe(c));
+    })();
+  </script>
+
+  <div id="cartBackdrop" class="backdrop" hidden></div>
+  <div class="cart-panel" hidden role="dialog" aria-labelledby="cartTitle">
+    <header class="cart-header">
+      <h3 id="cartTitle">장바구니</h3>
+      <button id="cartClose" class="cp-close" aria-label="장바구니 닫기">✕</button>
+    </header>
+    <ul id="cartItems" class="cart-items" role="list"></ul>
+    <footer class="cart-footer">
+      <div class="cp-sum"><span>Total</span><strong id="cpSubtotal">$0.00</strong></div>
+      <button id="checkoutBtn" class="cp-checkout">CHECKOUT NOW</button>
+      <button id="viewCartBtn" class="cp-view">View details</button>
+    </footer>
+  </div>
+
+  <div id="wishBackdrop" class="backdrop" hidden></div>
+  <div id="wishPopover" class="wish-popover" hidden role="dialog" aria-labelledby="wishPopTitle">
+    <div class="wish-panel">
+      <header class="wish-header">
+        <h3 id="wishPopTitle">Wishlist (<span id="wishPopCount">0</span>)</h3>
+        <button id="wishPopClose" class="wp-close" aria-label="닫기">×</button>
+      </header>
+      <ul id="wishPopItems" class="wish-items" role="list"></ul>
+      <footer class="wish-footer">
+        <div class="wp-sum"><span>Total</span><strong id="wishPopTotal">$0.00</strong></div>
+      </footer>
+    </div>
+  </div>
+
+  <script src="./main.js"></script>
+
+  <script>
+    (function(){
+      const CART_KEY='cart_drawer_demo_v1';
+      const $box=document.getElementById('cartOpenBtn');
+      const $badge=document.getElementById('cartCount');
+      function readQty(){try{const a=JSON.parse(localStorage.getItem(CART_KEY))||[];return a.reduce((s,x)=>s+(+x.qty||0),0);}catch{return 0;}}
+      function sync(){if(!$box||!$badge)return;const n=readQty();$badge.textContent=String(n);$box.setAttribute('aria-label', `장바구니 ${n}개`);}
+      if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync,{once:true});else sync();
+      window.addEventListener('storage',e=>{if(e.key===CART_KEY)sync();});
+    })();
+  </script>
+</body>
+</html>
