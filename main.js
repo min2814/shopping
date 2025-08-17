@@ -1,5 +1,5 @@
-const $ = (sel, root=document) => root.querySelector(sel);
-const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 
 const STORAGE_KEY = "cart_drawer_demo_v1";
 
@@ -37,7 +37,7 @@ const panel = drawer?.querySelector?.(".cart-panel") || drawer;
 const listEl = $("#cartItems");
 const subtotalEl = $("#cpSubtotal");
 
-function placePopover(){
+function placePopover() {
   if (!openBtn || !panel) return;
   const r = openBtn.getBoundingClientRect();
   const gap = 10;
@@ -45,34 +45,34 @@ function placePopover(){
   const vw = document.documentElement.clientWidth;
   const sx = window.scrollX, sy = window.scrollY;
 
-  let idealLeft = sx + (r.left + r.right)/2 - panelW/2;
+  let idealLeft = sx + (r.left + r.right) / 2 - panelW / 2;
   const minLeft = sx + 12;
   const maxLeft = sx + vw - panelW - 12;
   const left = Math.max(minLeft, Math.min(maxLeft, idealLeft));
-  const top  = sy + r.bottom + gap;
+  const top = sy + r.bottom + gap;
 
-  const arrowX = sx + (r.left + r.right)/2 - left;
+  const arrowX = sx + (r.left + r.right) / 2 - left;
   const arrowClamp = Math.max(16, Math.min(panelW - 24, arrowX));
 
-  panel.style.top  = `${top}px`;
+  panel.style.top = `${top}px`;
   panel.style.left = `${left}px`;
   panel.style.setProperty("--arrow-left", `${arrowClamp - 8}px`);
 }
 
 let lastFocused;
-function openDrawer(){
+function openDrawer() {
   if (!drawer) return;
   lastFocused = document.activeElement;
   drawer.hidden = false;
   backdrop && (backdrop.hidden = false);
   renderCart();
 
-  if (panel && !panel.hasAttribute('tabindex')) panel.setAttribute('tabindex','-1');
+  if (panel && !panel.hasAttribute('tabindex')) panel.setAttribute('tabindex', '-1');
 
   requestAnimationFrame(() => {
     drawer.classList.add("open");
     backdrop && backdrop.classList.add("show");
-    placePopover(); 
+    placePopover();
 
     if (closeBtn) focusNoScroll(closeBtn);
     else focusNoScroll(panel);
@@ -83,7 +83,7 @@ function openDrawer(){
   window.addEventListener("resize", placePopover);
   window.addEventListener("scroll", placePopover, { passive: true });
 }
-function closeDrawer(){
+function closeDrawer() {
   if (!drawer) return;
   drawer.classList.remove("open");
   backdrop && backdrop.classList.remove("show");
@@ -97,7 +97,7 @@ function closeDrawer(){
     if (lastFocused) focusNoScroll(lastFocused);
   }, 180);
 }
-function onEscClose(e){ if(e.key === "Escape") closeDrawer(); }
+function onEscClose(e) { if (e.key === "Escape") closeDrawer(); }
 
 document.addEventListener("click", (e) => {
   if (e.target.closest("#cartOpenBtn")) {
@@ -110,13 +110,13 @@ document.addEventListener("click", (e) => {
 closeBtn?.addEventListener("click", closeDrawer);
 backdrop?.addEventListener("click", closeDrawer);
 
-function renderCart(){
+function renderCart() {
   if (cartCount) cartCount.textContent = cart.reduce((s, it) => s + it.qty, 0);
 
   if (subtotalEl) subtotalEl.textContent = currencyUSD(subtotal(cart));
 
   if (!listEl) return;
-  if(cart.length === 0){
+  if (cart.length === 0) {
     listEl.innerHTML = `<li class="muted" style="padding:12px;">장바구니가 비어 있습니다.</li>`;
     return;
   }
@@ -144,31 +144,31 @@ function renderCart(){
 
 listEl?.addEventListener("click", (e) => {
   const btn = e.target.closest("button");
-  if(!btn) return;
+  if (!btn) return;
   const act = btn.dataset.act;
   const idx = Number(btn.dataset.idx);
-  if(Number.isNaN(idx)) return;
+  if (Number.isNaN(idx)) return;
 
-  if(act === "inc") cart[idx].qty += 1;
-  if(act === "dec") cart[idx].qty = Math.max(1, cart[idx].qty - 1);
-  if(act === "remove") cart.splice(idx, 1);
+  if (act === "inc") cart[idx].qty += 1;
+  if (act === "dec") cart[idx].qty = Math.max(1, cart[idx].qty - 1);
+  if (act === "remove") cart.splice(idx, 1);
 
   saveCart(cart);
   renderCart();
-  placePopover(); 
+  placePopover();
 });
 
 document.addEventListener("click", (e) => {
   const btn = e.target.closest(".add-to-cart");
-  if(!btn) return;
+  if (!btn) return;
 
   const id = String(btn.dataset.id);
   const name = btn.dataset.name || "상품";
-  const price = Number(btn.dataset.price || 0);  
+  const price = Number(btn.dataset.price || 0);
   const image = btn.dataset.image || "";
 
   const found = cart.find((x) => x.id === id);
-  if(found) found.qty += 1;
+  if (found) found.qty += 1;
   else cart.push({ id, name, price, image, qty: 1 });
 
   saveCart(cart);
@@ -177,9 +177,9 @@ document.addEventListener("click", (e) => {
 
 const productList = document.querySelector(".product-list");
 
-async function loadProducts(){
-  try{
-    if(!productList) return;
+async function loadProducts() {
+  try {
+    if (!productList) return;
     if (productList.querySelector(".product-card")) return;
 
     const res = await fetch("https://fakestoreapi.com/products?limit=8");
@@ -189,7 +189,12 @@ async function loadProducts(){
     data.forEach((item) => {
       const div = document.createElement("div");
       div.className = "product-card";
-      const title = item.title.length > 10 ? item.title.slice(0,20) + "…" : item.title;
+      div.dataset.id = item.id;
+      div.dataset.name = item.title;
+      div.dataset.price = item.price;
+      div.dataset.image = item.image;
+
+      const title = item.title.length > 10 ? item.title.slice(0, 20) + "…" : item.title;
       div.innerHTML = `
         <button class="wishlist-btn" aria-label="찜하기"><i class="fa-regular fa-heart"></i></button>
         <div class="img-wrap"><img src="${item.image}" alt="상품 이미지"></div>
@@ -199,7 +204,7 @@ async function loadProducts(){
           <button class="add-btn add-to-cart"
             aria-label="담기"
             data-id="${item.id}"
-            data-name="${item.title.replace(/"/g,'&quot;')}"
+            data-name="${item.title.replace(/"/g, '&quot;')}"
             data-price="${item.price}"
             data-image="${item.image}">
             <i class="fa-solid fa-plus"></i>
@@ -209,7 +214,7 @@ async function loadProducts(){
       frag.appendChild(div);
     });
     productList.appendChild(frag);
-  }catch(e){
+  } catch (e) {
     if (!productList.children.length) {
       productList.innerHTML = `<div class="muted">상품을 불러오지 못했습니다.</div>`;
     }
@@ -224,12 +229,12 @@ $("#viewCartBtn")?.addEventListener("click", () => alert("장바구니 상세 �
 
 function updateDeliveryDate() {
   const now = new Date();
-  const year  = now.getFullYear();
+  const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day   = String(now.getDate()).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
   const dateString = `${year}-${month}-${day}`;
   const el = document.getElementById("delivery-time-text");
-  if (el) el.textContent = dateString; 
+  if (el) el.textContent = dateString;
 }
 updateDeliveryDate();
 
@@ -302,12 +307,12 @@ updateDeliveryDate();
     const badge = box ? box.querySelector('#wishCount') : null;
     if (!box || !badge) return;
     const n = document.querySelectorAll('.wishlist-btn.active, .wishlist-btn[aria-pressed="true"]').length
-           || Object.values(readWish()).filter(Boolean).length;
+      || Object.values(readWish()).filter(Boolean).length;
     badge.textContent = String(n);
     box.setAttribute('aria-label', `찜 ${n}개`);
   };
 
-  const simpleHash = (str) => { let h=0; for (let i=0;i<str.length;i++){ h=(h<<5)-h+str.charCodeAt(i); h|=0; } return Math.abs(h); };
+  const simpleHash = (str) => { let h = 0; for (let i = 0; i < str.length; i++) { h = (h << 5) - h + str.charCodeAt(i); h |= 0; } return Math.abs(h); };
   const ensureCardId = (card) => {
     if (card.dataset.id) return card.dataset.id;
     const name = card.querySelector('.product-name')?.textContent?.trim() || '';
@@ -372,12 +377,12 @@ updateDeliveryDate();
 
 
 (function () {
-  const MAP_KEY  = 'wish';   
-  const DATA_KEY = 'wish.items.v1'; 
+  const MAP_KEY = 'wish';
+  const DATA_KEY = 'wish.items.v1';
 
-  const readMap   = () => { try { return JSON.parse(localStorage.getItem(MAP_KEY))  || {}; } catch { return {}; } };
-  const readData  = () => { try { return JSON.parse(localStorage.getItem(DATA_KEY)) || {}; } catch { return {}; } };
-  const writeData = (m)  => localStorage.setItem(DATA_KEY, JSON.stringify(m));
+  const readMap = () => { try { return JSON.parse(localStorage.getItem(MAP_KEY)) || {}; } catch { return {}; } };
+  const readData = () => { try { return JSON.parse(localStorage.getItem(DATA_KEY)) || {}; } catch { return {}; } };
+  const writeData = (m) => localStorage.setItem(DATA_KEY, JSON.stringify(m));
   const fmtUSD = (n) => `$${Number(n).toFixed(2)}`;
 
   if (!document.getElementById('wishPopoverCSS')) {
@@ -443,22 +448,22 @@ updateDeliveryDate();
   }
   ensureDOM();
 
-  let anchor = document.getElementById('wishIcon');                   
-  const popover  = document.getElementById('wishPopover');
-  const panel    = popover?.querySelector('.wish-panel');
-  const listEl   = document.getElementById('wishPopItems');
-  const countEl  = document.getElementById('wishPopCount');
-  const totalEl  = document.getElementById('wishPopTotal');
-  const closeWishBtn = document.getElementById('wishPopClose');     
-  const wishBackdrop = document.getElementById('wishBackdrop');    
+  let anchor = document.getElementById('wishIcon');
+  const popover = document.getElementById('wishPopover');
+  const panel = popover?.querySelector('.wish-panel');
+  const listEl = document.getElementById('wishPopItems');
+  const countEl = document.getElementById('wishPopCount');
+  const totalEl = document.getElementById('wishPopTotal');
+  const closeWishBtn = document.getElementById('wishPopClose');
+  const wishBackdrop = document.getElementById('wishBackdrop');
 
   const pickFromCard = (id) => {
-    const card  = document.querySelector(`.product-card[data-id="${CSS.escape(id)}"]`);
+    const card = document.querySelector(`.product-card[data-id="${CSS.escape(id)}"]`);
     if (!card) return null;
     const title = card.querySelector('.product-name, [data-title], .title, h4, h3')?.textContent?.trim() || '';
-    const img   = card.querySelector('img')?.getAttribute('src') || '';
-    const ptxt  = card.querySelector('.price, [data-price]')?.textContent || '';
-    const m     = String(ptxt).replace(/,/g,'').match(/-?\d+(\.\d+)?/);
+    const img = card.querySelector('img')?.getAttribute('src') || '';
+    const ptxt = card.querySelector('.price, [data-price]')?.textContent || '';
+    const m = String(ptxt).replace(/,/g, '').match(/-?\d+(\.\d+)?/);
     const price = m ? Number(m[0]) : NaN;
     return { id, title, img, price };
   };
@@ -470,9 +475,9 @@ updateDeliveryDate();
     return data;
   };
 
-  function renderWish(){
-    const map  = readMap();
-    const ids  = Object.keys(map).filter(k => !!map[k]);
+  function renderWish() {
+    const map = readMap();
+    const ids = Object.keys(map).filter(k => !!map[k]);
     const data = ensureSnapshots(ids);
     const items = ids.map(id => data[id]).filter(Boolean);
 
@@ -498,62 +503,62 @@ updateDeliveryDate();
       </li>
     `).join('');
 
-    const total = items.reduce((s,v) => s + (isNaN(v.price)?0:Number(v.price)), 0);
+    const total = items.reduce((s, v) => s + (isNaN(v.price) ? 0 : Number(v.price)), 0);
     totalEl.textContent = fmtUSD(total);
   }
 
-  function placeWishPopover(){                 
+  function placeWishPopover() {
     if (!anchor || !panel) return;
-    const r  = anchor.getBoundingClientRect();
+    const r = anchor.getBoundingClientRect();
     const gap = 10;
-    const panelW = panel.offsetWidth || 360;     
+    const panelW = panel.offsetWidth || 360;
     const vw = document.documentElement.clientWidth;
     const sx = window.scrollX, sy = window.scrollY;
 
-    let idealLeft = sx + (r.left + r.right)/2 - panelW/2;
+    let idealLeft = sx + (r.left + r.right) / 2 - panelW / 2;
     const minLeft = sx + 12;
     const maxLeft = sx + vw - panelW - 12;
     const left = Math.max(minLeft, Math.min(maxLeft, idealLeft));
-    const top  = sy + r.bottom + gap;
+    const top = sy + r.bottom + gap;
 
     panel.style.left = `${left}px`;
-    panel.style.top  = `${top}px`;
+    panel.style.top = `${top}px`;
 
-    const arrowX = sx + (r.left + r.right)/2 - left;
-    const clamp  = Math.max(16, Math.min(panelW - 24, arrowX));
+    const arrowX = sx + (r.left + r.right) / 2 - left;
+    const clamp = Math.max(16, Math.min(panelW - 24, arrowX));
     panel.style.setProperty('--wp-arrow-left', `${clamp}px`);
   }
 
-function placeWishFixed() {
-  const PANEL_W = 360;
-  const MARGIN_R = 12;
-  const GAP_TOP = 20;
+  function placeWishFixed() {
+    const PANEL_W = 360;
+    const MARGIN_R = 12;
+    const GAP_TOP = 20;
 
-  const vw = document.documentElement.clientWidth;
-  const leftPx = Math.max(12, vw - PANEL_W - MARGIN_R);
+    const vw = document.documentElement.clientWidth;
+    const leftPx = Math.max(12, vw - PANEL_W - MARGIN_R);
 
-  const searchBar = document.querySelector('.search-section');
-  const topPx = searchBar
-    ? searchBar.getBoundingClientRect().bottom + GAP_TOP
-    : 80;
+    const searchBar = document.querySelector('.search-section');
+    const topPx = searchBar
+      ? searchBar.getBoundingClientRect().bottom + GAP_TOP
+      : 80;
 
-  const anchor = document.querySelector('.icons .fa-heart')?.parentElement;
-  let arrowLeft = 40;
-  if (anchor) {
-    const rect = anchor.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    arrowLeft = Math.max(16, Math.min(PANEL_W - 24, centerX - leftPx));
+    const anchor = document.querySelector('.icons .fa-heart')?.parentElement;
+    let arrowLeft = 40;
+    if (anchor) {
+      const rect = anchor.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      arrowLeft = Math.max(16, Math.min(PANEL_W - 24, centerX - leftPx));
+    }
+
+    const popover = document.querySelector('.wish-popover');
+    popover.classList.add('wish-popover--fixed');
+    popover.style.setProperty('--wp-fixed-left', `${leftPx}px`);
+    popover.style.setProperty('--wp-fixed-top', `${topPx}px`);
+    popover.style.setProperty('--wp-fixed-arrow-left', `${arrowLeft}px`);
   }
 
-  const popover = document.querySelector('.wish-popover');
-  popover.classList.add('wish-popover--fixed');
-  popover.style.setProperty('--wp-fixed-left', `${leftPx}px`);
-  popover.style.setProperty('--wp-fixed-top', `${topPx}px`);
-  popover.style.setProperty('--wp-fixed-arrow-left', `${arrowLeft}px`);
-}
 
-
-  function openWish(){
+  function openWish() {
     renderWish();
     popover.hidden = false;
     wishBackdrop.hidden = false;
@@ -561,31 +566,31 @@ function placeWishFixed() {
       popover.classList.add('open');
       wishBackdrop.classList.add('show');
       // placeWishPopover();  
-      placeWishFixed();     
+      placeWishFixed();
     });
-    anchor?.setAttribute('aria-expanded', 'true');   
+    anchor?.setAttribute('aria-expanded', 'true');
     window.addEventListener('resize', placeWishPopover);
-    window.addEventListener('scroll', placeWishPopover, { passive:true });
+    window.addEventListener('scroll', placeWishPopover, { passive: true });
     window.addEventListener('keydown', onEsc);
   }
-  function closeWish(){
+  function closeWish() {
     popover.classList.remove('open');
     wishBackdrop.classList.remove('show');
-    anchor?.setAttribute('aria-expanded', 'false');  
+    anchor?.setAttribute('aria-expanded', 'false');
     window.removeEventListener('resize', placeWishPopover);
     window.removeEventListener('scroll', placeWishPopover);
     window.removeEventListener('keydown', onEsc);
     setTimeout(() => { popover.hidden = true; wishBackdrop.hidden = true; }, 150);
   }
-  function onEsc(e){ if (e.key === 'Escape') closeWish(); }
+  function onEsc(e) { if (e.key === 'Escape') closeWish(); }
 
-  if (anchor) {                                                
+  if (anchor) {
     const cloned = anchor.cloneNode(true);
     anchor.parentNode.replaceChild(cloned, anchor);
     anchor = cloned;
   }
 
-  anchor?.addEventListener('click', (e) => {    
+  anchor?.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopImmediatePropagation();
     e.stopPropagation();
@@ -594,8 +599,8 @@ function placeWishFixed() {
     else openWish();
   }, { capture: true });
 
-  closeWishBtn?.addEventListener('click', closeWish);  
-  wishBackdrop?.addEventListener('click', closeWish);    
+  closeWishBtn?.addEventListener('click', closeWish);
+  wishBackdrop?.addEventListener('click', closeWish);
 
   listEl?.addEventListener('click', (e) => {
     const rm = e.target.closest('.wish-remove');
@@ -609,8 +614,8 @@ function placeWishFixed() {
 
     const btn = document.querySelector(`.product-card[data-id="${CSS.escape(id)}"] .wishlist-btn`);
     const icon = btn?.querySelector('.fa-heart');
-    if (btn) { btn.classList.remove('active'); btn.setAttribute('aria-pressed','false'); }
-    if (icon){ icon.classList.remove('fa-solid'); icon.classList.add('fa-regular'); }
+    if (btn) { btn.classList.remove('active'); btn.setAttribute('aria-pressed', 'false'); }
+    if (icon) { icon.classList.remove('fa-solid'); icon.classList.add('fa-regular'); }
 
     const n = Object.values(map).filter(Boolean).length;
     const badge = document.getElementById('wishCount');
@@ -619,7 +624,7 @@ function placeWishFixed() {
     box?.setAttribute('aria-label', `찜 ${n}개`);
 
     renderWish();
-    placeWishPopover();                                                     
+    placeWishPopover();
   });
 
   document.addEventListener('click', (e) => {
@@ -678,3 +683,44 @@ function placeWishFixed() {
     if (e.key === PROFILE_KEY) applyRecommendTitle();
   });
 })();
+
+// [추가] 찜 버튼 클릭 시 localStorage에 상품 추가/제거
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".wishlist-btn");
+  if (!btn) return;
+
+  const card = btn.closest(".product-card");
+  if (!card) return;
+
+  const id    = card.dataset.id;
+  const name  = card.dataset.name;
+  const price = Number(card.dataset.price);
+  const image = card.dataset.image;
+
+  const WISH_KEY = "wish";
+  let wishMap = {};
+  try { wishMap = JSON.parse(localStorage.getItem(WISH_KEY)) || {}; }
+  catch { wishMap = {}; }
+
+  const already = !!wishMap[id];
+  if (already) {
+    delete wishMap[id];
+    btn.classList.remove("active");
+    btn.setAttribute("aria-pressed","false");
+  } else {
+    wishMap[id] = { id, name, price, image };
+    btn.classList.add("active");
+    btn.setAttribute("aria-pressed","true");
+  }
+
+  localStorage.setItem(WISH_KEY, JSON.stringify(wishMap));
+
+  // 아이콘 모양 즉시 반영
+  const icon = btn.querySelector(".fa-heart");
+  if (icon) {
+    icon.classList.toggle("fa-solid", !already);
+    icon.classList.toggle("fa-regular", already);
+  }
+
+  // 배지 숫자는 기존 IIFE가 setTimeout(updateBadge,0) 으로 갱신해줌
+});
