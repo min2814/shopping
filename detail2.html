@@ -83,7 +83,6 @@
             </div>
 
             <button class="btn-add-cart" id="add-cart-btn">장바구니에 담기</button>
-            <!-- 모달 -->
             <dialog id="cartDialog">
                 <p>장바구니에 담았습니다.<br>계속 쇼핑하겠습니까?</p>
                 <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
@@ -95,7 +94,6 @@
     </div>
 
     <script>
-        // 목록 페이지에서 저장한 상품 정보 불러오기
         const product = JSON.parse(localStorage.getItem("selectedProduct"));
 
         const cartDialog = document.getElementById('cartDialog');
@@ -109,7 +107,6 @@
             "jewelery": { colors: [], sizes: [] },
         };
 
-        // 카테고리별 라벨/안내 문구
         const LABEL_TEXT = {
             default: { color: '색상', size: '사이즈' },
             jewelery: { color: '색상(단일)', size: 'FREE SIZE' },
@@ -124,19 +121,16 @@
             return LABEL_TEXT.default;
         };
 
-        // 카테고리명을 CSS에서 쓰기 좋게 slug로 만들어 body에 클래스 부여
         const toSlug = (s = '') => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         const catClass = 'cat-' + toSlug(product.category || '');
         document.body.classList.add(catClass);
 
-        // 버튼 영역 숨기고 안내문 넣는 함수
         function showNote(groupId, noteText) {
             const group = document.getElementById(groupId);
             if (!group) return;
             const btns = group.querySelector('.option-buttons');
             if (btns) btns.style.display = 'none';
 
-            // note가 없으면 생성
             let note = group.querySelector('.option-note');
             if (!note) {
                 note = document.createElement('div');
@@ -144,7 +138,7 @@
                 group.appendChild(note);
             }
             note.textContent = noteText;
-            group.style.display = ''; // 보이도록
+            group.style.display = ''; 
         }
 
         const getRule = (cat) => OPTION_RULES[cat] || { colors: [], sizes: [] };
@@ -157,20 +151,16 @@
 
         if (!product) {
             alert("상품 정보가 없습니다. 메인 페이지로 이동합니다.");
-            window.location.href = "index.html"; // 상품 목록 페이지로 이동
+            window.location.href = "index.html"; 
         } else {
-            // 이미지 표시
             setProductImage(product.image, product.name);
 
-            // 상품 정보 표시
             document.getElementById('product-title').textContent = product.name;
             document.getElementById('product-price').textContent = '$' + product.price;
             document.getElementById('product-description').textContent = product.description || '';
 
-            //카테고리 별 color, size 배열들 관리(rule은 카테고리 별 color size 여부)
             const rule = getRule(product.category);
 
-            //카테고리별 라벨 및 텍스트
             const labelText = labelFor(product.category);
 
             const colorLabel = document.querySelector('#color-group label');
@@ -182,7 +172,6 @@
             if (sizeLabel) {
                 sizeLabel.textContent = labelText.size;
             }
-            // 색상 - 카테고리별 colors의 길이가 있으면 버튼을(rule.colors) 생성
             if (rule.colors.length) {
                 createOptionButtons('color-options', rule.colors, (color) => {
                     selectedColor = color;
@@ -190,11 +179,9 @@
                 });
                 document.getElementById('color-group').style.display = '';
             } else {
-                // 버튼은 숨기고, 라벨은 카테고리 맞춤 문구로 유지 + 안내노트 추가(선택)
                 showNote('color-group', '선택 가능한 색상 옵션이 없습니다.');
             }
 
-            // 사이즈 - 카테고리별 sizes의 길이가 있으면 버튼을(rule.sizes) 생성
             if (rule.sizes.length) {
                 createOptionButtons('size-options', rule.sizes, (size) => {
                     selectedSize = size;
@@ -258,7 +245,6 @@
                 alert('필요한 옵션을 선택해주세요.');
                 return;
             }
-            //cart라는 이름으로 저장돤 JSON 문자열을 가지고 와서 JS객체로 전환
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             cart.push({
                 id: product.id,
@@ -269,7 +255,6 @@
                 color: needColor ? selectedColor : null,
                 size: needSize ? selectedSize : null,
             });
-            //cart라는 이름으로 객체를 JSON 문자열로 저장
             localStorage.setItem('cart', JSON.stringify(cart));
 
             cartDialog.showModal();

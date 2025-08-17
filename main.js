@@ -1,7 +1,3 @@
-// main.js
-/* =========================
-   기존 코드 + 안정성 보강
-========================= */
 const $ = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
 
@@ -19,12 +15,10 @@ const currencyKRW = (n) =>
   new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW", maximumFractionDigits: 0 })
     .format(Number(n));
 
-/* [추가] USD 그대로 표시용 포맷터 */
 const currencyUSD = (n) =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" })
     .format(Number(n));
 
-/* [추가] 포커스 이동 시 자동 스크롤 방지 헬퍼 */
 const focusNoScroll = (el) => {
   try { el?.focus({ preventScroll: true }); }
   catch { el?.focus?.(); }
@@ -35,11 +29,9 @@ const subtotal = (items) => items.reduce((s, it) => s + it.price * it.qty, 0);
 const openBtn = $("#cartOpenBtn");
 const cartCount = $("#cartCount");
 
-// 드로어 래퍼(#cartDrawer)가 없으면 .cart-panel 자체를 드로어로 사용
 const drawer = $("#cartDrawer") || document.querySelector(".cart-panel");
 const backdrop = $("#cartBackdrop");
 const closeBtn = $("#cartClose");
-// 패널 요소 (래퍼 내부 .cart-panel or 래퍼가 없으면 drawer 자체)
 const panel = drawer?.querySelector?.(".cart-panel") || drawer;
 
 const listEl = $("#cartItems");
@@ -75,7 +67,6 @@ function openDrawer(){
   backdrop && (backdrop.hidden = false);
   renderCart();
 
-  // [추가] 패널 포커스 가능 보장(스크롤 없이 패널로 포커스 이동할 때 사용)
   if (panel && !panel.hasAttribute('tabindex')) panel.setAttribute('tabindex','-1');
 
   requestAnimationFrame(() => {
@@ -83,7 +74,6 @@ function openDrawer(){
     backdrop && backdrop.classList.add("show");
     placePopover(); 
 
-    // [변경] 포커스 이동 시 자동 스크롤 방지
     if (closeBtn) focusNoScroll(closeBtn);
     else focusNoScroll(panel);
   });
@@ -104,13 +94,11 @@ function closeDrawer(){
   setTimeout(() => {
     drawer.hidden = true;
     backdrop && (backdrop.hidden = true);
-    // [변경] 복귀 포커스 시에도 자동 스크롤 방지
     if (lastFocused) focusNoScroll(lastFocused);
   }, 180);
 }
 function onEscClose(e){ if(e.key === "Escape") closeDrawer(); }
 
-// [변경] 열기 버튼 클릭 시 다른 핸들러 개입/기본 동작을 모두 차단
 document.addEventListener("click", (e) => {
   if (e.target.closest("#cartOpenBtn")) {
     e.preventDefault();
@@ -125,7 +113,6 @@ backdrop?.addEventListener("click", closeDrawer);
 function renderCart(){
   if (cartCount) cartCount.textContent = cart.reduce((s, it) => s + it.qty, 0);
 
-  /* [변경] 소계: 상품 금액 그대로(USD) */
   if (subtotalEl) subtotalEl.textContent = currencyUSD(subtotal(cart));
 
   if (!listEl) return;
@@ -242,14 +229,13 @@ function updateDeliveryDate() {
   const day   = String(now.getDate()).padStart(2, "0");
   const dateString = `${year}-${month}-${day}`;
   const el = document.getElementById("delivery-time-text");
-  if (el) el.textContent = dateString; // ✅ 콜론 제거, 날짜만 넣기
+  if (el) el.textContent = dateString; 
 }
 updateDeliveryDate();
 
-
-
-// 찜 배지(하트) 실시간 업데이트
 (function () {
+  const WISH_KEY = 'wish';
+
   const heartIcon = document.querySelector('.icons .icon-box i.fa-heart');
   const box = heartIcon ? heartIcon.parentElement : null;
   if (!box) return;
@@ -263,17 +249,36 @@ updateDeliveryDate();
     box.appendChild(badge);
   }
 
-  const calcCount = () =>
-    document.querySelectorAll(
-      '.wishlist-btn.active, .wishlist-btn[aria-pressed="true"]'
-    ).length;
-
-  const updateBadge = () => {
-    badge.textContent = String(calcCount());
-    box.setAttribute('aria-label', `찜 ${badge.textContent}개`);
+  const readWish = () => {
+    try { return JSON.parse(localStorage.getItem(WISH_KEY)) || {}; }
+    catch { return {}; }
   };
 
-  window.addEventListener('DOMContentLoaded', updateBadge);
+  const calcCount = () => {
+    const domCount = document.querySelectorAll(
+      '.wishlist-btn.active, .wishlist-btn[aria-pressed="true"]'
+    ).length;
+    if (domCount > 0) return domCount;
+
+    const map = readWish();
+    return Object.values(map).filter(Boolean).length;
+  };
+
+  const updateBadge = () => {
+    const n = calcCount();
+    badge.textContent = String(n);
+    box.setAttribute('aria-label', `찜 ${n}개`);
+  };
+
+  if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', updateBadge, { once: true });
+  } else {
+    updateBadge();
+  }
+
+  window.addEventListener('storage', (e) => {
+    if (e.key === WISH_KEY) updateBadge();
+  });
 
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.wishlist-btn')) return;
@@ -296,7 +301,8 @@ updateDeliveryDate();
     const box = heartIcon ? heartIcon.parentElement : null;
     const badge = box ? box.querySelector('#wishCount') : null;
     if (!box || !badge) return;
-    const n = document.querySelectorAll('.wishlist-btn.active, .wishlist-btn[aria-pressed="true"]').length;
+    const n = document.querySelectorAll('.wishlist-btn.active, .wishlist-btn[aria-pressed="true"]').length
+           || Object.values(readWish()).filter(Boolean).length;
     badge.textContent = String(n);
     box.setAttribute('aria-label', `찜 ${n}개`);
   };
@@ -518,6 +524,35 @@ updateDeliveryDate();
     panel.style.setProperty('--wp-arrow-left', `${clamp}px`);
   }
 
+function placeWishFixed() {
+  const PANEL_W = 360;
+  const MARGIN_R = 12;
+  const GAP_TOP = 20;
+
+  const vw = document.documentElement.clientWidth;
+  const leftPx = Math.max(12, vw - PANEL_W - MARGIN_R);
+
+  const searchBar = document.querySelector('.search-section');
+  const topPx = searchBar
+    ? searchBar.getBoundingClientRect().bottom + GAP_TOP
+    : 80;
+
+  const anchor = document.querySelector('.icons .fa-heart')?.parentElement;
+  let arrowLeft = 40;
+  if (anchor) {
+    const rect = anchor.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    arrowLeft = Math.max(16, Math.min(PANEL_W - 24, centerX - leftPx));
+  }
+
+  const popover = document.querySelector('.wish-popover');
+  popover.classList.add('wish-popover--fixed');
+  popover.style.setProperty('--wp-fixed-left', `${leftPx}px`);
+  popover.style.setProperty('--wp-fixed-top', `${topPx}px`);
+  popover.style.setProperty('--wp-fixed-arrow-left', `${arrowLeft}px`);
+}
+
+
   function openWish(){
     renderWish();
     popover.hidden = false;
@@ -525,7 +560,8 @@ updateDeliveryDate();
     requestAnimationFrame(() => {
       popover.classList.add('open');
       wishBackdrop.classList.add('show');
-      placeWishPopover();       
+      // placeWishPopover();  
+      placeWishFixed();     
     });
     anchor?.setAttribute('aria-expanded', 'true');   
     window.addEventListener('resize', placeWishPopover);
@@ -609,13 +645,6 @@ updateDeliveryDate();
 
 })();
 
-
-/* ============================================================
-   [추가] 마이페이지에 저장된 이름으로 "추천 상품" 제목 교체
-   - 키: 'shop.profile.v1'
-   - 대상: #recommendTitle
-   - 다른 탭에서 변경 시(storage 이벤트) 자동 반영
-============================================================ */
 (function () {
   const PROFILE_KEY = 'shop.profile.v1';
   const TITLE_ID = 'recommendTitle';

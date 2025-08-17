@@ -1,4 +1,3 @@
-<!-- 연습장2.html (최종본) -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -6,11 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My Account (with New Top Header)</title>
 
-  <!-- ✅ 메인과 동일한 공통 CSS 사용 -->
   <link rel="stylesheet" href="style.css" />
   <script src="https://kit.fontawesome.com/5c3afda2cc.js" crossorigin="anonymous"></script>
 
-  <!-- ✅ 페이지 전용(본문 전용) 스타일만 남김: 상단바/검색/아이콘/배지는 style.css에 맡김 -->
   <style>
     :root{
       --bg:#f5f7fb; --card:#fff; --line:#e9eef5; --text:#1c2230;
@@ -100,12 +97,10 @@
       .input,.select-wrap,.date-field{max-width:100%}
     }
 
-    /* 🟦 혹시 badge--pink가 남아도 파란색으로 통일 */
     .badge--pink, .badge.badge--pink { background:#2f80ed !important; }
   </style>
 </head>
 <body>
-  <!-- ✅ 메인과 완전 동일한 상단바 -->
   <header class="top-bar">
     <div class="top-left">
       <div class="delivery-toggle" role="tablist" aria-label="배송 방식">
@@ -119,7 +114,6 @@
     <div class="top-right"><span class="phone"><strong>+ 8 800 555-35-35 </strong>Around the clock</span></div>
   </header>
 
-  <!-- ✅ 메인과 완전 동일한 검색/아이콘 바 -->
   <div class="search-section">
     <button class="catalog-btn" type="button"><i class="fa-regular fa-clone" aria-hidden="true"></i> Catalog</button>
     <div class="search-group">
@@ -130,31 +124,31 @@
       <button class="search-submit" type="button" aria-label="검색"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
     </div>
     <div class="icons" aria-label="바로가기 아이콘">
-      <!-- ✅ 변경: div → a 로 교체, main.html로 이동 -->
       <a id="homeLink" class="icon-box" href="./main.html" aria-label="홈">
         <i class="fa-solid fa-house" aria-hidden="true"></i>
       </a>
 
       <div id="wishIcon" class="icon-box" role="button" tabindex="0" aria-label="찜 0개" aria-haspopup="dialog" aria-expanded="false">
-        <i class="fa-solid fa-heart" aria-hidden="true"></i><span id="wishCount" class="badge" aria-live="polite" aria-atomic="true">0</span>
+        <i class="fa-solid fa-heart" aria-hidden="true"></i>
+        <span id="wishCount" class="badge" aria-live="polite" aria-atomic="true">0</span>
       </div>
-      <div id="cartOpenBtn" class="icon-box" role="button" tabindex="0" aria-label="장바구니" aria-haspopup="dialog" aria-expanded="false">
+
+      <div id="cartOpenBtn" class="icon-box" role="button" tabindex="0" aria-label="장바구니 0개" aria-haspopup="dialog" aria-expanded="false">
         <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+        <span id="cartCount" class="badge" aria-live="polite" aria-atomic="true">0</span>
       </div>
+
       <a id="myPageLink" class="icon-box" href="./연습장2.html" aria-label="마이페이지">
         <i class="fa-solid fa-user" aria-hidden="true"></i>
       </a>
     </div>
   </div>
 
-  <!-- ===== 페이지 제목 ===== -->
   <div class="section-title" aria-labelledby="page-title">
     <h1 id="page-title">My page</h1>
   </div>
 
-  <!-- ===== 본문 ===== -->
   <main class="page">
-    <!-- 사이드바 -->
     <aside class="sidebar" id="sidebar" aria-label="내 계정 섹션 목록">
       <ul class="side-list">
         <li class="side-item active" tabindex="0" data-target="profileCard" aria-controls="profileCard">마이 프로필</li>
@@ -168,9 +162,7 @@
       <div class="signout" tabindex="0" data-id="signout">⎋&nbsp;&nbsp;Sign Out</div>
     </aside>
 
-    <!-- 컨텐츠 -->
     <section class="content" id="content">
-      <!-- === 프로필 정보 카드 === -->
       <div class="card" id="profileCard">
         <div class="card-head">
           <div class="h2">프로필 정보</div>
@@ -220,7 +212,6 @@
         </div>
       </div>
 
-      <!-- === 결제관리 카드 === -->
       <div class="card" id="paymentsCard">
         <div class="card-head">
           <div class="h2">결제관리</div>
@@ -246,7 +237,6 @@
           </div>
         </div>
 
-        <!-- ▼ 카드 캐러셀 -->
         <div class="wallet" id="wallet">
           <div class="pay-head"><span class="pay-radio on" id="payRadio"></span><span>카카오페이</span></div>
           <div class="carousel" id="cardCarousel" tabindex="0" aria-roledescription="carousel">
@@ -256,12 +246,10 @@
           </div>
           <div class="dots" id="cardDots" aria-label="페이지 표시점"></div>
         </div>
-        <!-- ▲ 카드 캐러셀 -->
 
         <button class="cta" id="withdrawBtn">Withdraw</button>
       </div>
 
-      <!-- === 섹션들 === -->
       <div class="card" id="ordersCard">
         <div class="card-head"><div class="h2">주문내역</div></div>
         <p>최근 주문내역이 여기에 표시됩니다.</p>
@@ -281,7 +269,6 @@
     </section>
   </main>
 
-  <!-- ✅ 메인과 동일한 배송시간 표시 스크립트 -->
   <script>
     (function updateDeliveryDate() {
       const now = new Date();
@@ -293,9 +280,7 @@
     })();
   </script>
 
-  <!-- ✅ 마이페이지 전용 스크립트(그대로 유지) -->
   <script>
-    // 카드사 선택/캐러셀/프로필 편집 등 (기존 그대로)
     const issuerWrap   = document.getElementById("issuerSelect");
     const issuerDisp   = document.getElementById("issuerDisplay");
     const issuerTextEl = document.getElementById("issuerText");
@@ -316,9 +301,9 @@
       if(willOpen){ issuerMenu.classList.add("show"); issuerDisp.setAttribute("aria-expanded","true"); }
       else{ issuerMenu.classList.remove("show"); issuerDisp.setAttribute("aria-expanded","false"); }
     }
-    issuerDisp.addEventListener("click", ()=>toggleIssuerMenu());
-    issuerDisp.addEventListener("keydown",(e)=>{ if(["Enter"," "].includes(e.key)){ e.preventDefault(); toggleIssuerMenu(); }});
-    issuerMenu.addEventListener("click",(e)=>{
+    issuerDisp?.addEventListener("click", ()=>toggleIssuerMenu());
+    issuerDisp?.addEventListener("keydown",(e)=>{ if(["Enter"," "].includes(e.key)){ e.preventDefault(); toggleIssuerMenu(); }});
+    issuerMenu?.addEventListener("click",(e)=>{
       const item = e.target.closest(".select-item"); if(!item) return;
       const val = item.dataset.value || "";
       if(val){ issuerTextEl.className="select-value"; issuerTextEl.innerHTML = logoHTML(val); }
@@ -328,8 +313,6 @@
 
     const slidesEl = document.getElementById("slides");
     const dotsEl   = document.getElementById("cardDots");
-    const prevBtn  = document.querySelector("#cardCarousel .prev");
-    const nextBtn  = document.querySelector("#cardCarousel .next");
 
     const cards = [
       { bank:"토스뱅크", last4:"4821", theme:"toss" },
@@ -363,6 +346,7 @@
 
     let current = 0;
     function renderSlides(){
+      if(!slidesEl || !dotsEl) return;
       slidesEl.innerHTML = "";
       cards.forEach((c,idx)=>{
         const wrap = document.createElement("div");
@@ -381,7 +365,7 @@
       updateTransform();
     }
     function updateTransform(){
-      const first = slidesEl.querySelector(".slide"); if(!first) return;
+      const first = slidesEl?.querySelector(".slide"); if(!first) return;
       const slideWidth = first.getBoundingClientRect().width + 16;
       slidesEl.style.transform = `translateX(${-slideWidth * current}px)`;
       slidesEl.querySelectorAll(".slide").forEach((s,i)=>s.classList.toggle("is-center", i===current));
@@ -391,16 +375,16 @@
       current = Math.max(0, Math.min(cards.length-1, idx));
       updateTransform();
     }
-    document.querySelector("#cardCarousel .prev").addEventListener("click", ()=>goTo(current-1));
-    document.querySelector("#cardCarousel .next").addEventListener("click", ()=>goTo(current+1));
-    document.getElementById("cardCarousel").addEventListener("keydown",(e)=>{
+    document.querySelector("#cardCarousel .prev")?.addEventListener("click", ()=>goTo(current-1));
+    document.querySelector("#cardCarousel .next")?.addEventListener("click", ()=>goTo(current+1));
+    document.getElementById("cardCarousel")?.addEventListener("keydown",(e)=>{
       if(e.key==="ArrowLeft")  goTo(current-1);
       if(e.key==="ArrowRight") goTo(current+1);
     });
     window.addEventListener("resize", updateTransform);
     renderSlides();
 
-    document.getElementById("addCardBtn").addEventListener("click",(e)=>{
+    document.getElementById("addCardBtn")?.addEventListener("click",(e)=>{
       e.preventDefault();
       const last4 = String(Math.floor(1000 + Math.random()*9000));
       cards.push({ bank:"새 카드", last4, theme:"custom" });
@@ -408,12 +392,11 @@
       renderSlides();
     });
 
-    document.getElementById("withdrawBtn").addEventListener("click", ()=>{
+    document.getElementById("withdrawBtn")?.addEventListener("click", ()=>{
       const c = cards[current];
       alert(`Withdrawing to card: ${c.bank} **** ${c.last4} ✅`);
     });
 
-    // 폼/편집
     const emailInput   = document.getElementById("email");
     if(emailInput){
       emailInput.addEventListener("blur", ()=>{
@@ -492,9 +475,9 @@
       }
     }
 
-    genderDisp.addEventListener("click", ()=>{ if(!editing) return; toggleGenderMenu(); });
-    genderDisp.addEventListener("keydown",(e)=>{ if(!editing) return; if(["Enter"," "].includes(e.key)){ e.preventDefault(); toggleGenderMenu(); }});
-    genderMenu.addEventListener("click",(e)=>{
+    genderDisp?.addEventListener("click", ()=>{ if(!editing) return; toggleGenderMenu(); });
+    genderDisp?.addEventListener("keydown",(e)=>{ if(!editing) return; if(["Enter"," "].includes(e.key)){ e.preventDefault(); toggleGenderMenu(); }});
+    genderMenu?.addEventListener("click",(e)=>{
       const item = e.target.closest(".select-item"); if(!item || !editing) return;
       const val = item.dataset.value || "";
       genderTextEl.dataset.value = val;
@@ -505,7 +488,7 @@
       toggleGenderMenu(false);
     });
 
-    editBtn.addEventListener("click", ()=>{
+    editBtn?.addEventListener("click", ()=>{
       if(editing && emailInput.value && !emailInput.checkValidity()){ emailInput.reportValidity(); return; }
       if(editing){
         saveProfile({
@@ -542,7 +525,7 @@
       });
     }
 
-    nameField.addEventListener('blur', ()=>{
+    nameField?.addEventListener('blur', ()=>{
       const cur = loadProfile() || {};
       const nextName = nameField.value.trim();
       if((cur.name || '') !== nextName){ cur.name = nextName; saveProfile(cur); }
@@ -551,7 +534,6 @@
     setEditing(false);
   </script>
 
-  <!-- ✅ 찜 배지 숫자 메인과 연동 (로컬스토리지 'wish') -->
   <script>
     (function(){
       const WISH_KEY = 'wish';
@@ -576,17 +558,95 @@
     })();
   </script>
 
-  <!-- 🔒 안전망: 혹시 홈 아이콘이 div로 남아 있어도 main.html로 이동 -->
   <script>
     (function(){
       const el = document.querySelector('.icons .icon-box[aria-label="홈"]');
       if (!el) return;
-      if (el.tagName.toLowerCase() === 'a' && el.getAttribute('href')) return; // 이미 a면 패스
+      if (el.tagName.toLowerCase() === 'a' && el.getAttribute('href')) return; 
       const go = () => { window.location.href = './main.html'; };
       el.addEventListener('click', go);
       el.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); }
       });
+    })();
+  </script>
+
+  <script>
+    (function(){
+      const items = document.querySelectorAll('.side-item[data-target]');
+      const cards = Array.from(document.querySelectorAll('.content .card[id]'));
+
+      function scrollToCard(id){
+        const el = document.getElementById(id);
+        if(!el) return;
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      items.forEach(li=>{
+        li.addEventListener('click', ()=>{
+          const id = li.getAttribute('data-target');
+          if(id) scrollToCard(id);
+        });
+        li.addEventListener('keydown', (e)=>{
+          if(e.key==='Enter' || e.key===' '){
+            e.preventDefault();
+            const id = li.getAttribute('data-target');
+            if(id) scrollToCard(id);
+          }
+        });
+      });
+
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){
+            const id = entry.target.id;
+            items.forEach(li=> li.classList.toggle('active', li.getAttribute('data-target')===id));
+          }
+        });
+      }, { root:null, rootMargin:'-30% 0px -60% 0px', threshold:0.01 });
+
+      cards.forEach(c=>io.observe(c));
+    })();
+  </script>
+
+  <div id="cartBackdrop" class="backdrop" hidden></div>
+  <div class="cart-panel" hidden role="dialog" aria-labelledby="cartTitle">
+    <header class="cart-header">
+      <h3 id="cartTitle">장바구니</h3>
+      <button id="cartClose" class="cp-close" aria-label="장바구니 닫기">✕</button>
+    </header>
+    <ul id="cartItems" class="cart-items" role="list"></ul>
+    <footer class="cart-footer">
+      <div class="cp-sum"><span>Total</span><strong id="cpSubtotal">$0.00</strong></div>
+      <button id="checkoutBtn" class="cp-checkout">CHECKOUT NOW</button>
+      <button id="viewCartBtn" class="cp-view">View details</button>
+    </footer>
+  </div>
+
+  <div id="wishBackdrop" class="backdrop" hidden></div>
+  <div id="wishPopover" class="wish-popover" hidden role="dialog" aria-labelledby="wishPopTitle">
+    <div class="wish-panel">
+      <header class="wish-header">
+        <h3 id="wishPopTitle">Wishlist (<span id="wishPopCount">0</span>)</h3>
+        <button id="wishPopClose" class="wp-close" aria-label="닫기">×</button>
+      </header>
+      <ul id="wishPopItems" class="wish-items" role="list"></ul>
+      <footer class="wish-footer">
+        <div class="wp-sum"><span>Total</span><strong id="wishPopTotal">$0.00</strong></div>
+      </footer>
+    </div>
+  </div>
+
+  <script src="./main.js"></script>
+
+  <script>
+    (function(){
+      const CART_KEY='cart_drawer_demo_v1';
+      const $box=document.getElementById('cartOpenBtn');
+      const $badge=document.getElementById('cartCount');
+      function readQty(){try{const a=JSON.parse(localStorage.getItem(CART_KEY))||[];return a.reduce((s,x)=>s+(+x.qty||0),0);}catch{return 0;}}
+      function sync(){if(!$box||!$badge)return;const n=readQty();$badge.textContent=String(n);$box.setAttribute('aria-label', `장바구니 ${n}개`);}
+      if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync,{once:true});else sync();
+      window.addEventListener('storage',e=>{if(e.key===CART_KEY)sync();});
     })();
   </script>
 </body>

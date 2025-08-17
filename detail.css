@@ -199,8 +199,8 @@ body {
   .container{ flex-direction: column; }
   .media-box{
     max-width: 100%;
-    aspect-ratio: auto;                  /* 가변 높이 */
-    height: clamp(240px, 50vh, 420px);   /* 화면 높이 기준 제한 */
+    aspect-ratio: auto;  
+    height: clamp(240px, 50vh, 420px); 
   }
 }
 

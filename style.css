@@ -191,15 +191,15 @@ body { margin: 0; font-family: Arial, sans-serif; background: #f9f9f9; }
 }
 .wish-popover.open .wish-panel{ transform:scale(1); opacity:1; }
 .wish-popover--fixed .wish-panel{
-  position: fixed !important;
-  width: 360px !important;  
-  max-width: 360px !important;
-  left: var(--wp-fixed-left) !important;
-  top:  var(--wp-fixed-top)  !important;
+  position: fixed;
+  width: 360px;  
+  max-width: 360px;
+  left: var(--wp-fixed-left);
+  top:  var(--wp-fixed-top);
 }
 
 .wish-popover--fixed .wish-panel::before{
-  left: var(--wp-fixed-arrow-left, 40px) !important;
+  left: var(--wp-fixed-arrow-left, 40px) ;
 }
 .wish-panel::before{
   content:""; position:absolute; top:-8px; left:var(--wp-arrow-left, 40px);
