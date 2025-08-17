@@ -228,6 +228,7 @@
       } else {
         filteredProducts = products.filter(p => checked.includes(p.category));
       }
+      applySearchFilter();
       goToPage(1);
     }
 
@@ -369,6 +370,19 @@
         }
       });
     })();
+
+    function applySearchFilter() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const query = (urlParams.get("query") || "").toLowerCase();
+
+      if (query) {
+        filteredProducts = filteredProducts.filter(
+          (p) =>
+          p.name.toLowerCase().includes(query) ||
+          p.category.toLowerCase().includes(query)
+        );
+      }
+    }
   </script>
   <script defer src="../js/main.js"></script>
 </body>
