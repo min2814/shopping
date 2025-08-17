@@ -20,7 +20,7 @@ function loadCartFromStorage() {
 function groupCartItems(rawCart) {
   const groupedItems = {};
   rawCart.forEach((item) => {
-    const key = item.id ?? item.title;
+    const key = String(item.id ?? item.title);
     if (!groupedItems[key]) {
       groupedItems[key] = { ...item, quantity: 0, _key: key };
     }
@@ -127,7 +127,7 @@ cartListElement.addEventListener("click", (event) => {
   if (event.target.classList.contains("fa-circle-xmark")) {
     const key = event.target.dataset.key;
     const filteredCart = loadCartFromStorage().filter(
-      (p) => (p.id ?? p.title) !== key
+      (p) => String(p.id ?? p.title) !== key
     );
     localStorage.setItem("cart", JSON.stringify(filteredCart));
     renderCart();
