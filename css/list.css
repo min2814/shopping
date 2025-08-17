@@ -98,6 +98,8 @@ body {
   margin-left: auto;
 }
 .icon-box {
+  position: relative;
+
   width: 44px;
   height: 44px;
   border: 1px solid #e2e4ea;
@@ -107,6 +109,29 @@ body {
   align-items: center;
   background: #fff;
 }
+
+/* heart badge */
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: #077de2;
+  color: #fff;
+  font-size: 11px;
+  line-height: 18px;
+  text-align: center;
+  font-weight: 700;
+}
+
+/* 하트 전용 색(핑크 톤) */
+.badge--pink {
+  background: #ff4d8d;
+}
+
 .icon-box i {
   font-size: 18px;
   color: #333;
@@ -233,6 +258,7 @@ body {
 }
 
 .product-card {
+  position: relative;
   background: white;
   border: 1px solid #ddd;
   padding: 10px;
@@ -316,7 +342,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 30px;
+  gap: 10px;
 }
 .product-card:hover {
   color: gray;
@@ -357,4 +383,395 @@ body {
 .wishlist-btn:hover {
   color: #077de2;
   border-color: #d5daf0;
+}
+/* mini cart */
+.cart-icon {
+  position: relative;
+  cursor: pointer;
+}
+.cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: #077de2;
+  color: #fff;
+  font-size: 11px;
+  line-height: 18px;
+  text-align: center;
+  font-weight: 700;
+}
+.mini-cart {
+  position: absolute;
+  top: 52px;
+  right: 0;
+  width: 340px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+  padding: 12px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+  z-index: 20;
+}
+.mini-cart::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  right: 16px;
+  border-width: 0 8px 8px 8px;
+  border-style: solid;
+  border-color: transparent transparent #fff transparent;
+  filter: drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.06));
+}
+.cart-icon.open .mini-cart {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.mini-cart__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 4px 10px;
+  border-bottom: 1px solid #eee;
+}
+.mini-cart__close {
+  background: transparent;
+  border: 0;
+  font-size: 22px;
+  cursor: pointer;
+  line-height: 1;
+}
+.mini-cart__list {
+  list-style: none;
+  margin: 10px 0;
+  padding: 0;
+  max-height: 260px;
+  overflow: auto;
+}
+.mini-cart__item {
+  display: flex;
+  gap: 10px;
+  padding: 8px 4px;
+  align-items: center;
+  border-bottom: 1px dashed #eee;
+}
+.mini-cart__thumb {
+  flex: 0 0 54px;
+  width: 54px;
+  height: 54px;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  object-fit: cover;
+}
+.mini-cart__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.mini-cart__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mini-cart__sub {
+  font-size: 12px;
+  color: #6b7280;
+}
+.mini-cart__price {
+  font-weight: 700;
+  font-size: 13px;
+}
+.mini-cart__summary {
+  border-top: 1px solid #eee;
+  padding-top: 8px;
+  margin-top: 6px;
+  font-size: 13px;
+}
+.mini-cart__summary .row {
+  display: flex;
+  justify-content: space-between;
+  margin: 6px 0;
+}
+.mini-cart__summary .total {
+  font-weight: 800;
+  font-size: 14px;
+}
+.mini-cart__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.mini-btn {
+  flex: 1 1 50%;
+  border-radius: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  border: 1px solid #111;
+  font-weight: 700;
+}
+.mini-btn.primary {
+  background: #077de2;
+  color: #fff;
+  border: none;
+  transition: background-color 0.2s ease-in-out;
+}
+.mini-btn.primary:hover {
+  background-color: #0077b6;
+}
+.mini-btn.ghost {
+  background: #fff;
+  color: #111;
+}
+.mini-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.view_cart {
+  text-decoration: none;
+  color: #077de2;
+}
+.ghost {
+  border: 2px solid #077de2;
+  transition: background-color 0.3s;
+}
+.ghost:hover {
+  background-color: #077de2;
+}
+.ghost:hover a {
+  color: #fff;
+}
+
+/* === search suggest dropdown === */
+.search-group {
+  position: relative !important;
+}
+.suggest-list {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 6px;
+  list-style: none;
+  max-height: 280px;
+  overflow: auto;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+  z-index: 30;
+  display: none;
+}
+.suggest-list li {
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.suggest-list li[aria-selected="true"],
+.suggest-list li:hover {
+  background: #eef3ff;
+}
+.wish-popover.open .wish-panel {
+  opacity: 1;
+  transform: scale(1);
+}
+/* ... */
+/* === search bar 레이어 보정 === */
+.search-section {
+  position: relative; /* main.css 동일 */
+  z-index: 1;
+}
+
+/* === 아이콘 정렬/호버 컬러 === */
+.icons {
+  position: relative; /* main.css 동일 */
+  z-index: 3;
+}
+#wishIcon {
+  position: relative;
+  z-index: 43;
+}
+.icon-box {
+  cursor: pointer;
+}
+.icon-box:hover i {
+  color: #077de2;
+  transition: color 0.2s ease-in-out;
+}
+
+/* === 배지(숫자표시) 통일 === */
+.badge {
+  font-size: 12px;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+/* === 장바구니 배지 === */
+.cart-icon {
+  position: relative;
+}
+.cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: #077de2;
+  color: #fff;
+  font-size: 11px;
+  line-height: 18px;
+  text-align: center;
+  font-weight: 700;
+}
+
+/* === (필수) 미니카트 기본 애니메이션/레이아웃 === */
+/* list.css에 이미 유사 규칙이 있더라도 아래 값들이 누락/상이하면 덮어쓰기 */
+.mini-cart {
+  position: absolute;
+  top: 52px;
+  right: 0;
+  width: 340px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+  padding: 12px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+  z-index: 20;
+}
+.mini-cart::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  right: 16px;
+  border-width: 0 8px 8px 8px;
+  border-style: solid;
+  border-color: transparent transparent #fff transparent;
+  filter: drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.06));
+}
+.cart-icon.open .mini-cart {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+/* search bar 레이어 */
+.search-section {
+  position: relative;
+  z-index: 1;
+} /* main과 동일해야 z-index 꼬임 방지 */
+
+/* 아이콘: 포인터/호버 컬러 */
+.icons {
+  position: relative;
+  z-index: 3;
+}
+.icon-box {
+  cursor: pointer;
+}
+.icon-box:hover i {
+  color: #077de2;
+  transition: color 0.2s ease-in-out;
+}
+
+/* 카트 배지 */
+.cart-icon {
+  position: relative;
+}
+.cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: #077de2;
+  color: #fff;
+  font-size: 11px;
+  line-height: 18px;
+  text-align: center;
+  font-weight: 700;
+}
+
+/* 미니카트 표시/숨김 토글 핵심 */
+.mini-cart {
+  position: absolute;
+  top: 52px;
+  right: 0;
+  width: 340px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+  padding: 12px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+  z-index: 20;
+}
+.cart-icon.open .mini-cart {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* 팝오버 바깥 클릭용 오버레이 */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  z-index: 39;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.backdrop.show {
+  opacity: 1;
+}
+/* wish icon */
+/* 팝오버 래퍼는 클릭을 '통과'시켜야 함 (메인과 동일) */
+.wish-popover {
+  position: fixed;
+  inset: 0;
+  pointer-events: none; /* ✅ 이게 핵심 */
+  z-index: 41; /* 백드롭(39) 위, 아이콘(42~43) 아래 */
+}
+
+/* 실제 패널만 클릭 가능 */
+.wish-popover .wish-panel {
+  pointer-events: auto;
+}
+
+/* 아이콘 레이어가 래퍼/백드롭보다 위에 오게 */
+.icons {
+  position: relative;
+  z-index: 42;
+}
+#wishIcon {
+  position: relative;
+  z-index: 43;
 }

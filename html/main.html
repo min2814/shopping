@@ -5,9 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>쇼핑몰</title>
-
   <link rel="stylesheet" href="../css/main.css" />
-
   <script src="https://kit.fontawesome.com/5c3afda2cc.js" crossorigin="anonymous"></script>
 </head>
 
@@ -23,18 +21,12 @@
       <span class="edit-icon" aria-hidden="true"><i class="fa-regular fa-pen-to-square"></i></span>
       <span class="delivery-time">Nearest delivery : <strong id="delivery-time-text"></strong></span>
     </div>
-
-    <div class="top-right">
-      <span class="phone"><strong>+ 8 800 555-35-35 </strong>Around the clock</span>
-    </div>
+    <div class="top-right"><span class="phone"><strong>+ 8 800 555-35-35 </strong>Around the clock</span></div>
   </header>
 
   <!-- 검색/아이콘 -->
   <div class="search-section">
-    <button class="catalog-btn" type="button">
-      <i class="fa-regular fa-clone" aria-hidden="true"></i> Catalog
-    </button>
-
+    <button class="catalog-btn" type="button"><i class="fa-regular fa-clone" aria-hidden="true"></i> Catalog</button>
     <div class="search-group">
       <div class="search-pill">
         <select class="category-select" aria-label="카테고리">
@@ -42,31 +34,53 @@
         </select>
         <input class="search-input" type="text" placeholder="Search in the market" aria-label="검색어 입력" />
       </div>
-      <button class="search-submit" type="button" aria-label="검색">
-        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-      </button>
+      <button class="search-submit" type="button" aria-label="검색"><i class="fa-solid fa-magnifying-glass"
+          aria-hidden="true"></i></button>
     </div>
-
     <div class="icons" aria-label="바로가기 아이콘">
-      <div class="icon-box" role="button" tabindex="0" aria-label="배송">
-        <i class="fa-solid fa-house" aria-hidden="true"></i>
-      </div>
+      <!-- 홈 -->
+      <div class="icon-box" role="button" tabindex="0" aria-label="배송"><i class="fa-solid fa-house"
+          aria-hidden="true"></i></div>
 
-      <!-- 찜 아이콘 -->
-      <div id="wishIcon" class="icon-box" role="button" tabindex="0" aria-label="찜 0개">
+      <!-- 찜 -->
+      <div id="wishIcon" class="icon-box" role="button" tabindex="0" aria-label="찜 0개" aria-haspopup="dialog"
+        aria-expanded="false">
         <i class="fa-solid fa-heart" aria-hidden="true"></i>
         <span id="wishCount" class="badge" aria-live="polite" aria-atomic="true">0</span>
       </div>
 
-      <!-- 장바구니 아이콘 -->
-      <div id="cartOpenBtn" class="icon-box" role="button" tabindex="0" aria-label="장바구니" aria-haspopup="dialog"
-        aria-expanded="false">
+      <!-- 장바구니 -->
+      <!-- 교체 (shopping_cart의 미니카트) -->
+      <div class="icon-box cart-icon" role="button" tabindex="0" aria-label="장바구니">
         <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+        <span class="cart-badge" id="cart-count">0</span>
+
+        <div class="mini-cart" id="mini-cart" aria-hidden="true">
+          <div class="mini-cart__header">
+            <strong>Checkout Goods</strong>
+            <button class="mini-cart__close" aria-label="닫기">&times;</button>
+          </div>
+
+          <ul class="mini-cart__list" id="mini-cart-list"></ul>
+
+          <div class="mini-cart__summary">
+            <div class="row"><span>Order Amount</span><span id="mini-order">$0.00</span></div>
+            <div class="row"><span>Delivery</span><span id="mini-delivery">$0.00</span></div>
+            <div class="row total"><span>Total</span><span id="mini-total">$0.00</span></div>
+          </div>
+
+          <div class="mini-cart__actions">
+            <button type="button" class="mini-btn ghost" id="mini-view-cart">
+              <a href="./shopping_cart.html" class="view_cart">View cart</a></button>
+            <button type="button" class="mini-btn primary" id="mini-checkout">Checkout now</button>
+          </div>
+        </div>
       </div>
 
-      <div class="icon-box" role="button" tabindex="0" aria-label="마이페이지">
+
+      <a id="myPageLink" class="icon-box" href="../html/mypage.html" aria-label="마이페이지">
         <i class="fa-solid fa-user" aria-hidden="true"></i>
-      </div>
+      </a>
     </div>
   </div>
 
@@ -80,102 +94,87 @@
   <!-- 인기 상품 -->
   <section class="popular" aria-label="인기 상품">
     <div class="section-header">
-      <h3>Popular</h3>
-      <a href="#">See all</a>
+      <h3 id="recommendTitle">추천 상품</h3>
+      <!-- ✅ 수정: index.html로 이동 -->
+      <a id="seeAllLink" href="../html/list.html" aria-label="전체 상품 보기">See all</a>
     </div>
-    <div class="product-list">
-    </div>
+    <div class="product-list"></div>
   </section>
 
-  <div id="cartBackdrop" class="backdrop" hidden></div>
-  <div class="cart-panel">
-    <header class="cart-header">
-      <div>
-        <h3 id="cartTitle">장바구니</h3>
-        <p id="cartDesc" class="muted">담긴 상품을 확인하고 수량을 수정하거나 결제할 수 있습니다.</p>
-      </div>
-      <button id="cartClose" class="cp-close" aria-label="장바구니 닫기">✕</button>
-    </header>
-    <ul id="cartItems" class="cart-items" aria-label="장바구니 목록"></ul>
-    <footer class="cart-footer">
-      <div class="cp-sum">
-        <span>Subtotal</span>
-        <strong id="cpSubtotal">₩0</strong>
-      </div>
-      <button id="checkoutBtn" class="cp-checkout">CHECKOUT NOW</button>
-      <button id="viewCartBtn" class="cp-view">View details</button>
-    </footer>
-  </div>
 
+
+  <!-- 기존 메인 스크립트 -->
   <script src="../js/main.js"></script>
 
+  <!-- 장바구니 배지 동기화(안전망) -->
   <script>
     (function () {
-      const WISH_KEY = 'wish';
-      const $wishCount = document.getElementById('wishCount');
-      const $wishIconBox = document.getElementById('wishIcon');
+      const CART_KEY = 'cart_drawer_demo_v1';
+      const $box = document.getElementById('cartOpenBtn');
+      const $badge = document.getElementById('cartCount');
 
-      const readWish = () => {
+      function readQty() {
         try {
-          return JSON.parse(localStorage.getItem(WISH_KEY)) || {};
+          const a = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+          return a.reduce((s, x) => s + (+x.qty || 0), 0);
         } catch {
-          return {};
+          return 0;
         }
-      };
-      const writeWish = (m) => localStorage.setItem(WISH_KEY, JSON.stringify(m));
-      const countWish = (m) => Object.values(m).filter(Boolean).length;
-      const setBadge = (n) => {
-        if (!$wishCount) return;
-        $wishCount.textContent = n;
-        if ($wishIconBox) $wishIconBox.setAttribute('aria-label', `찜 ${n}개`);
-      };
+      }
 
-      window.addEventListener('DOMContentLoaded', () => {
-        const saved = readWish();
-
-        document.querySelectorAll('.product-card').forEach(card => {
-          const id = card.dataset.id;
-          const btn = card.querySelector('.wishlist-btn');
-          const icon = btn && btn.querySelector('.fa-heart');
-          const liked = !!(id && saved[id]);
-          if (btn) {
-            btn.classList.toggle('active', liked);
-            btn.setAttribute('aria-pressed', liked);
-          }
-          if (icon) {
-            icon.classList.toggle('fa-solid', liked);
-            icon.classList.toggle('fa-regular', !liked);
-          }
-        });
-
-        setBadge(countWish(saved));
+      function sync() {
+        if (!$box || !$badge) return;
+        const n = readQty();
+        $badge.textContent = String(n);
+        $box.setAttribute('aria-label', `장바구니 ${n}개`);
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync, {
+        once: true
       });
+      else sync();
+      window.addEventListener('storage', e => {
+        if (e.key === CART_KEY) sync();
+      });
+    })();
+  </script>
 
-      document.addEventListener('click', (e) => {
-        const btn = e.target.closest('.wishlist-btn');
-        if (!btn) return;
+  <!-- 위시리스트 팝오버 (메인에 이미 있던 것 유지) -->
+  <div id="wishBackdrop" class="backdrop" hidden></div>
+  <div id="wishPopover" class="wish-popover" aria-hidden="true" role="dialog" aria-labelledby="wishPopTitle" hidden>
+    <div class="wish-panel">
+      <header class="wish-header">
+        <h3 id="wishPopTitle">Wishlist (<span id="wishPopCount">0</span>)</h3>
+        <button id="wishPopClose" class="wp-close" aria-label="닫기">×</button>
+      </header>
+      <ul id="wishPopItems" class="wish-items" role="list"></ul>
+      <footer class="wish-footer">
+        <div class="wp-sum"><span>Total</span><strong id="wishPopTotal">$0.00</strong></div>
+      </footer>
+    </div>
+  </div>
 
-        const icon = btn.querySelector('.fa-heart');
-        const card = btn.closest('.product-card');
-        const id = card && card.dataset.id;
-
-
-        const willLike = !btn.classList.contains('active');
-        btn.classList.toggle('active', willLike);
-        btn.setAttribute('aria-pressed', willLike);
-        if (icon) {
-          icon.classList.toggle('fa-solid', willLike);
-          icon.classList.toggle('fa-regular', !willLike);
+  <!-- 홈 아이콘: 메인일 땐 새로고침, 다른 페이지면 main.html로 이동 -->
+  <script>
+    (function () {
+      const icon = document.querySelector('.icons .icon-box i.fa-house');
+      const homeBtn = icon ? icon.parentElement : null;
+      if (!homeBtn) return;
+      const goHome = () => {
+        const onMain = /(^|\/)main\.html(\?|#|$)/.test(location.href);
+        if (onMain) location.reload();
+        else location.href = './main.html';
+      };
+      homeBtn.setAttribute('aria-label', '홈');
+      homeBtn.setAttribute('role', 'link');
+      homeBtn.addEventListener('click', e => {
+        e.preventDefault();
+        goHome();
+      });
+      homeBtn.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          goHome();
         }
-
-        if (!id) return;
-
-        const saved = readWish();
-        if (willLike) saved[id] = true;
-        else delete saved[id];
-        writeWish(saved);
-
-        setBadge(countWish(saved));
       });
     })();
   </script>
