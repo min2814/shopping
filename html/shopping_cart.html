@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="shopping_cart.css">
+    <link rel="stylesheet" href="../css/shopping_cart.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800;900&display=swap"
@@ -13,6 +13,94 @@
 </head>
 
 <body>
+    <!-- header -->
+    <header class="top-bar">
+        <div class="top-left">
+            <div class="delivery-toggle" role="tablist" aria-label="배송 방식">
+                <button class="nav-btn active" role="tab" aria-selected="true">Delivery</button>
+                <button class="nav-btn" role="tab" aria-selected="false">Pickup</button>
+            </div>
+            <span class="address">Select the delivery address</span>
+            <span class="edit-icon" aria-hidden="true"><i class="fa-regular fa-pen-to-square"></i></span>
+            <span class="delivery-time">Nearest delivery <strong id="delivery-time-text"></strong></span>
+        </div>
+        <div class="top-right">
+            <span class="phone"><strong>+ 8 800 555-35-35 </strong>Around the clock</span>
+        </div>
+    </header>
+    <div class="search-section">
+        <button class="catalog-btn" type="button">
+            <i class="fa-regular fa-clone" aria-hidden="true"></i>
+            Catalog
+        </button>
+
+        <div class="search-group">
+            <div class="search-pill">
+                <select class="category-select" aria-label="카테고리">
+                    <option>ALL CATEGORIES</option>
+                </select>
+                <input class="search-input" type="text" placeholder="Search in the market" aria-label="검색어 입력">
+            </div>
+
+            <button class="search-submit" type="button" aria-label="검색">
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            </button>
+        </div>
+
+        <div class="icons" aria-label="바로가기 아이콘">
+            <a href="./main.html">
+                <div class="icon-box" role="button" tabindex="0" aria-label="배송">
+                    <i class="fa-solid fa-house" aria-hidden="true"></i>
+                </div>
+            </a>
+            <div class="icon-box" role="button" tabindex="0" aria-label="찜">
+                <i class="fa-solid fa-heart" aria-hidden="true"></i>
+            </div>
+            <!-- <div class="icon-box" role="button" tabindex="0" aria-label="장바구니">
+                <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+                <span class="tooltip">장바구니</span>
+            </div> -->
+            <div class="icon-box cart-icon" role="button" tabindex="0" aria-label="장바구니">
+                <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+                <span class="cart-badge" id="cart-count">0</span>
+
+                <div class="mini-cart" id="mini-cart" aria-hidden="true">
+                    <div class="mini-cart__header">
+                        <strong>Checkout Goods</strong>
+                        <button class="mini-cart__close" aria-label="닫기">&times;</button>
+                    </div>
+
+                    <ul class="mini-cart__list" id="mini-cart-list">
+
+                    </ul>
+
+                    <div class="mini-cart__summary">
+                        <div class="row">
+                            <span>Order Amount</span><span id="mini-order">$0.00</span>
+                        </div>
+                        <div class="row">
+                            <span>Delivery</span><span id="mini-delivery">$0.00</span>
+                        </div>
+                        <div class="row total">
+                            <span>Total</span><span id="mini-total">$0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="mini-cart__actions">
+                        <button type="button" class="mini-btn ghost" id="mini-view-cart">
+                            <a href="./shopping_cart.html" class="view_cart">View cart</a></button>
+                        <button type="button" class="mini-btn primary" id="mini-checkout">Checkout now</button>
+                    </div>
+                </div>
+            </div>
+            <!--  -->
+            <a href="./mypage.html">
+                <div class="icon-box" role="button" tabindex="0" aria-label="마이페이지">
+                    <i class="fa-solid fa-user" aria-hidden="true"></i>
+                </div>
+            </a>
+        </div>
+    </div>
     <div class="shopping__container">
         <!-- header -->
         <header class="top-bar">
@@ -116,8 +204,8 @@
                     <div class="accept">
                         <div>We ACCEPT</div>
                         <div>
-                            <img src="./visa.png" alt="">
-                            <img src="./Mastercard-Logo.png" alt="">
+                            <img src="../img/visa.png" alt="">
+                            <img src="../img/Mastercard-Logo.png" alt="">
                         </div>
                     </div>
                     <p>
@@ -135,7 +223,7 @@
             </div>
         </div>
 
-        <script defer src="shopping_cart.js"></script>
+        <script defer src="../js/shopping_cart.js"></script>
         <script src="https://kit.fontawesome.com/5c3afda2cc.js" crossorigin="anonymous"></script>
 </body>
 

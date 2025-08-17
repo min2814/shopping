@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품 목록 (카탈로그 토글 필터)</title>
+    <script src="https://kit.fontawesome.com/5c3afda2cc.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../css/list.css">
+    <link rel="stylesheet" href="../css/shopping_cart.css">
+    <style>
+        .catalog-panel {
+            display: none;
+            margin: 10px 0;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            background: #fff
+        }
+
+        .catalog-panel.open {
+            display: block
+        }
+
+        .catalog-panel h3 {
+            margin: 0 0 10px;
+            font-size: 16px
+        }
+
+        .catalog-panel .category-filter label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin: 6px 12px 6px 0;
+            cursor: pointer
+        }
+
+        .product-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 16px
+        }
+
+        .product-card {
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 12px;
+            background: #fff
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: contain
+        }
+
+        .product-name {
+            margin-top: 8px;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden
+        }
+
+        /* 긴 제목 말줄임(2줄) */
+        .pagination {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin: 20px 0
+        }
+
+        .pagination button.active {
+            font-weight: 700
+        }
+    </style>
+</head>
+
+<body>
+    <!-- header (cart와 동일) -->
+    <header class="top-bar">
+        <div class="top-left">
+            <div class="delivery-toggle" role="tablist" aria-label="배송 방식">
+                <button class="nav-btn active" role="tab" aria-selected="true">Delivery</button>
+                <button class="nav-btn" role="tab" aria-selected="false">Pickup</button>
+            </div>
+            <span class="address">Select the delivery address</span>
+            <span class="edit-icon" aria-hidden="true"><i class="fa-regular fa-pen-to-square"></i></span>
+            <span class="delivery-time">Nearest delivery <strong id="delivery-time-text"></strong></span>
+        </div>
+        <div class="top-right">
+            <span class="phone"><strong>+ 8 800 555-35-35 </strong>Around the clock</span>
+        </div>
+    </header>
+
+    <div class="search-section">
+        <button class="catalog-btn" type="button">
+            <i class="fa-regular fa-clone" aria-hidden="true"></i>
+            Catalog
+        </button>
+
+        <div class="search-group">
+            <div class="search-pill">
+                <select class="category-select" aria-label="카테고리">
+                    <option>ALL CATEGORIES</option>
+                </select>
+                <input class="search-input" type="text" placeholder="Search in the market" aria-label="검색어 입력">
+            </div>
+
+            <button class="search-submit" type="button" aria-label="검색">
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            </button>
+        </div>
+
+        <div class="icons" aria-label="바로가기 아이콘">
+            <a href="./main.html">
+                <div class="icon-box" role="button" tabindex="0" aria-label="배송">
+                    <i class="fa-solid fa-house" aria-hidden="true"></i>
+                </div>
+            </a>
+            <div class="icon-box" role="button" tabindex="0" aria-label="찜">
+                <i class="fa-solid fa-heart" aria-hidden="true"></i>
+            </div>
+            <div class="icon-box cart-icon" role="button" tabindex="0" aria-label="장바구니">
+                <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+                <span class="cart-badge" id="cart-count">0</span>
+
+                <div class="mini-cart" id="mini-cart" aria-hidden="true">
+                    <div class="mini-cart__header">
+                        <strong>Checkout Goods</strong>
+                        <button class="mini-cart__close" aria-label="닫기">&times;</button>
+                    </div>
+                    <ul class="mini-cart__list" id="mini-cart-list"></ul>
+                    <div class="mini-cart__summary">
+                        <div class="row"><span>Order Amount</span><span id="mini-order">$0.00</span></div>
+                        <div class="row"><span>Delivery</span><span id="mini-delivery">$0.00</span></div>
+                        <div class="row total"><span>Total</span><span id="mini-total">$0.00</span></div>
+                    </div>
+                    <div class="mini-cart__actions">
+                        <button type="button" class="mini-btn ghost" id="mini-view-cart"><a href="./shopping_cart.html"
+                                class="view_cart">View cart</a></button>
+                        <button type="button" class="mini-btn primary" id="mini-checkout">Checkout now</button>
+                    </div>
+                </div>
+            </div>
+            <a href="./mypage.html">
+                <div class="icon-box" role="button" tabindex="0" aria-label="마이페이지">
+                    <i class="fa-solid fa-user" aria-hidden="true"></i>
+                </div>
+            </a>
+        </div>
+    </div>
+
+
+    <div id="catalog-panel" class="catalog-panel" role="region" aria-label="카테고리 필터">
+        <!-- <h3>카테고리</h3> -->
+        <div class="category-filter" id="category-filter"></div>
+    </div>
+
+    <div class="main">
+        <div class="content">
+            <div class="product-list" id="product-list"></div>
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </div>
+
+    <script>
+        let products = [];
+        let filteredProducts = [];
+        const itemsPerPage = 20;
+        let currentPage = 1;
+        let categories = [];
+
+        async function fetchProducts() {
+            try {
+                const res = await fetch("https://fakestoreapi.com/products");
+                const data = await res.json();
+
+                products = data.map(item => ({
+                    name: item.title,
+                    price: item.price,
+                    rating: (item.rating && item.rating.rate) || 0,
+                    image: item.image,
+                    category: item.category
+                }));
+
+
+                categories = ["전체", ...new Set(products.map(p => p.category))];
+                createCategoryFilters();
+                applyCategoryFilter();
+            } catch (err) {
+                console.error("상품 데이터를 불러오는 중 오류 발생:", err);
+            }
+        }
+
+        function createCategoryFilters() {
+            const container = document.getElementById("category-filter");
+            container.innerHTML = categories.map(cat => `
+      <label>
+        <input type="checkbox" value="${cat}" ${cat === "전체" ? "checked" : ""} />
+        ${cat}
+      </label>
+    `).join('');
+
+            container.addEventListener('change', applyCategoryFilter);
+        }
+
+        function applyCategoryFilter() {
+            const checked = Array.from(document.querySelectorAll('#category-filter input:checked'))
+                .map(input => input.value);
+
+            if (checked.includes("전체") || checked.length === 0) {
+                filteredProducts = products;
+            } else {
+                filteredProducts = products.filter(p => checked.includes(p.category));
+            }
+            goToPage(1);
+        }
+
+        function renderProducts(page) {
+            const start = (page - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const displayProducts = filteredProducts.slice(start, end);
+
+            document.getElementById("product-list").innerHTML = displayProducts.map(p => `
+      <div class="product-card">
+        <img src="${p.image}" alt="${p.name}">
+        <div class="product-name">${p.name}</div>
+        <div class="product-price">$${p.price}</div>
+        <div class="product-rating">⭐ ${p.rating}</div>
+      </div>
+    `).join('');
+        }
+
+        function goToDetail(index) {
+            localStorage.setItem("selectedProduct", JSON.stringify(filteredProducts[index]));
+            window.location.href = "./detail2.html";
+        }
+
+        function renderPagination() {
+            let buttons = '';
+            const maxPages = Math.ceil(filteredProducts.length / itemsPerPage);
+            for (let i = 1; i <= maxPages; i++) {
+                buttons +=
+                    `<button class="${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            }
+            document.getElementById("pagination").innerHTML = buttons;
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            renderProducts(page);
+            renderPagination();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        const catalogBtn = document.querySelector('.catalog-btn');
+        const catalogPanel = document.getElementById('catalog-panel');
+
+        function toggleCatalogPanel(forceOpen) {
+            const willOpen = typeof forceOpen === 'boolean' ? forceOpen : !catalogPanel.classList.contains('open');
+            catalogPanel.classList.toggle('open', willOpen);
+            catalogBtn.setAttribute('aria-expanded', String(willOpen));
+        }
+
+        function renderProducts(page) {
+            const start = (page - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const displayProducts = filteredProducts.slice(start, end);
+
+            const listEl = document.getElementById("product-list");
+            listEl.innerHTML = "";
+
+            displayProducts.forEach((p) => {
+                const card = document.createElement("div");
+                card.className = "product-card";
+                card.innerHTML = `
+                    <img src="${p.image}" alt="${p.name}">
+                    <div class="product-name">${p.name}</div>
+                    <div class="product-price">$${p.price}</div>
+                    <div class="product-rating">⭐ ${p.rating}</div>
+                    `;
+                card.addEventListener("click", () => {
+                    localStorage.setItem("selectedProduct", JSON.stringify(p));
+                    window.location.href = "detail2.html";
+                });
+                listEl.appendChild(card);
+            });
+        }
+
+
+        // 상품 상세 페이지로 이동 + LocalStorage 저장
+        function goToDetail(product) {
+            localStorage.setItem("selectedProduct", JSON.stringify(product));;
+        }
+
+
+
+        catalogBtn.addEventListener('click', () => toggleCatalogPanel());
+
+        document.addEventListener('click', (e) => {
+            window.location.href = "http://127.0.0.1:5500/detail2.html"
+            if (!catalogPanel.classList.contains('open')) return;
+            const isInside = catalogPanel.contains(e.target) || catalogBtn.contains(e.target);
+            if (!isInside) toggleCatalogPanel(false);
+        });
+
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && catalogPanel.classList.contains('open')) {
+                toggleCatalogPanel(false);
+                catalogBtn.focus();
+            }
+        });
+
+
+        fetchProducts();
+        // search ========================
+        function getQueryParam(param) {
+            const params = new URLSearchParams(window.location.search);
+            return params.get(param);
+        }
+
+        async function fetchProducts() {
+            try {
+                const res = await fetch("https://fakestoreapi.com/products");
+                const data = await res.json();
+
+                products = data.map(item => ({
+                    name: item.title,
+                    price: item.price,
+                    rating: (item.rating && item.rating.rate) || 0,
+                    image: item.image,
+                    category: item.category
+                }));
+
+                categories = ["전체", ...new Set(products.map(p => p.category))];
+                createCategoryFilters();
+
+                const searchQuery = getQueryParam('query');
+                if (searchQuery) {
+                    filteredProducts = products.filter(p =>
+                        p.name.toLowerCase().includes(searchQuery.toLowerCase())
+                    );
+                } else {
+                    filteredProducts = products;
+                }
+
+                goToPage(1);
+            } catch (err) {
+                console.error("상품 데이터를 불러오는 중 오류 발생:", err);
+            }
+        }
+
+        // search ...
+        /* --- 기존 변수/함수(products, filteredProducts 등)는 그대로 두고 아래만 추가/수정 --- */
+
+        const searchInput2 = document.querySelector('.search-input');
+        const searchBtn2 = document.querySelector('.search-submit');
+
+        /* ▼ 드롭다운 DOM */
+        const suggest2 = document.createElement('ul');
+        suggest2.className = 'suggest-list';
+        suggest2.id = 'list-search-suggest';
+        suggest2.setAttribute('role', 'listbox');
+        suggest2.setAttribute('aria-label', '연관 검색어');
+        document.querySelector('.search-group').appendChild(suggest2);
+
+        let terms2 = [];
+        let active2 = -1;
+
+        function normalize(s) {
+            return s.toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, '').trim();
+        }
+
+        function debounce(fn, ms) {
+            let id;
+            return (...a) => {
+                clearTimeout(id);
+                id = setTimeout(() => fn(...a), ms);
+            };
+        }
+
+        function goSearchOnList(forceValue) {
+            const q = (forceValue || searchInput2.value).trim();
+
+
+            const base = location.pathname.split('/').pop() || 'list.html';
+            const url = `${base}?query=${encodeURIComponent(q)}`;
+            history.pushState({}, '', url); // 새로고침 없이 URL 반영(선택)
+            // 필터 적용
+            applySearchFilter(q);
+        }
+
+        function applySearchFilter(q) {
+            if (!q) {
+                filteredProducts = products;
+            } else {
+                const nq = normalize(q);
+                filteredProducts = products.filter(p =>
+                    normalize(p.name).includes(nq) || normalize(p.category).includes(nq)
+                );
+            }
+            goToPage(1);
+        }
+
+        /* Suggest seeds: products 로드 후 만들어짐 */
+        function buildTerms2() {
+            const set = new Set();
+            products.forEach(p => {
+                set.add(p.name);
+                normalize(p.name).split(/\s+/).forEach(w => {
+                    if (w.length >= 3) set.add(w);
+                });
+                if (p.category) set.add(p.category);
+            });
+            terms2 = Array.from(set);
+        }
+
+        function renderSuggest2(items) {
+            suggest2.innerHTML = '';
+            active2 = -1;
+            if (!items.length) {
+                close2();
+                return;
+            }
+            items.forEach(text => {
+                const li = document.createElement('li');
+                li.setAttribute('role', 'option');
+                li.dataset.value = text;
+                li.innerHTML = `<i class="fa-solid fa-magnifying-glass"></i><span>${text}</span>`;
+                li.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    searchInput2.value = text;
+                    goSearchOnList(text);
+                    close2();
+                });
+                suggest2.appendChild(li);
+            });
+            suggest2.style.display = 'block';
+        }
+
+        function close2() {
+            suggest2.style.display = 'none';
+            suggest2.innerHTML = '';
+            active2 = -1;
+        }
+
+        function paint2() {
+            [...suggest2.children].forEach((li, idx) => {
+                li.setAttribute('aria-selected', idx === active2 ? 'true' : 'false');
+                if (idx === active2) li.scrollIntoView({
+                    block: 'nearest'
+                });
+            });
+        }
+
+        function handleInput2() {
+            const q = normalize(searchInput2.value);
+            if (!q) {
+                close2();
+                return;
+            }
+            const starts = [],
+                includes = [];
+            for (const t of terms2) {
+                const n = normalize(t);
+                if (n.startsWith(q)) starts.push(t);
+                else if (n.includes(q)) includes.push(t);
+                if (starts.length >= 6 && includes.length >= 4) break;
+            }
+            renderSuggest2([...starts, ...includes].slice(0, 10));
+        }
+
+        const debounced2 = debounce(handleInput2, 120);
+        searchInput2.addEventListener('input', debounced2);
+
+        searchBtn2.addEventListener('click', () => goSearchOnList());
+
+        searchInput2.addEventListener('keydown', (e) => {
+            const count = suggest2.style.display === 'block' ? suggest2.children.length : 0;
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (count > 0 && active2 >= 0) {
+                    const li = suggest2.children[active2];
+                    searchInput2.value = li.dataset.value;
+                    goSearchOnList(li.dataset.value);
+                } else {
+                    goSearchOnList();
+                }
+                close2();
+            } else if (e.key === 'ArrowDown' && count) {
+                e.preventDefault();
+                active2 = (active2 + 1) % count;
+                paint2();
+            } else if (e.key === 'ArrowUp' && count) {
+                e.preventDefault();
+                active2 = (active2 - 1 + count) % count;
+                paint2();
+            } else if (e.key === 'Escape') {
+                close2();
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!suggest2.contains(e.target) && e.target !== searchInput2) close2();
+        });
+
+        /* URL query 유지 & products 로딩 후 시드 생성 */
+        function getQueryParam(param) {
+            const params = new URLSearchParams(location.search);
+            return params.get(param);
+        }
+
+        /* 기존 fetchProducts 끝부분을 살짝 바꿔주세요:
+           - buildTerms2() 호출
+           - URL query를 입력창에 채우고 필터 적용  */
+        async function fetchProducts() {
+            try {
+                const res = await fetch("https://fakestoreapi.com/products");
+                const data = await res.json();
+
+                products = data.map(item => ({
+                    name: item.title,
+                    price: item.price,
+                    rating: (item.rating && item.rating.rate) || 0,
+                    image: item.image,
+                    category: item.category
+                }));
+
+                categories = ["전체", ...new Set(products.map(p => p.category))];
+                createCategoryFilters();
+
+                buildTerms2(); // 🔹 시드 만들기
+
+                const q = getQueryParam('query') || '';
+                if (q) {
+                    searchInput2.value = q; // 🔹 검색창에 유지
+                    applySearchFilter(q); // 🔹 바로 필터 적용
+                } else {
+                    filteredProducts = products;
+                    goToPage(1);
+                }
+            } catch (err) {
+                console.error("상품 데이터를 불러오는 중 오류 발생:", err);
+            }
+        }
+
+        // header ..
+
+        // === 장바구니 공용 유틸 ===
+        const DELIVERY_FEE = 5;
+
+        function loadCartFromStorage() {
+            return JSON.parse(localStorage.getItem("cart")) || [];
+        }
+
+        function groupCartItems(rawCart) {
+            const grouped = {};
+            rawCart.forEach((it) => {
+                const key = it.id || it.title;
+
+                if (!grouped[key]) grouped[key] = {
+                    ...it,
+                    quantity: 0,
+                    _key: key
+                };
+                grouped[key].quantity += 1;
+            });
+            return Object.values(grouped);
+        }
+
+        // === 미니카트 요소 ===
+        const cartIcon = document.querySelector(".cart-icon");
+        const miniCart = document.getElementById("mini-cart");
+        const miniList = document.getElementById("mini-cart-list");
+        const miniOrder = document.getElementById("mini-order");
+        const miniDelivery = document.getElementById("mini-delivery");
+        const miniTotal = document.getElementById("mini-total");
+        const miniCheckoutBtn = document.getElementById("mini-checkout");
+        const miniViewCartBtn = document.getElementById("mini-view-cart");
+        const miniCloseBtn = document.querySelector(".mini-cart__close");
+        const cartCountBadge = document.getElementById("cart-count");
+
+        function updateCartBadge() {
+            const cnt = loadCartFromStorage().length;
+            cartCountBadge.textContent = cnt;
+            cartCountBadge.style.display = cnt > 0 ? "inline-block" : "none";
+        }
+
+        function renderMiniCart() {
+            const grouped = groupCartItems(loadCartFromStorage());
+            miniList.innerHTML = "";
+            grouped.forEach((item) => {
+                const li = document.createElement("li");
+                li.className = "mini-cart__item";
+                li.innerHTML = `
+        <img class="mini-cart__thumb" src="${item.image}" alt="${item.title}">
+        <div class="mini-cart__meta">
+          <div class="mini-cart__title">${item.title}</div>
+          <div class="mini-cart__sub">x${item.quantity} · ${item.category || ""}</div>
+        </div>
+        <div class="mini-cart__price">$${(item.price * item.quantity).toFixed(2)}</div>
+      `;
+                miniList.appendChild(li);
+            });
+
+            const order = grouped.reduce((s, i) => s + i.price * i.quantity, 0);
+            const delv = grouped.length === 0 ? 0 : DELIVERY_FEE;
+            const total = order + delv;
+            miniOrder.textContent = `$${order.toFixed(2)}`;
+            miniDelivery.textContent = `$${delv.toFixed(2)}`;
+            miniTotal.textContent = `$${total.toFixed(2)}`;
+            miniCheckoutBtn.disabled = grouped.length === 0;
+        }
+
+        function proceedCheckout() {
+            const grouped = groupCartItems(loadCartFromStorage());
+            if (!grouped.length) return;
+
+            const productsForPayment = grouped.map(({
+                _key,
+                ...rest
+            }) => rest);
+            localStorage.setItem("products", JSON.stringify(productsForPayment));
+
+            const order = grouped.reduce((s, it) => s + it.price * it.quantity, 0);
+            const delivery = grouped.length === 0 ? 0 : DELIVERY_FEE;
+            const total = order + delivery;
+
+            localStorage.setItem("summary", JSON.stringify({
+                order: Number(order.toFixed(2)),
+                delivery: Number(delivery.toFixed(2)),
+                total: Number(total.toFixed(2)),
+            }));
+
+            window.location.href = "./pay.html";
+        }
+
+        // 이벤트 바인딩
+        cartIcon.addEventListener("click", (e) => {
+            e.stopPropagation();
+            cartIcon.classList.toggle("open");
+            renderMiniCart();
+        });
+        miniCloseBtn.addEventListener("click", () => cartIcon.classList.remove("open"));
+        document.addEventListener("click", (e) => {
+            if (!cartIcon.contains(e.target)) cartIcon.classList.remove("open");
+        });
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") cartIcon.classList.remove("open");
+        });
+
+        miniCheckoutBtn.addEventListener("click", proceedCheckout);
+        if (miniViewCartBtn) {
+            miniViewCartBtn.addEventListener("click", () => {
+                window.location.href = "./shopping_cart.html";
+            });
+        }
+
+        // 배송 날짜 표시 (cart와 동일)
+        (function updateDeliveryDate() {
+            const now = new Date();
+            const yyyy = now.getFullYear();
+            const mm = String(now.getMonth() + 1).padStart(2, "0");
+            const dd = String(now.getDate()).padStart(2, "0");
+            const el = document.getElementById("delivery-time-text");
+            if (el) el.textContent = `: ${yyyy}-${mm}-${dd}`;
+        })();
+
+        // 초기 렌더
+        updateCartBadge();
+        renderMiniCart();
+    </script>
+</body>
+
+</html>
