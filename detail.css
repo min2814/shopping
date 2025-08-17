@@ -195,12 +195,14 @@ body {
   box-shadow: 0 0 0 3px rgba(47, 128, 237, 0.16);
 }
 
-@media (max-width: 768px){
-  .container{ flex-direction: column; }
-  .media-box{
-    max-width: 100%;
-    aspect-ratio: auto;                  /* 가변 높이 */
-    height: clamp(240px, 50vh, 420px);   /* 화면 높이 기준 제한 */
+@media (max-width: 768px) {
+  .media-box {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;  
+  }
+  .media-box img {
+    max-height: 100%;
   }
 }
 
@@ -395,9 +397,6 @@ body {
   box-sizing: border-box;
 }
 
-
-
-
 .container {
   display: flex;
   gap: 40px;
@@ -416,26 +415,29 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 20px 0;
 }
 
 .media-box {
-  width: 100%;
-  max-width: 560px;
+  width: 560px;             
+  height: 420px;            
   padding: 16px;
   border-radius: 12px;
   background: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
-  display: grid;
-  place-items: center;
-  border: 1px solid #eee;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #eee;    
+  margin: 0 auto;
 }
 
 .media-box img {
   display: block;
+  max-width: 100%;
+  max-height: 100%;
   width: auto;
   height: auto;
-  max-width: 100%;        
-  max-height: 60vh; 
   object-fit: contain;
   object-position: center;
   border: 0;
@@ -446,27 +448,29 @@ body[class*="cat-men-s-clothing"] .media-box,
 body[class*="cat-women-s-clothing"] .media-box {
   max-width: 560px;
 }
+
 body[class*="cat-men-s-clothing"] .media-box img,
 body[class*="cat-women-s-clothing"] .media-box img {
-  max-height: 60vh;
+  max-height: 100%;  
 }
 
 body[class*="cat-electronics"] .media-box {
   max-width: 640px;
 }
+
 body[class*="cat-electronics"] .media-box img {
-  max-height: 55vh;
+  max-height: 90%;   
 }
 
 body[class*="cat-jewel"] .media-box,
 body[class*="cat-jewelery"] .media-box {
   max-width: 460px;
 }
+
 body[class*="cat-jewel"] .media-box img,
 body[class*="cat-jewelery"] .media-box img {
-  max-height: 50vh;
+  max-height: 80%;   
 }
-
 .product-title {
   font-size: 2rem;
   font-weight: 900;
@@ -503,7 +507,7 @@ body[class*="cat-jewelery"] .media-box img {
 }
 
 .option-buttons button {
-  border: 1px solid #111;
+  border: 1px solid lightgray;
   background: transparent;
   color: #111;
   font-weight: 700;
@@ -521,8 +525,7 @@ body[class*="cat-jewelery"] .media-box img {
 }
 
 .option-buttons button:not(.selected):hover {
-  background: #111;
-  color: #fff;
+  border: 1px solid #111;
 }
 
 .btn-add-cart {
@@ -539,7 +542,7 @@ body[class*="cat-jewelery"] .media-box img {
 }
 
 .btn-add-cart:hover {
-  background: #333;
+  background: gray;
 }
 
 #loading-text {
@@ -556,3 +559,118 @@ body[class*="cat-jewelery"] .media-box img {
   border: 1px solid #e5e7eb;
   border-radius: 8px;
 }
+
+.color-box {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+  border: 1px solid #ccc;
+  vertical-align: middle;
+}
+
+.color-label {
+  vertical-align: middle;
+  font-size: 14px;
+}
+
+
+#cartDialog {
+  border: 0;
+  border-radius: 16px;
+  padding: 20px 22px;
+  max-width: 360px;
+  width: calc(100% - 40px);
+  background: #fff;
+  color: #111;
+  box-shadow: 0 20px 60px rgba(0,0,0,.18);
+  transform: translateY(8px) scale(.98);
+  opacity: 0;
+  transition: transform .24s ease, opacity .24s ease;
+}
+
+
+#cartDialog.is-open {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+
+#cartDialog::backdrop {
+  background: rgba(17, 24, 39, .35);
+  backdrop-filter: blur(2px);
+}
+
+
+#cartDialog p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+
+#cartDialog .dialog-actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+
+#cartDialog button {
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+}
+#cartDialog #yesBtn,
+#cartDialog #noBtn {
+  background: #fff;
+  color: #111;
+  border: 1px solid lightgray;   /* 기본 테두리 연회색 */
+}
+
+#cartDialog #yesBtn:hover,
+#cartDialog #noBtn:hover {
+  border-color: #111;   /* hover 시 진한 검정 */
+  background: #111;
+  color: #fff;
+}
+
+#cartDialog button:hover {
+  border-color: #111;
+  background: #111;
+  color: #fff;
+}
+#cartDialog button:active { transform: translateY(1px); }
+
+
+#cartDialog .btn-primary {
+  border-color: #111;
+  background: #111;
+  color: #fff;
+}
+#cartDialog .btn-primary:hover {
+  filter: brightness(1.05);
+}
+
+
+#cartDialog .dialog-close {
+  position: absolute;
+  top: 5px; right: 15px;
+  width: 32px; height: 32px;
+  border: none;
+  background: #fff;
+  display: grid; place-items: center;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+/* ✕ 버튼 hover 효과 제거 */
+#cartDialog .dialog-close:hover {
+  color: #6b7280;   /* hover 시에도 동일하게 유지 */
+  background: #fff;
+}
+

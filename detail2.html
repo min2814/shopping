@@ -82,13 +82,14 @@
                 </div>
             </div>
 
-            <button class="btn-add-cart" id="add-cart-btn">장바구니에 담기</button>
+            <button class="btn-add-cart" id="add-cart-btn">장바구니</button>
             <!-- 모달 -->
             <dialog id="cartDialog">
+                <button class="dialog-close" aria-label="닫기">✕</button>
                 <p>장바구니에 담았습니다.<br>계속 쇼핑하겠습니까?</p>
-                <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
+                <div class="dialog-actions">
                     <button id="yesBtn">예</button>
-                    <button id="noBtn">아니오</button>
+                    <button id="noBtn" class="btn-primary">아니오</button>
                 </div>
             </dialog>
         </div>
@@ -99,9 +100,41 @@
         const product = JSON.parse(localStorage.getItem("selectedProduct"));
 
         const cartDialog = document.getElementById('cartDialog');
+        const closeBtn = cartDialog.querySelector('.dialog-close');
         const colorGroup = document.getElementById('color-group') || document.querySelector('.options .option-group:nth-child(1)');
         const sizeGroup = document.getElementById('size-group') || document.querySelector('.options .option-group:nth-child(2)');
 
+
+        function openCartDialog() {
+            if (typeof cartDialog.showModal === 'function') {
+                cartDialog.showModal();
+            } else {
+                // 구형 브라우저 fallback
+                cartDialog.setAttribute('open', '');
+            }
+            requestAnimationFrame(() => cartDialog.classList.add('is-open'));
+        }
+
+        function closeCartDialog() {
+            cartDialog.classList.remove('is-open');
+            const onEnd = (e) => {
+                if (e.propertyName !== 'opacity') return;
+                if (typeof cartDialog.close === 'function') {
+                    cartDialog.close();
+                } else {
+                    cartDialog.removeAttribute('open');
+                }
+                cartDialog.removeEventListener('transitionend', onEnd);
+            };
+            cartDialog.addEventListener('transitionend', onEnd);
+        }
+
+        cartDialog.addEventListener('cancel', (e) => {
+            e.preventDefault();
+            closeCartDialog();
+        });
+
+        closeBtn.addEventListener('click', closeCartDialog);
         const OPTION_RULES = {
             "men's clothing": { colors: ['black', 'white', 'navy', 'beige'], sizes: ['S', 'M', 'L', 'XL'] },
             "women's clothing": { colors: ['black', 'white', 'purple', 'red', 'navy'], sizes: ['S', 'M', 'L'] },
@@ -210,7 +243,19 @@
             const container = document.getElementById(containerId);
             options.forEach(option => {
                 const btn = document.createElement('button');
-                btn.textContent = option;
+                const value = String(option).toLowerCase();
+
+                // 공통: data-value로 값 보관
+                btn.dataset.value = value;
+                // 색상 별 네모칸 표시
+                if (containerId === 'color-options') {
+                    btn.innerHTML = `
+                        <span class="color-box" style="background-color:${option};"></span>
+                        <span class="color-label">${option}</span>`;
+                } else {
+                    btn.textContent = option;
+                }
+
                 btn.addEventListener('click', () => {
                     const isSelected = btn.classList.contains('selected');
                     if (isSelected) {
@@ -221,16 +266,21 @@
                         onClick(option);
                     }
                 });
+
                 container.appendChild(btn);
             });
         }
 
         function updateSelected(containerId, selectedValue) {
             const container = document.getElementById(containerId);
+            const target = String(selectedValue || '').toLowerCase();
+
             [...container.children].forEach(btn => {
-                btn.classList.toggle('selected', btn.textContent === selectedValue);
+                const val = (btn.dataset.value || btn.textContent || '').trim().toLowerCase();
+                btn.classList.toggle('selected', val === target);
             });
         }
+
 
         function setProductImage(url, alt) {
             loadingText.style.display = 'block';
@@ -272,15 +322,15 @@
             //cart라는 이름으로 객체를 JSON 문자열로 저장
             localStorage.setItem('cart', JSON.stringify(cart));
 
-            cartDialog.showModal();
+            openCartDialog();
         });
 
         document.getElementById('yesBtn').addEventListener('click', () => {
-            cartDialog.close();
+            closeCartDialog();
         })
 
         document.getElementById('noBtn').addEventListener('click', () => {
-            cartDialog.close();
+            closeCartDialog();
             if (confirm('장바구니로 이동하겠습니까?')) {
                 location.href = "http://127.0.0.1:5500/shopping_cart.html"
             }
