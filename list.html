@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>상품 목록 (카탈로그 토글 필터)</title>
 <script src="https://kit.fontawesome.com/5c3afda2cc.js" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="list.css">
 <style>
   .catalog-panel{display:none;margin:10px 0;padding:16px;border:1px solid #e5e7eb;border-radius:10px;background:#fff}
   .catalog-panel.open{display:block}
@@ -17,6 +17,7 @@
   .product-name{margin-top:8px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   .pagination{display:flex;gap:6px;justify-content:center;margin:20px 0}
   .pagination button.active{font-weight:700}
+
 </style>
 </head>
 <body>
@@ -133,6 +134,7 @@
     goToPage(1);
   }
 
+
   function renderProducts(page) {
     const start = (page - 1) * itemsPerPage;
     const end = start + itemsPerPage;
@@ -175,6 +177,7 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+
   const catalogBtn = document.querySelector('.catalog-btn');
   const catalogPanel = document.getElementById('catalog-panel');
 
@@ -184,7 +187,6 @@
     catalogBtn.setAttribute('aria-expanded', String(willOpen));
   }
   catalogBtn.addEventListener('click', () => toggleCatalogPanel());
-
 
   document.addEventListener('click', (e) => {
     if (!catalogPanel.classList.contains('open')) return;
