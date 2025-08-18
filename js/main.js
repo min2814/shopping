@@ -755,9 +755,14 @@ updateDeliveryDate();
       if (e.key === PROFILE_KEY) applyRecommendTitle();
     });
   })();
-  document.addEventListener("DOMContentLoaded", () => {
-    loadProducts();
-  });
+  // document.addEventListener("DOMContentLoaded", () => {
+  //   loadProducts();
+  // });
+  if (!/\/list\.html(\?|#|$)/.test(location.pathname + location.search)) {
+    document.addEventListener("DOMContentLoaded", () => {
+      loadProducts();
+    });
+  }
   // search
   // === [검색 자동완성 - shopping_cart 동일 로직] ===
   (function () {
