@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>쇼핑몰</title>
+  <link rel="stylesheet" href="../css/main.css" />
+  <script src="https://kit.fontawesome.com/5c3afda2cc.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <!-- 상단 바 -->
+  <header class="top-bar">
+    <div class="top-left">
+      <div class="delivery-toggle" role="tablist" aria-label="배송 방식">
+        <button class="nav-btn active" role="tab" aria-selected="true">Delivery</button>
+        <button class="nav-btn" role="tab" aria-selected="false">Pickup</button>
+      </div>
+      <span class="address">Select the delivery address</span>
+      <span class="edit-icon" aria-hidden="true"><i class="fa-regular fa-pen-to-square"></i></span>
+      <span class="delivery-time">Nearest delivery : <strong id="delivery-time-text"></strong></span>
+    </div>
+    <div class="top-right"><span class="phone"><strong>+ 8 800 555-35-35 </strong>Around the clock</span></div>
+  </header>
+
+  <!-- 검색/아이콘 -->
+  <div class="search-section">
+    <button class="catalog-btn" type="button"><i class="fa-regular fa-clone" aria-hidden="true"></i> Catalog</button>
+    <div class="search-group">
+      <div class="search-pill">
+        <select class="category-select" aria-label="카테고리">
+          <option>ALL CATEGORIES</option>
+        </select>
+        <input class="search-input" type="text" placeholder="Search in the market" aria-label="검색어 입력" />
+      </div>
+      <button class="search-submit" type="button" aria-label="검색"><i class="fa-solid fa-magnifying-glass"
+          aria-hidden="true"></i></button>
+    </div>
+    <div class="icons" aria-label="바로가기 아이콘">
+      <!-- 홈 -->
+      <div class="icon-box" role="button" tabindex="0" aria-label="배송"><i class="fa-solid fa-house"
+          aria-hidden="true"></i></div>
+
+      <!-- 찜 -->
+      <div id="wishIcon" class="icon-box" role="button" tabindex="0" aria-label="찜 0개" aria-haspopup="dialog"
+        aria-expanded="false">
+        <i class="fa-solid fa-heart" aria-hidden="true"></i>
+        <span id="wishCount" class="badge" aria-live="polite" aria-atomic="true">0</span>
+      </div>
+
+      <!-- 장바구니 -->
+      <!-- 교체 (shopping_cart의 미니카트) -->
+      <div class="icon-box cart-icon" role="button" tabindex="0" aria-label="장바구니">
+        <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+        <span class="cart-badge" id="cart-count">0</span>
+
+        <div class="mini-cart" id="mini-cart" aria-hidden="true">
+          <div class="mini-cart__header">
+            <strong>Checkout Goods</strong>
+            <button class="mini-cart__close" aria-label="닫기">&times;</button>
+          </div>
+
+          <ul class="mini-cart__list" id="mini-cart-list"></ul>
+
+          <div class="mini-cart__summary">
+            <div class="row"><span>Order Amount</span><span id="mini-order">$0.00</span></div>
+            <div class="row"><span>Delivery</span><span id="mini-delivery">$0.00</span></div>
+            <div class="row total"><span>Total</span><span id="mini-total">$0.00</span></div>
+          </div>
+
+          <div class="mini-cart__actions">
+            <button type="button" class="mini-btn ghost" id="mini-view-cart">
+              <a href="./shopping_cart.html" class="view_cart">View cart</a></button>
+            <button type="button" class="mini-btn primary" id="mini-checkout">Checkout now</button>
+          </div>
+        </div>
+      </div>
+
+
+      <a id="myPageLink" class="icon-box" href="../html/mypage.html" aria-label="마이페이지">
+        <i class="fa-solid fa-user" aria-hidden="true"></i>
+      </a>
+    </div>
+  </div>
+
+  <!-- 배너 -->
+  <section class="banner" aria-label="프로모션 배너">
+    <div class="banner-text">
+      <h1><img src="../img/banner.png" alt="프로모션 배너"></h1>
+    </div>
+  </section>
+
+  <!-- 인기 상품 -->
+  <section class="popular" aria-label="인기 상품">
+    <div class="section-header">
+      <h3 id="recommendTitle">추천 상품</h3>
+      <!-- ✅ 수정: index.html로 이동 -->
+      <a id="seeAllLink" href="../html/list.html" aria-label="전체 상품 보기">See all</a>
+    </div>
+    <div class="product-list"></div>
+  </section>
+
+
+
+  <!-- 기존 메인 스크립트 -->
+  <script src="../js/main.js"></script>
+
+
+
+  <!-- 위시리스트 팝오버 (메인에 이미 있던 것 유지) -->
+  <div id="wishBackdrop" class="backdrop" hidden></div>
+  <div id="wishPopover" class="wish-popover" aria-hidden="true" role="dialog" aria-labelledby="wishPopTitle" hidden>
+    <div class="wish-panel">
+      <header class="wish-header">
+        <h3 id="wishPopTitle">Wishlist (<span id="wishPopCount">0</span>)</h3>
+        <button id="wishPopClose" class="wp-close" aria-label="닫기">×</button>
+      </header>
+      <ul id="wishPopItems" class="wish-items" role="list"></ul>
+      <footer class="wish-footer">
+        <div class="wp-sum"><span>Total</span><strong id="wishPopTotal">$0.00</strong></div>
+      </footer>
+    </div>
+  </div>
+
+
+
+</body>
+
+</html>

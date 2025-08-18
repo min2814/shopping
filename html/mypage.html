@@ -1,0 +1,1894 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Account (with New Top Header)</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;700;900&display=swap"
+    rel="stylesheet" />
+  <script src="https://kit.fontawesome.com/5c3afda2cc.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="../css/main.css" />
+
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #fff;
+      --line: #e9eef5;
+      --text: #1c2230;
+      --primary: #1357ff;
+      --primary-700: #0f46cc;
+      --shadow: 0 10px 30px rgba(24, 39, 75, 0.08);
+      --radius: 16px;
+      --muted: #9aa3b2;
+      --topbar-h: 42px;
+      --search-h: 72px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, "Noto Sans KR", system-ui, -apple-system, Segoe UI,
+        Roboto, Arial, "Apple SD Gothic Neo", "Noto Sans", sans-serif;
+      padding-top: calc(var(--topbar-h) + var(--search-h) + 16px);
+      scroll-behavior: smooth;
+    }
+
+    /* ===== 헤더 ===== */
+    .top-bar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 50;
+      background: #1c1e26;
+      color: #fff;
+      height: var(--topbar-h);
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .top-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .delivery-toggle {
+      display: inline-flex;
+      align-items: center;
+      background: #2b2f38;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+        0 4px 10px rgba(0, 0, 0, 0.25);
+    }
+
+    .top-right {
+      color: gray;
+    }
+
+    .top-right strong {
+      color: #fff;
+    }
+
+    .search-section {
+      position: fixed;
+      top: var(--topbar-h);
+      width: 100%;
+      z-index: 40;
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+      height: var(--search-h);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .catalog-btn {
+      background: #077de2;
+      color: #fff;
+      border: none;
+      height: 48px;
+      padding: 0 22px;
+      border-radius: 18px;
+      cursor: pointer;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .search-group {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex: 1;
+      min-width: 420px;
+    }
+
+    .search-pill {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      background: #fff;
+      border: 2px solid #2f80ed;
+      border-right: 0;
+      border-radius: 14px 0 0 18px;
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
+      overflow: hidden;
+    }
+
+    .category-select {
+      appearance: none;
+      height: 48px;
+      flex: 0 0 240px;
+      border: 0;
+      border-right: 1px solid #e6e6ea;
+      padding: 0 30px 0 16px;
+      font-weight: 800;
+      cursor: pointer;
+      background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>") no-repeat right 14px center/14px;
+    }
+
+    .search-input {
+      height: 48px;
+      flex: 1;
+      border: 0;
+      padding: 0 16px;
+      outline: none;
+      font-size: 15px;
+    }
+
+    .search-submit {
+      height: 52px;
+      padding: 0 18px;
+      background: #2f80ed;
+      color: #fff;
+      border: 2px solid #2f80ed;
+      border-left: 0;
+      border-radius: 0 18px 18px 0;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .search-pill:focus-within {
+      box-shadow: 0 0 0 3px rgba(47, 128, 237, 0.16);
+    }
+
+    .icons {
+      display: flex;
+      gap: 10px;
+      margin-left: auto;
+      position: relative;
+    }
+
+    .icon-box {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      border: 1px solid #e2e4ea;
+      border-radius: 14px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .icon-box i {
+      font-size: 18px;
+      color: #333;
+    }
+
+    .icon-box:hover i {
+      color: #077de2;
+      transition: color 0.2s;
+    }
+
+    .popover {
+      position: absolute;
+      top: 58px;
+      min-width: 220px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 12px;
+      display: none;
+      z-index: 60;
+    }
+
+    .popover.show {
+      display: block;
+    }
+
+    .popover h4 {
+      margin: 4px 0 8px;
+      font-size: 14px;
+    }
+
+    .popover .row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+      border-radius: 8px;
+    }
+
+    .popover .row:hover {
+      background: #f6f8fe;
+    }
+
+    .popover .cta-mini {
+      margin-top: 8px;
+      width: 100%;
+      height: 36px;
+      border-radius: 8px;
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .popover .cta-mini:hover {
+      background: var(--primary-700);
+    }
+
+    /* ===== 페이지 ===== */
+    .section-title {
+      width: min(1400px, 98vw);
+      margin: 0 auto 12px;
+      padding: 0 2px;
+    }
+
+    .section-title h1 {
+      margin: 0;
+      font-size: 32px;
+      line-height: 1.2;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      color: #1c2230;
+      text-align: left;
+    }
+
+    .page {
+      width: min(1400px, 98vw);
+      margin: 0 auto 40px;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+    }
+
+    .sidebar {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px 0;
+      height: fit-content;
+      position: sticky;
+      top: calc(var(--topbar-h) + var(--search-h) + 16px);
+    }
+
+    .side-list {
+      list-style: none;
+      margin: 0;
+      padding: 8px;
+    }
+
+    .side-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      margin: 4px 8px;
+      border-radius: 12px;
+      color: #2b3240;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .side-item:hover {
+      background: #f6f8fe;
+    }
+
+    .side-item.active {
+      background: #f5f8ff;
+      outline: 1px solid #e4ebff;
+      color: #1141c7;
+    }
+
+    .side-sep {
+      height: 1px;
+      background: var(--line);
+      margin: 10px 14px;
+    }
+
+    .signout {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      color: #d14747;
+      font-weight: 600;
+      margin-top: 4px;
+      cursor: pointer;
+    }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      scroll-margin-top: calc(var(--topbar-h) + var(--search-h) + 16px);
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 12px;
+    }
+
+    .h2 {
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .card.highlight {
+      animation: pop 900ms ease;
+      outline: 2px solid rgba(19, 87, 255, 0.25);
+    }
+
+    @keyframes pop {
+      0% {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(19, 87, 255, 0.15);
+      }
+
+      100% {
+        transform: none;
+        box-shadow: var(--shadow);
+      }
+    }
+
+    .profile {
+      margin-top: 16px;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background-color: transparent;
+      border: 2px solid black;
+      margin-bottom: 16px;
+      background-image: url("유연상.png");
+      background-size: cover;
+      background-position: center;
+    }
+
+    .label {
+      font-size: 14px;
+      color: #667085;
+      margin: 8px 0 8px;
+    }
+
+    .date-field {
+      display: inline-flex;
+      align-items: center;
+      height: 48px;
+      background: #fff;
+      border: 1px solid #e4e9f3;
+      border-radius: 12px;
+      overflow: hidden;
+      max-width: 450px;
+    }
+
+    .date-field input[type="date"] {
+      height: 100%;
+      border: 0;
+      outline: 0;
+      padding: 0 12px;
+      font-size: 15px;
+      min-width: 200px;
+      background: #fff;
+      color: #111827;
+    }
+
+    .calendar-btn {
+      width: 48px;
+      height: 48px;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+    }
+
+    .calendar-btn:hover {
+      background: #f6f8fe;
+    }
+
+    .link {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .link:hover {
+      text-decoration: underline;
+    }
+
+    .btn-edit {
+      appearance: none;
+      border: 1px solid #d6def0;
+      background: #f7f9ff;
+      color: #1141c7;
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-edit:hover {
+      background: #eef4ff;
+    }
+
+    .input,
+    .select-display {
+      height: 56px;
+      border-radius: 12px;
+      border: 1px solid #e4e9f3;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      box-shadow: inset 0 1px 0 rgba(17, 24, 39, 0.02);
+      max-width: 450px;
+    }
+
+    .input {
+      font-size: 16px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .input .prefix {
+      margin-right: 8px;
+      color: #6b7280;
+      font-weight: 800;
+    }
+
+    .select-wrap {
+      position: relative;
+      max-width: 450px;
+    }
+
+    .select-display {
+      justify-content: space-between;
+      cursor: pointer;
+    }
+
+    .select-placeholder {
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .select-value {
+      color: #111827;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chevron {
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 7px solid var(--muted);
+      margin-left: 10px;
+    }
+
+    .select-menu {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(100% + 8px);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 6px;
+      display: none;
+      z-index: 35;
+    }
+
+    .select-menu.show {
+      display: block;
+    }
+
+    .select-item {
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #1c2230;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .select-item.muted {
+      color: var(--muted);
+    }
+
+    .select-item:hover {
+      background: #f6f8fe;
+    }
+
+    .bank-logo {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 0.3px;
+      flex: 0 0 20px;
+    }
+
+    .bank-logo.kb {
+      background: #f0c400;
+      color: #2b2b2b;
+    }
+
+    .bank-logo.shinhan {
+      background: #003474;
+    }
+
+    .bank-logo.samsung {
+      background: #1428a0;
+    }
+
+    .bank-logo.hyundai {
+      background: #111;
+    }
+
+    .bank-logo.lotte {
+      background: #ed1c24;
+    }
+
+    .bank-logo.woori {
+      background: #1e6ed2;
+    }
+
+    .bank-logo.hana {
+      background: #008485;
+    }
+
+    .bank-logo.nh {
+      background: #00a64e;
+    }
+
+    /* ===== 카드 캐러셀 ===== */
+    .wallet {
+      margin-top: 16px;
+      user-select: none;
+    }
+
+    .carousel {
+      position: relative;
+      padding: 8px 48px;
+    }
+
+    .carousel .nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 36px;
+      height: 72px;
+      border: 0;
+      border-radius: 12px;
+      background: #f3f5fb;
+      color: #26324d;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(17, 24, 39, 0.08);
+    }
+
+    .carousel .nav:hover {
+      background: #e9efff;
+    }
+
+    .carousel .prev {
+      left: 4px;
+    }
+
+    .carousel .next {
+      right: 4px;
+    }
+
+    .track {
+      overflow: hidden;
+    }
+
+    .slides {
+      display: flex;
+      gap: 16px;
+      align-items: stretch;
+      transition: transform 0.35s ease;
+    }
+
+    .slide {
+      flex: 0 0 74%;
+      max-width: 640px;
+      aspect-ratio: 16/9;
+      border-radius: 20px;
+      position: relative;
+      background: #e9eef7;
+      box-shadow: 0 10px 25px rgba(23, 45, 98, 0.1);
+      transform: scale(0.92);
+      opacity: 0.6;
+      filter: saturate(0.75);
+    }
+
+    .slide.is-center {
+      transform: scale(1);
+      opacity: 1;
+      filter: none;
+    }
+
+    .slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: inherit;
+      display: block;
+    }
+
+    .slide .sub {
+      position: absolute;
+      left: 16px;
+      bottom: 14px;
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.22);
+    }
+
+    .dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #c8d2e6;
+      opacity: 0.85;
+    }
+
+    .dot.on {
+      width: 20px;
+      border-radius: 6px;
+      background: #2e58ff;
+      opacity: 1;
+    }
+
+    .cta {
+      margin-top: 18px;
+      max-width: 900px;
+      height: 56px;
+      border-radius: 12px;
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(19, 87, 255, 0.25);
+      cursor: pointer;
+    }
+
+    .cta:hover {
+      background: var(--primary-700);
+    }
+
+    .cta:active {
+      transform: translateY(1px);
+    }
+
+    .no-focus {
+      pointer-events: none;
+      caret-color: transparent;
+    }
+
+    .disabled .select-display {
+      background: #f8fafc;
+      color: var(--muted);
+      cursor: default;
+    }
+
+    .date-field.disabled {
+      background: #f8fafc;
+    }
+
+    .add-inline-wrap {
+      margin-top: 12px;
+    }
+
+    .btn-add-inline {
+      height: 48px;
+      padding: 0 16px;
+      border-radius: 12px;
+      border: 1px solid #d6def0;
+      background: #f7f9ff;
+      color: #1141c7;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .btn-add-inline:hover {
+      background: #eef4ff;
+    }
+
+    /* 제거 버튼 스타일 */
+    .btn-remove-inline {
+      height: 48px;
+      padding: 0 16px;
+      border-radius: 12px;
+      border: 1px solid #f0d3d3;
+      background: #fff5f5;
+      color: #c53030;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      margin-left: 8px;
+    }
+
+    .btn-remove-inline:hover {
+      background: #ffecec;
+    }
+
+    .btn-remove-inline:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* 공지사항(제목+본문 아코디언) */
+    .notice-item {
+      border-bottom: 1px solid var(--line);
+      padding: 12px 0;
+    }
+
+    .notice-title {
+      font-weight: 800;
+      color: #1357ff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .notice-title .badge {
+      font-size: 12px;
+      background: #e9efff;
+      color: #1141c7;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    .notice-body {
+      display: none;
+      margin-top: 8px;
+      color: #374151;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .notice-body.show {
+      display: block;
+    }
+
+    @media (max-width: 720px) {
+      .carousel {
+        padding: 8px 36px;
+      }
+
+      .slide {
+        flex-basis: 86%;
+      }
+    }
+
+    @media (max-width: 960px) {
+      .section-title {
+        width: min(100%, 98vw);
+        padding: 0 12px;
+      }
+
+      .page {
+        grid-template-columns: 1fr;
+        width: min(100%, 98vw);
+      }
+
+      .input,
+      .select-wrap,
+      .date-field {
+        max-width: 100%;
+      }
+    }
+
+    html,
+    body {
+      overflow-anchor: none;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ===== 상단바 ===== -->
+  <header class="top-bar">
+    <div class="top-left">
+      <div class="delivery-toggle" role="tablist" aria-label="배송 방식">
+        <button class="nav-btn active" role="tab" aria-selected="true">Delivery</button>
+        <button class="nav-btn" role="tab" aria-selected="false">Pickup</button>
+      </div>
+      <span class="address">Select the delivery address</span>
+      <span class="edit-icon" aria-hidden="true"><i class="fa-regular fa-pen-to-square"></i></span>
+      <span class="delivery-time">Nearest delivery : <strong id="delivery-time-text"></strong></span>
+    </div>
+    <div class="top-right"><span class="phone"><strong>+ 8 800 555-35-35 </strong>Around the clock</span></div>
+  </header>
+
+  <div class="search-section">
+    <button class="catalog-btn" type="button"><i class="fa-regular fa-clone" aria-hidden="true"></i> Catalog</button>
+
+    <div class="search-group">
+      <div class="search-pill">
+        <select class="category-select" aria-label="카테고리">
+          <option>ALL CATEGORIES</option>
+        </select>
+        <input class="search-input" type="text" placeholder="Search in the market" aria-label="검색어 입력" />
+      </div>
+      <button class="search-submit" type="button" aria-label="검색"><i class="fa-solid fa-magnifying-glass"
+          aria-hidden="true"></i></button>
+    </div>
+
+    <div class="icons" aria-label="바로가기 아이콘">
+      <!-- 홈 -->
+      <div class="icon-box" role="button" tabindex="0" aria-label="배송">
+        <i class="fa-solid fa-house" aria-hidden="true"></i>
+      </div>
+
+      <!-- 찜 -->
+      <div id="wishIcon" class="icon-box" role="button" tabindex="0" aria-label="찜 0개" aria-haspopup="dialog"
+        aria-expanded="false">
+        <i class="fa-solid fa-heart" aria-hidden="true"></i>
+        <span id="wishCount" class="badge" aria-live="polite" aria-atomic="true">0</span>
+      </div>
+
+      <!-- 장바구니 (mini-cart 포함) -->
+      <div class="icon-box cart-icon" role="button" tabindex="0" aria-label="장바구니">
+        <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+        <span class="cart-badge" id="cart-count">0</span>
+
+        <div class="mini-cart" id="mini-cart" aria-hidden="true">
+          <div class="mini-cart__header">
+            <strong>Checkout Goods</strong>
+            <button class="mini-cart__close" aria-label="닫기">&times;</button>
+          </div>
+
+          <ul class="mini-cart__list" id="mini-cart-list"></ul>
+
+          <div class="mini-cart__summary">
+            <div class="row"><span>Order Amount</span><span id="mini-order">$0.00</span></div>
+            <div class="row"><span>Delivery</span><span id="mini-delivery">$0.00</span></div>
+            <div class="row total"><span>Total</span><span id="mini-total">$0.00</span></div>
+          </div>
+
+          <div class="mini-cart__actions">
+            <button type="button" class="mini-btn ghost" id="mini-view-cart">
+              <a href="./shopping_cart.html" class="view_cart">View cart</a></button>
+            <button type="button" class="mini-btn primary" id="mini-checkout">Checkout now</button>
+          </div>
+        </div>
+      </div>
+
+      <a id="myPageLink" class="icon-box" href="../html/mypage.html" aria-label="마이페이지">
+        <i class="fa-solid fa-user" aria-hidden="true"></i>
+      </a>
+    </div>
+  </div>
+
+
+  <!-- ===== 페이지 제목 ===== -->
+  <div class="section-title" aria-labelledby="page-title">
+    <h1 id="page-title">My page</h1>
+  </div>
+
+  <!-- ===== 본문 ===== -->
+  <main class="page">
+    <!-- 사이드바 -->
+    <aside class="sidebar" id="sidebar" aria-label="내 계정 섹션 목록">
+      <ul class="side-list">
+        <li class="side-item active" role="button" aria-selected="true" tabindex="0" data-target="profileCard">
+          마이 프로필
+        </li>
+        <li class="side-item" role="button" aria-selected="false" tabindex="0" data-target="paymentsCard">
+          결제관리
+        </li>
+        <li class="side-item" role="button" aria-selected="false" tabindex="0" data-target="ordersCard">
+          주문내역
+        </li>
+        <li class="side-item" role="button" aria-selected="false" tabindex="0" data-target="csCard">
+          취소/반품/교환
+        </li>
+        <li class="side-item" role="button" aria-selected="false" tabindex="0" data-target="recentCard">
+          최근 본 상품
+        </li>
+        <li class="side-item" role="button" aria-selected="false" tabindex="0" data-target="noticeCard">
+          공지사항
+        </li>
+      </ul>
+      <div class="side-sep"></div>
+      <div class="signout" tabindex="0" data-id="signout">
+        ⎋&nbsp;&nbsp;Sign Out
+      </div>
+    </aside>
+
+    <!-- 컨텐츠 -->
+    <section class="content" id="content">
+      <!-- === 프로필 정보 카드 === -->
+      <div class="card" id="profileCard">
+        <div class="card-head">
+          <div class="h2">프로필 정보</div>
+          <button type="button" id="editToggle" class="btn-edit" aria-pressed="false">
+            수정하기
+          </button>
+        </div>
+
+        <div class="profile" aria-label="프로필 이미지"></div>
+
+        <div class="label">이름</div>
+        <div class="input">
+          <input id="nameField" type="text" value="유연상" aria-label="이름" class="no-focus" tabindex="-1" readonly
+            aria-readonly="true" style="
+                flex: 1;
+                border: 0;
+                outline: 0;
+                height: 100%;
+                font-size: 16px;
+                font-weight: 700;
+                color: #111827;
+                background: transparent;
+              " />
+        </div>
+
+        <div class="label" style="margin-top: 10px">생년월일</div>
+        <div class="date-field" id="birthWrap">
+          <input type="date" id="birthDate" value="2001-09-18" disabled />
+          <button type="button" class="calendar-btn" aria-label="달력 열기" disabled>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+              <path d="M7 2v2M17 2v2M3 9h18M4 7h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="label" style="margin-top: 10px">성별</div>
+        <div class="select-wrap disabled" id="genderSelect">
+          <div class="select-display" id="genderDisplay" aria-haspopup="listbox" aria-expanded="false"
+            aria-disabled="true" tabindex="-1">
+            <span class="select-value" id="genderText" data-value="male">남성</span>
+            <span class="chevron" aria-hidden="true"></span>
+          </div>
+          <div class="select-menu" id="genderMenu" role="listbox">
+            <div class="select-item muted" data-value="">선택하세요</div>
+            <div class="select-item" data-value="female">여성</div>
+            <div class="select-item" data-value="male">남성</div>
+            <div class="select-item" data-value="other">기타/벌키지 않음</div>
+          </div>
+        </div>
+
+        <div class="label" style="margin-top: 10px">전화번호</div>
+        <div class="input" aria-live="polite">
+          <span class="prefix">+82</span>
+          <input id="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="010-1234-5678"
+            aria-label="전화번호" value="010-4140-1166" class="no-focus" tabindex="-1" readonly aria-readonly="true" style="
+                flex: 1;
+                border: 0;
+                outline: 0;
+                height: 100%;
+                font-size: 16px;
+                font-weight: 700;
+                color: #111827;
+                background: transparent;
+              " />
+        </div>
+
+        <div class="label" style="margin-top: 10px">이메일</div>
+        <div class="input">
+          <input id="email" type="email" autocomplete="email" placeholder="name@example.com" aria-label="이메일"
+            value="yscome1159@naver.com " class="no-focus" tabindex="-1" readonly aria-readonly="true" style="
+                flex: 1;
+                border: 0;
+                outline: 0;
+                height: 100%;
+                font-size: 16px;
+                font-weight: 700;
+                color: #111827;
+                background: transparent;
+              " />
+        </div>
+      </div>
+
+      <!-- === 결제관리 카드 === -->
+      <div class="card" id="paymentsCard">
+        <div class="card-head">
+          <div class="h2">결제관리</div>
+          <a href="#" class="link" id="addCardBtn">+Add New Card</a>
+        </div>
+
+        <div class="label" style="margin-top: 10px">Bank</div>
+        <div class="select-wrap" id="issuerSelect">
+          <div class="select-display" id="issuerDisplay" aria-haspopup="listbox" aria-expanded="false" tabindex="0">
+            <span class="select-placeholder" id="issuerText">카드사 선택</span>
+            <span class="chevron" aria-hidden="true"></span>
+          </div>
+          <div class="select-menu" id="issuerMenu" role="listbox">
+            <div class="select-item muted" data-value="">
+              <span class="bank-logo" style="background: #e5e7eb; color: #374151">–</span>카드사 선택
+            </div>
+            <div class="select-item" data-value="KB국민카드">
+              <span class="bank-logo kb">KB</span>KB국민카드
+            </div>
+            <div class="select-item" data-value="신한카드">
+              <span class="bank-logo shinhan">SH</span>신한카드
+            </div>
+            <div class="select-item" data-value="삼성카드">
+              <span class="bank-logo samsung">SS</span>삼성카드
+            </div>
+            <div class="select-item" data-value="현대카드">
+              <span class="bank-logo hyundai">HD</span>현대카드
+            </div>
+            <div class="select-item" data-value="롯데카드">
+              <span class="bank-logo lotte">LT</span>롯데카드
+            </div>
+            <div class="select-item" data-value="우리카드">
+              <span class="bank-logo woori">WR</span>우리카드
+            </div>
+            <div class="select-item" data-value="하나카드">
+              <span class="bank-logo hana">HN</span>하나카드
+            </div>
+            <div class="select-item" data-value="NH농협카드">
+              <span class="bank-logo nh">NH</span>NH농협카드
+            </div>
+          </div>
+        </div>
+
+        <!-- ▼ 추가: 계좌번호 입력 -->
+        <div class="label" style="margin-top: 10px">계좌번호</div>
+        <div class="input">
+          <input id="accountNumber" type="text" inputmode="numeric" autocomplete="off" placeholder="예: 110-123-456789"
+            aria-label="계좌번호" style="
+                flex: 1;
+                border: 0;
+                outline: 0;
+                height: 100%;
+                font-size: 16px;
+                font-weight: 700;
+                color: #111827;
+                background: transparent;
+              " />
+        </div>
+
+        <!-- ▼ 추가: 인라인 '추가/제거' 버튼 -->
+        <div class="add-inline-wrap">
+          <button type="button" class="btn-add-inline" id="addInlineBtn" aria-label="카드 추가">
+            <i class="fa-solid fa-plus" aria-hidden="true"></i> 추가
+          </button>
+          <button type="button" class="btn-remove-inline" id="removeInlineBtn" aria-label="카드 제거">
+            <i class="fa-solid fa-minus" aria-hidden="true"></i> 제거
+          </button>
+        </div>
+
+        <!-- ▼ 카드 캐러셀 -->
+        <div class="wallet" id="wallet">
+          <div class="carousel" id="cardCarousel" tabindex="0" aria-roledescription="carousel">
+            <button class="nav prev" aria-label="이전 카드">&lt;</button>
+            <div class="track">
+              <div class="slides" id="slides"></div>
+            </div>
+            <button class="nav next" aria-label="다음 카드">&gt;</button>
+          </div>
+          <div class="dots" id="cardDots" aria-label="페이지 표시점"></div>
+        </div>
+      </div>
+
+      <!-- === 섹션들 === -->
+      <div class="card" id="ordersCard">
+        <div class="card-head">
+          <div class="h2">주문내역</div>
+        </div>
+        <p>최근 주문내역이 여기에 표시됩니다.</p>
+      </div>
+      <div class="card" id="csCard">
+        <div class="card-head">
+          <div class="h2">취소/반품/교환</div>
+        </div>
+        <p>취소/반품/교환 진행 현황을 확인할 수 있습니다.</p>
+      </div>
+      <div class="card" id="recentCard">
+        <div class="card-head">
+          <div class="h2">최근 본 상품</div>
+        </div>
+        <p>최근 확인한 상품 목록입니다.</p>
+      </div>
+
+      <!-- === 공지사항(제목+본문 아코디언) === -->
+      <div class="card" id="noticeCard">
+        <div class="card-head">
+          <div class="h2">공지사항</div>
+        </div>
+
+        <div class="notice-item">
+          <div class="notice-title" role="button" tabindex="0" aria-expanded="false">
+            <span class="badge">NEW</span>
+            [공지사항] 이번주 여름휴가 80% 세일!
+          </div>
+          <div class="notice-body" aria-hidden="true">
+            안녕하세요 고객님 😊<br />
+            이번 주 여름휴가를 맞아 전 상품
+            <strong>최대 80% 세일</strong> 이벤트를 진행합니다.<br />
+            <br />
+            ▸ 기간: <b>8월 20일 ~ 8월 27일</b><br />
+            ▸ 대상: 전 카테고리(일부 품목 제외)<br />
+            ▸ 유의사항: 쿠폰/포인트 중복 적용은 결제 단계에서 확인해
+            주세요.<br />
+            <br />
+            많은 관심과 참여 부탁드립니다. 감사합니다!
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div id="wishBackdrop" class="backdrop" hidden></div>
+  <div id="wishPopover" class="wish-popover" aria-hidden="true" role="dialog" aria-labelledby="wishPopTitle" hidden>
+    <div class="wish-panel">
+      <header class="wish-header">
+        <h3 id="wishPopTitle">Wishlist (<span id="wishPopCount">0</span>)</h3>
+        <button id="wishPopClose" class="wp-close" aria-label="닫기">×</button>
+      </header>
+      <ul id="wishPopItems" class="wish-items" role="list"></ul>
+      <footer class="wish-footer">
+        <div class="wp-sum"><span>Total</span><strong id="wishPopTotal">$0.00</strong></div>
+      </footer>
+    </div>
+  </div>
+
+
+  <script>
+    /* ===== 카드사 선택 (로고 표시) ===== */
+    const issuerWrap = document.getElementById("issuerSelect");
+    const issuerDisp = document.getElementById("issuerDisplay");
+    const issuerTextEl = document.getElementById("issuerText");
+    const issuerMenu = document.getElementById("issuerMenu");
+
+    function logoHTML(bankName) {
+      const map = {
+        KB국민카드: {
+          cls: "kb",
+          txt: "KB"
+        },
+        신한카드: {
+          cls: "shinhan",
+          txt: "SH"
+        },
+        삼성카드: {
+          cls: "samsung",
+          txt: "SS"
+        },
+        현대카드: {
+          cls: "hyundai",
+          txt: "HD"
+        },
+        롯데카드: {
+          cls: "lotte",
+          txt: "LT"
+        },
+        우리카드: {
+          cls: "woori",
+          txt: "WR"
+        },
+        하나카드: {
+          cls: "hana",
+          txt: "HN"
+        },
+        NH농협카드: {
+          cls: "nh",
+          txt: "NH"
+        },
+      };
+      const item = map[bankName];
+      if (!item) return "";
+      return `<span class="bank-logo ${item.cls}">${item.txt}</span><span>${bankName}</span>`;
+    }
+
+    function toggleIssuerMenu(force) {
+      const willOpen =
+        typeof force === "boolean" ?
+        force :
+        !issuerMenu.classList.contains("show");
+      if (willOpen) {
+        issuerMenu.classList.add("show");
+        issuerDisp.setAttribute("aria-expanded", "true");
+      } else {
+        issuerMenu.classList.remove("show");
+        issuerDisp.setAttribute("aria-expanded", "false");
+      }
+    }
+    issuerDisp.addEventListener("click", () => toggleIssuerMenu());
+    issuerDisp.addEventListener("keydown", (e) => {
+      if (["Enter", " "].includes(e.key)) {
+        e.preventDefault();
+        toggleIssuerMenu();
+      }
+    });
+    issuerMenu.addEventListener("click", (e) => {
+      const item = e.target.closest(".select-item");
+      if (!item) return;
+      const val = item.dataset.value || "";
+      if (val) {
+        issuerTextEl.className = "select-value";
+        issuerTextEl.innerHTML = logoHTML(val);
+        issuerTextEl.dataset.value = val; // ★ 선택한 카드사 저장
+      } else {
+        issuerTextEl.textContent = "카드사 선택";
+        issuerTextEl.className = "select-placeholder";
+        issuerTextEl.dataset.value = "";
+      }
+      toggleIssuerMenu(false);
+    });
+
+    /* ===== 사이드바: 정확 스크롤 + 해시/뒤로가기 + 하이라이트 ===== */
+    const sidebar = document.getElementById("sidebar");
+    const sideItems = Array.from(
+      sidebar.querySelectorAll(".side-item[data-target]")
+    );
+    const sections = sideItems
+      .map((li) => document.getElementById(li.dataset.target))
+      .filter(Boolean);
+
+    // CSS 변수(px) -> 수치화
+    const px = (v) => Number(String(v).trim().replace("px", "")) || 0;
+    const rootStyle = getComputedStyle(document.documentElement);
+    const headerOffset =
+      px(rootStyle.getPropertyValue("--topbar-h")) +
+      px(rootStyle.getPropertyValue("--search-h")) +
+      16; // body padding-top 여유치
+
+    function activateById(id) {
+      sideItems.forEach((li) => {
+        const on = li.dataset.target === id;
+        li.classList.toggle("active", on);
+        li.setAttribute("aria-selected", String(on));
+      });
+    }
+
+    function scrollToSection(id, pushHash = true) {
+      const target = document.getElementById(id);
+      if (!target) return;
+
+      const rect = target.getBoundingClientRect();
+      const absoluteTop = window.pageYOffset + rect.top;
+      const y = Math.max(0, absoluteTop - headerOffset);
+
+      window.scrollTo({
+        top: y,
+        behavior: "smooth"
+      });
+      activateById(id);
+
+      if (pushHash) history.pushState(null, "", `#${id}`);
+      // 카드 강조 효과 (시각적 피드백)
+      target.classList.add("highlight");
+      setTimeout(() => target.classList.remove("highlight"), 900);
+    }
+
+    // 클릭/키보드로 이동
+    sidebar.addEventListener("click", (e) => {
+      const item = e.target.closest(".side-item[data-target]");
+      if (!item) return;
+      scrollToSection(item.dataset.target, true);
+    });
+    sidebar.addEventListener("keydown", (e) => {
+      const item = e.target.closest(".side-item[data-target]");
+      if (!item) return;
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        scrollToSection(item.dataset.target, true);
+      }
+    });
+
+    // 스크롤 시 가시 영역에 맞춰 활성 상태 동기화
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) activateById(entry.target.id);
+        });
+      }, {
+        root: null,
+        rootMargin: `-${headerOffset + 10}px 0px -60% 0px`,
+        threshold: 0.01,
+      }
+    );
+    sections.forEach((sec) => io.observe(sec));
+
+    // 해시로 진입 시 해당 섹션으로 보정 스크롤
+    window.addEventListener('load', function () {
+      var hash = location.hash ? location.hash.replace('#', '') : '';
+      if (hash && document.getElementById(hash)) {
+        // 약간 딜레이 후 스크롤(레이아웃 안정화)
+        setTimeout(function () {
+          scrollToSection(hash, false);
+        }, 0);
+      }
+    });
+
+    // 뒤로가기/앞으로가기
+    window.addEventListener('popstate', function () {
+      var id;
+      if (location.hash) {
+        id = location.hash.replace('#', '');
+      } else if (sections && sections.length && sections[0]) {
+        id = sections[0].id;
+      }
+      if (id) {
+        scrollToSection(id, false);
+      }
+    });
+
+    /* ===== 카드 이미지(SVG) 생성기 ===== */
+    function cardSVGData({
+      bank,
+      last4,
+      theme
+    }) {
+      const themes = {
+        toss: {
+          c1: "#1673ff",
+          c2: "#0b59ff",
+          text: "#ffffff",
+          chip: "#f1f5ff",
+        },
+        nh: {
+          c1: "#00a64e",
+          c2: "#0f9a44",
+          text: "#ffffff",
+          chip: "#e6ffe6",
+        },
+        kb: {
+          c1: "#f0c400",
+          c2: "#f0b400",
+          text: "#273238",
+          chip: "#fff6d7",
+        },
+        shinhan: {
+          c1: "#003474",
+          c2: "#0b3b94",
+          text: "#ffffff",
+          chip: "#e2ecff",
+        },
+        custom: {
+          c1: "#6b7cff",
+          c2: "#5a67d8",
+          text: "#ffffff",
+          chip: "#f3f4ff",
+        },
+      };
+      const t = themes[theme] || themes.custom;
+      const svg = `
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="420" viewBox="0 0 680 420">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="${t.c1}"/><stop offset="1" stop-color="${t.c2}"/>
+  </linearGradient></defs>
+  <rect width="680" height="420" rx="28" fill="url(#g)"/>
+  <rect x="48" y="78" width="72" height="52" rx="10" fill="${t.chip}" opacity="0.9"/>
+  <circle cx="565" cy="94" r="6" fill="${t.text}" opacity="0.95"/>
+  <text x="48" y="170" fill="${t.text}" font-family="Inter,'Noto Sans KR',sans-serif" font-size="28" font-weight="700" opacity="0.9">bank</text>
+  <text x="48" y="238" fill="${t.text}" font-family="Inter,'Noto Sans KR',sans-serif" font-size="38" font-weight="800">${bank}</text>
+  <text x="48" y="300" fill="${t.text}" font-family="Inter,monospace" font-size="26" letter-spacing="6">•••• •••• ${last4}</text>
+  <text x="632" y="356" fill="${t.text}" font-family="Inter,sans-serif" font-size="14" opacity="0.8" text-anchor="end">${bank}</text>
+</svg>`;
+      return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+    }
+
+    /* ===== 결제 카드 캐러셀 ===== */
+    const cards = [{
+        bank: "토스뱅크",
+        last4: "4821",
+        theme: "toss"
+      },
+      {
+        bank: "NH채움",
+        last4: "1103",
+        theme: "nh"
+      },
+      {
+        bank: "KB국민",
+        last4: "2878",
+        theme: "kb"
+      },
+      {
+        bank: "신한",
+        last4: "9042",
+        theme: "shinhan"
+      },
+    ];
+    const slidesEl = document.getElementById("slides");
+    const dotsEl = document.getElementById("cardDots");
+    const prevBtn = document.querySelector("#cardCarousel .prev");
+    const nextBtn = document.querySelector("#cardCarousel .next");
+    let current = 0;
+
+    function updateNavDisabled() {
+      const hasCards = cards.length > 0;
+      prevBtn.disabled = !hasCards || current <= 0;
+      nextBtn.disabled = !hasCards || current >= cards.length - 1;
+      const removeBtn = document.getElementById("removeInlineBtn");
+      if (removeBtn) removeBtn.disabled = !hasCards;
+    }
+
+    function renderSlides() {
+      slidesEl.innerHTML = "";
+      cards.forEach((c, idx) => {
+        const wrap = document.createElement("div");
+        wrap.className = "slide" + (idx === current ? " is-center" : "");
+        wrap.innerHTML =
+          `<img alt="${c.bank} 카드 **** ${c.last4}" src="${cardSVGData(
+              c
+            )}"/>` + `<div class="sub">${c.bank} •••• ${c.last4}</div>`;
+        wrap.addEventListener("click", () => goTo(idx));
+        slidesEl.appendChild(wrap);
+      });
+      dotsEl.innerHTML = "";
+      cards.forEach((_, idx) => {
+        const d = document.createElement("div");
+        d.className = "dot" + (idx === current ? " on" : "");
+        d.addEventListener("click", () => goTo(idx));
+        dotsEl.appendChild(d);
+      });
+      updateTransform();
+      updateNavDisabled();
+    }
+
+    // ★★★ 센터 정렬 로직 ★★★
+    function updateTransform() {
+      const track = document.querySelector("#cardCarousel .track");
+      const slides = slidesEl.querySelectorAll(".slide");
+      if (!slides.length) return;
+
+      const first = slides[0].getBoundingClientRect();
+      const trackW = track.getBoundingClientRect().width;
+      const slideW = first.width;
+
+      // 실제 gap 계산 (두 장 이상일 때), 없으면 16px
+      let gap = 16;
+      if (slides.length >= 2) {
+        const s0 = slides[0].getBoundingClientRect();
+        const s1 = slides[1].getBoundingClientRect();
+        gap = Math.max(0, s1.left - s0.right);
+      }
+      const step = slideW + gap;
+      const totalW = slideW * slides.length + gap * (slides.length - 1);
+
+      // current 슬라이드 중심을 트랙 중앙에 맞추는 오프셋
+      const targetCenter = current * step + slideW / 2;
+      let offset = targetCenter - trackW / 2;
+
+      // 가장자리 클램프
+      const maxOffset = Math.max(0, totalW - trackW);
+      if (offset < 0) offset = 0;
+      if (offset > maxOffset) offset = maxOffset;
+
+      slidesEl.style.transform = `translateX(${-offset}px)`;
+
+      // 상태 업데이트
+      slidesEl
+        .querySelectorAll(".slide")
+        .forEach((s, i) => s.classList.toggle("is-center", i === current));
+      dotsEl
+        .querySelectorAll(".dot")
+        .forEach((d, i) => d.classList.toggle("on", i === current));
+    }
+
+    function goTo(idx) {
+      current = Math.max(0, Math.min(cards.length - 1, idx));
+      updateTransform();
+      updateNavDisabled();
+    }
+    prevBtn.addEventListener("click", () => goTo(current - 1));
+    nextBtn.addEventListener("click", () => goTo(current + 1));
+    document
+      .getElementById("cardCarousel")
+      .addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft") goTo(current - 1);
+        if (e.key === "ArrowRight") goTo(current + 1);
+      });
+    window.addEventListener("resize", updateTransform);
+    renderSlides();
+
+    // 공통 추가 함수
+    function addCard(bankName, last4, theme = "custom") {
+      const bank = bankName || "새 카드";
+      const l4 =
+        (last4 && String(last4).padStart(4, "0").slice(-4)) ||
+        String(Math.floor(1000 + Math.random() * 9000));
+      cards.push({
+        bank,
+        last4: l4,
+        theme
+      });
+      current = cards.length - 1; // 마지막(새 카드)으로 포커스
+      renderSlides(); // 렌더 후 중앙 정렬 + 버튼 상태 갱신
+    }
+
+    // 카드사명 -> 테마 매핑
+    function themeByIssuer(issuer) {
+      if (!issuer) return "custom";
+      if (issuer.includes("농협") || issuer.includes("NH")) return "nh";
+      if (issuer.includes("KB")) return "kb";
+      if (issuer.includes("신한")) return "shinhan";
+      if (issuer.includes("토스")) return "toss";
+      return "custom";
+    }
+
+    // 폼 기반으로 카드 추가
+    const accountInput = document.getElementById("accountNumber");
+
+    function addNewCardFromForm() {
+      const issuer = issuerTextEl.dataset.value || ""; // 선택한 카드사
+      const accNums = (accountInput.value || "").replace(/\D/g, "");
+      const last4 = accNums.slice(-4);
+      const theme = themeByIssuer(issuer);
+      const bankName = issuer ? issuer.replace(/카드$/, "") : "새 카드";
+      addCard(bankName, last4, theme);
+    }
+
+    // 헤더 링크: 랜덤 새 카드
+    document.getElementById("addCardBtn").addEventListener("click", (e) => {
+      e.preventDefault();
+      const last4 = String(Math.floor(1000 + Math.random() * 9000));
+      addCard("새 카드", last4, "custom");
+    });
+
+    // 인라인 '추가' 버튼: 선택값 기반 추가
+    document
+      .getElementById("addInlineBtn")
+      .addEventListener("click", addNewCardFromForm);
+
+    // ★ 현재 카드 제거 기능
+    function removeCurrentCard() {
+      if (cards.length === 0) return;
+
+      // 현재 카드 삭제
+      cards.splice(current, 1);
+
+      // 인덱스 보정
+      if (current >= cards.length) current = Math.max(0, cards.length - 1);
+
+      // 렌더링 갱신
+      slidesEl.innerHTML = "";
+      dotsEl.innerHTML = "";
+
+      if (cards.length === 0) {
+        // 빈 상태 처리 (선택사항)
+        slidesEl.innerHTML = `<div style="padding:24px;text-align:center;width:100%;">등록된 카드가 없습니다.</div>`;
+        slidesEl.style.transform = `translateX(0px)`;
+        updateNavDisabled();
+        return;
+      }
+
+      renderSlides(); // 내부에서 updateTransform + updateNavDisabled 호출
+    }
+
+    // 제거 버튼 연결
+    document
+      .getElementById("removeInlineBtn")
+      .addEventListener("click", removeCurrentCard);
+
+    // Withdraw 버튼(데모) - 존재할 때만 연결
+    const withdrawBtn = document.getElementById("withdrawBtn");
+    if (withdrawBtn) {
+      withdrawBtn.addEventListener("click", () => {
+        const c = cards[current];
+        alert(`Withdrawing to card: ${c.bank} **** ${c.last4} ✅`);
+      });
+    }
+
+    /* ===== 바깥 클릭/ESC 닫기 ===== */
+    document.addEventListener("click", (e) => {
+
+
+      if (
+        issuerMenu.classList.contains("show") &&
+        !issuerWrap.contains(e.target)
+      )
+        toggleIssuerMenu(false);
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        toggleIssuerMenu(false);
+      }
+    });
+
+    /* ===== 폼/편집 ===== */
+    const emailInput = document.getElementById("email");
+    if (emailInput) {
+      emailInput.addEventListener("blur", () => {
+        if (emailInput.value && !emailInput.checkValidity())
+          emailInput.reportValidity();
+      });
+    }
+    const nameField = document.getElementById("nameField");
+    const phoneInput = document.getElementById("phone");
+    const birthInput = document.getElementById("birthDate");
+    const birthWrap = document.getElementById("birthWrap");
+    const calendarBtns = document.querySelectorAll(".calendar-btn");
+    const editBtn = document.getElementById("editToggle");
+    const genderWrap = document.getElementById("genderSelect");
+    const genderDisp = document.getElementById("genderDisplay");
+    const genderTextEl = document.getElementById("genderText");
+    const genderMenu = document.getElementById("genderMenu");
+    let editing = false;
+
+    function setReadOnly(el, ro) {
+      el.readOnly = ro;
+      el.setAttribute("aria-readonly", String(ro));
+      el.classList.toggle("no-focus", ro);
+      el.tabIndex = ro ? -1 : 0;
+    }
+
+    function toggleGenderMenu(force) {
+      const willOpen =
+        typeof force === "boolean" ?
+        force :
+        !genderMenu.classList.contains("show");
+      if (willOpen) {
+        genderMenu.classList.add("show");
+        genderDisp.setAttribute("aria-expanded", "true");
+      } else {
+        genderMenu.classList.remove("show");
+        genderDisp.setAttribute("aria-expanded", "false");
+      }
+    }
+
+    function setEditing(on) {
+      editing = on;
+      editBtn.textContent = on ? "저장" : "수정하기";
+      editBtn.setAttribute("aria-pressed", String(on));
+      setReadOnly(nameField, !on);
+      setReadOnly(phoneInput, !on);
+      setReadOnly(emailInput, !on);
+      birthInput.disabled = !on;
+      calendarBtns.forEach((btn) => (btn.disabled = !on));
+      birthWrap.classList.toggle("disabled", !on);
+      genderDisp.setAttribute("aria-disabled", String(!on));
+      genderWrap.classList.toggle("disabled", !on);
+      genderDisp.tabIndex = on ? 0 : -1;
+      if (!on) toggleGenderMenu(false);
+      if (on) {
+        nameField.focus();
+        nameField.setSelectionRange(
+          nameField.value.length,
+          nameField.value.length
+        );
+      }
+    }
+    editBtn.addEventListener("click", () => {
+      if (editing && emailInput.value && !emailInput.checkValidity()) {
+        emailInput.reportValidity();
+        return;
+      }
+      if (editing) {
+        alert("프로필이 저장되었습니다. ✅");
+      }
+      setEditing(!editing);
+    });
+    document.querySelectorAll(".calendar-btn").forEach((btn) =>
+      btn.addEventListener("click", () => {
+        if (!editing) return;
+        if (typeof birthInput.showPicker === "function")
+          birthInput.showPicker();
+        else birthInput.focus();
+      })
+    );
+
+    // 전화번호 포맷
+    if (phoneInput) {
+      phoneInput.addEventListener("input", () => {
+        if (phoneInput.readOnly) return;
+        let v = phoneInput.value.replace(/[^\d]/g, "").slice(0, 11);
+        if (v.startsWith("010")) {
+          if (v.length > 7)
+            v = v
+            .replace(/(\d{3})(\d{4})(\d{0,4}).*/, "$1-$2-$3")
+            .replace(/-$/, "");
+          else if (v.length > 3) v = v.replace(/(\d{3})(\d{0,4})/, "$1-$2");
+        } else {
+          if (v.length > 7)
+            v = v
+            .replace(/(\d{3})(\d{3,4})(\d{0,4}).*/, "$1-$2-$3")
+            .replace(/-$/, "");
+          else if (v.length > 3) v = v.replace(/(\d{3})(\d{0,4})/, "$1-$2");
+        }
+        phoneInput.value = v;
+      });
+    }
+
+    // 초기 상태
+    setEditing(false);
+
+    /* === 공지사항 토글 === */
+    document.querySelectorAll(".notice-title").forEach((title) => {
+      title.addEventListener("click", () => {
+        const body = title.nextElementSibling;
+        const willShow = !body.classList.contains("show");
+        document.querySelectorAll(".notice-body").forEach((b) => {
+          b.classList.remove("show");
+          b.setAttribute("aria-hidden", "true");
+        });
+        document
+          .querySelectorAll(".notice-title")
+          .forEach((t) => t.setAttribute("aria-expanded", "false"));
+        if (willShow) {
+          body.classList.add("show");
+          body.setAttribute("aria-hidden", "false");
+          title.setAttribute("aria-expanded", "true");
+        }
+      });
+      title.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          title.click();
+        }
+      });
+    });
+    (function () {
+      const icon = document.querySelector('.icons .icon-box i.fa-house');
+      const homeBtn = icon ? icon.parentElement : null;
+      if (!homeBtn) return;
+      const goHome = () => {
+        const onMain = /(^|\/)main\.html(\?|#|$)/.test(location.href);
+        if (onMain) location.reload();
+        else location.href = './main.html';
+      };
+      homeBtn.setAttribute('aria-label', '홈');
+      homeBtn.setAttribute('role', 'link');
+      homeBtn.addEventListener('click', e => {
+        e.preventDefault();
+        goHome();
+      });
+      homeBtn.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          goHome();
+        }
+      });
+    })();
+    // ...
+    (function () {
+      var wishIcon = document.getElementById('wishIcon');
+      var wishPopover = document.getElementById('wishPopover');
+
+      if (!wishIcon) return;
+
+      // 마우스다운 시 기본 포커스 이동을 막아 스크롤 점프 방지
+      wishIcon.addEventListener('mousedown', function (e) {
+        e.preventDefault();
+      });
+
+      // 클릭 시 스크롤 위치를 저장/복원해서 점프 방지
+      wishIcon.addEventListener('click', function (e) {
+        // 혹시 a 태그로 바뀌어도 대비
+        e.preventDefault();
+        // e.stopPropagation();
+
+        var x = window.pageXOffset || document.documentElement.scrollLeft || 0;
+        var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+
+        // 메인 스크립트의 토글 로직이 실행된 뒤 스크롤 복원
+        setTimeout(function () {
+          window.scrollTo(x, y);
+        }, 0);
+      }, true);
+
+      // 팝오버에 포커스를 줄 때 스크롤이 움직이지 않도록(브라우저 지원 시)
+      if (wishPopover && wishPopover.focus) {
+        var _focus = wishPopover.focus.bind(wishPopover);
+        wishPopover.focus = function (opts) {
+          try {
+            _focus({
+              preventScroll: true
+            });
+          } catch (_) {
+            _focus();
+          }
+        };
+      }
+    })();
+    // --- wishlist click: prevent scroll jump without blocking main.js ---
+    (function () {
+      var wishIcon = document.getElementById('wishIcon');
+      if (!wishIcon) return;
+
+      var sx = 0,
+        sy = 0;
+
+      function saveScroll() {
+        sx = window.pageXOffset || document.documentElement.scrollLeft || 0;
+        sy = window.pageYOffset || document.documentElement.scrollTop || 0;
+      }
+
+      // 포인터/마우스/터치 시작 시 현재 스크롤 저장
+      wishIcon.addEventListener('pointerdown', saveScroll, {
+        passive: true
+      });
+      wishIcon.addEventListener('mousedown', saveScroll, {
+        passive: true
+      });
+      wishIcon.addEventListener('touchstart', saveScroll, {
+        passive: true
+      });
+
+      // 캡처 단계에서 실행하지만 전파는 막지 않음 → main.js 토글 정상 작동
+      wishIcon.addEventListener('click', function () {
+        setTimeout(function () {
+          window.scrollTo(sx, sy);
+        }, 0);
+      }, true);
+    })();
+  </script>
+  <script src="../js/main.js"></script>
+
+</body>
+
+</html>
