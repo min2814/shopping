@@ -60,9 +60,8 @@ function renderMiniCart() {
       <img class="mini-cart__thumb" src="${item.image}" alt="${item.title}">
       <div class="mini-cart__meta">
         <div class="mini-cart__title">${item.title}</div>
-        <div class="mini-cart__sub">x${item.quantity} · ${
-      item.category || ""
-    }</div>
+        <div class="mini-cart__sub">x${item.quantity} · ${item.category || ""
+      }</div>
       </div>
       <div class="mini-cart__price">$${(item.price * item.quantity).toFixed(
         2
@@ -146,12 +145,35 @@ document.addEventListener("click", (e) => {
   const price = Number(btn.dataset.price || 0);
   const image = btn.dataset.image || "";
   // 선택 항목(있으면 dataset에 넣어 사용)
-  const category = btn.dataset.category || "";
-  const color = btn.dataset.color || "";
-  const size = btn.dataset.size || "";
+  // ① 카테고리 읽기 (버튼→카드 순으로 안전하게)
+  const card = btn.closest(".product-card");
+  const category =
+    btn.dataset.category ||
+    card?.dataset.category ||
+    "General";
+
+  // ② 상세페이지와 동일 규칙으로 기본 옵션 자동 선택
+  const OPTION_RULES = {
+    "men's clothing": { colors: ["black", "white", "navy", "beige"], sizes: ["S", "M", "L", "XL"] },
+    "women's clothing": { colors: ["black", "white", "purple", "red", "navy"], sizes: ["S", "M", "L"] },
+    electronics: { colors: ["black", "silver"], sizes: [] },
+    jewelery: { colors: [], sizes: [] },
+  };
+  const rule = OPTION_RULES[category] || { colors: [], sizes: [] };
+  const color = rule.colors.length ? rule.colors[0] : null;
+  const size = rule.sizes.length ? rule.sizes[0] : null;
 
   const arr = scLoad();
-  arr.push({ id, title, price, image, category, color, size });
+  arr.push({
+    id,
+    // title/name 혼용 대비
+    title: title || (card?.dataset.name) || "상품",
+    price,
+    image,
+    category,
+    color,
+    size,
+  });
   scSave(arr);
 
   updateCartBadge();
@@ -178,6 +200,7 @@ async function loadProducts() {
       div.dataset.name = item.title;
       div.dataset.price = item.price;
       div.dataset.image = item.image;
+      div.dataset.category = item.category;
       const title =
         item.title.length > 10 ? item.title.slice(0, 20) + "…" : item.title;
       div.innerHTML = `
@@ -191,7 +214,7 @@ async function loadProducts() {
             data-id="${item.id}"
             data-name="${item.title.replace(/"/g, "&quot;")}"
             data-price="${item.price}"
-            data-image="${item.image}">
+            data-image="${item.image}">      
             <i class="fa-solid fa-plus"></i>
           </button>
         </div>
