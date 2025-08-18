@@ -22,7 +22,7 @@ function loadCartFromStorage() {
 function groupCartItems(rawCart) {
   const groupedItems = {};
   rawCart.forEach((item) => {
-    const key = item.id ?? item.title;
+    const key = String(item.id ?? item.title);
     if (!groupedItems[key]) {
       groupedItems[key] = { ...item, quantity: 0, _key: key };
     }
