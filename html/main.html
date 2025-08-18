@@ -106,37 +106,7 @@
   <!-- 기존 메인 스크립트 -->
   <script src="../js/main.js"></script>
 
-  <!-- 장바구니 배지 동기화(안전망) -->
-  <script>
-    (function () {
-      const CART_KEY = 'cart_drawer_demo_v1';
-      const $box = document.getElementById('cartOpenBtn');
-      const $badge = document.getElementById('cartCount');
 
-      function readQty() {
-        try {
-          const a = JSON.parse(localStorage.getItem(CART_KEY)) || [];
-          return a.reduce((s, x) => s + (+x.qty || 0), 0);
-        } catch {
-          return 0;
-        }
-      }
-
-      function sync() {
-        if (!$box || !$badge) return;
-        const n = readQty();
-        $badge.textContent = String(n);
-        $box.setAttribute('aria-label', `장바구니 ${n}개`);
-      }
-      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync, {
-        once: true
-      });
-      else sync();
-      window.addEventListener('storage', e => {
-        if (e.key === CART_KEY) sync();
-      });
-    })();
-  </script>
 
   <!-- 위시리스트 팝오버 (메인에 이미 있던 것 유지) -->
   <div id="wishBackdrop" class="backdrop" hidden></div>
@@ -153,41 +123,7 @@
     </div>
   </div>
 
-  <!-- 홈 아이콘: 메인일 땐 새로고침, 다른 페이지면 main.html로 이동 -->
-  <script>
-    (function () {
-      const CART_KEY = 'cart'; // main.js와 동일 키로 맞추는 게 안전
-      const $box = document.querySelector('.cart-icon');
-      const $badge = document.getElementById('cart-count');
 
-      function readQty() {
-        try {
-          const a = JSON.parse(localStorage.getItem(CART_KEY)) || [];
-          return a.reduce((s, x) => s + (+x.quantity || +x.qty || 0), 0);
-        } catch {
-          return 0;
-        }
-      }
-
-      function sync() {
-        if (!$box || !$badge) return;
-        const n = readQty();
-        $badge.textContent = String(n);
-        $box.setAttribute('aria-label', `장바구니 ${n}개`);
-      }
-
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', sync, {
-          once: true
-        });
-      } else {
-        sync();
-      }
-      window.addEventListener('storage', e => {
-        if (e.key === CART_KEY) sync();
-      });
-    })();
-  </script>
 
 </body>
 
