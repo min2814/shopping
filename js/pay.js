@@ -1,22 +1,39 @@
 document.addEventListener("DOMContentLoaded", function () {
   const products = JSON.parse(localStorage.getItem("products")) || [];
-
+  console.log(products);
   const productList = document.getElementById("product-list");
   const totalAmountSpan = document.getElementById("total-amount");
+  const finalAmountSpan = document.getElementById("final-amount");
   const paymentButton = document.getElementById("payment-button");
   let total = 0;
 
   products.forEach((product) => {
     const li = document.createElement("li");
+
+    // color, size 중 null이 아닌 값만 모으기
+    const options = [];
+    if (product.color && product.color !== "null") options.push(product.color);
+    if (product.size && product.size !== "null") options.push(product.size);
+
+    // 옵션이 하나라도 있으면 괄호 포함, 없으면 그냥 상품명만 출력
+    const productTitle =
+      options.length > 0
+        ? `${product.title} (${options.join(", ")})`
+        : product.title;
+
     li.innerHTML = `
-            <span>${product.title}</span>
-            <span>${product.price.toLocaleString()}$</span>
-        `;
+    <img src="${product.image}">
+    <span class="product-title">${productTitle}</span>
+    <span class="product-quantity">수량 ${product.quantity}개</span>
+    <span class="product-price">${product.price.toLocaleString()}$</span>
+  `;
     productList.appendChild(li);
-    total += product.price;
+
+    total += product.price * product.quantity;
   });
 
   totalAmountSpan.textContent = `${total.toLocaleString()}$`;
+  finalAmountSpan.textContent = `${(total + 5).toLocaleString()}$`; // 배달비 5$ 추가
 
   const paymentLabels = document.querySelectorAll(".payment-options label");
   const cardSelectContainer = document.getElementById("card-select-container");
@@ -46,6 +63,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
       toggleCardSelector();
     });
+  });
+
+  const deliveryRequest = document.getElementById("delivery-request");
+  const customRequest = document.getElementById("custom-request");
+
+  deliveryRequest.addEventListener("change", function () {
+    if (this.value === "기타") {
+      customRequest.classList.remove("hidden");
+      customRequest.required = true;
+    } else {
+      customRequest.classList.add("hidden");
+      customRequest.required = false;
+      customRequest.value = "";
+    }
   });
 
   paymentButton.addEventListener("click", function () {
@@ -82,7 +113,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 결제 방법: ${paymentMethodText}
                 총 금액: ${total.toLocaleString()}$
             `);
-      window.location.href = "../mainpage/main.html";
+      window.location.href = "./main.html";
     } else {
       let message = "배송 정보를 모두 입력해 주세요.";
       if (name && address && phone && !termsChecked) {
