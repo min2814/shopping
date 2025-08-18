@@ -113,7 +113,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 결제 방법: ${paymentMethodText}
                 총 금액: ${total.toLocaleString()}$
             `);
-      window.location.href = "../mainpage/main.html";
+      window.location.href = "./main.html";
     } else {
       let message = "배송 정보를 모두 입력해 주세요.";
       if (name && address && phone && !termsChecked) {
