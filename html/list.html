@@ -203,6 +203,7 @@
         categories = ["전체", ...new Set(products.map(p => p.category))];
         createCategoryFilters();
         applyCategoryFilter();
+        goToPage(1);
       } catch (err) {
         console.error("상품 데이터를 불러오는 중 오류 발생:", err);
       }
@@ -371,17 +372,22 @@
       });
     })();
 
+    // 안전한 정규식 이스케이프
+    function escapeRegExp(s) {
+      return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
     function applySearchFilter() {
       const urlParams = new URLSearchParams(window.location.search);
-      const query = (urlParams.get("query") || "").toLowerCase();
+      const q = (urlParams.get("query") || "").trim().toLowerCase();
+      if (!q) return;
 
-      if (query) {
-        filteredProducts = filteredProducts.filter(
-          (p) =>
-          p.name.toLowerCase().includes(query) ||
-          p.category.toLowerCase().includes(query)
-        );
-      }
+      // 공백으로 분해된 모든 단어가 각각 '단어 경계'로 매칭될 때만 통과 (정확도↑)
+      const words = q.split(/\s+/).filter(Boolean);
+      filteredProducts = filteredProducts.filter((p) => {
+        const hay = `${p.name} ${p.category}`.toLowerCase();
+        return words.every((w) => new RegExp(`\\b${escapeRegExp(w)}\\b`, "i").test(hay));
+      });
     }
   </script>
   <script defer src="../js/main.js"></script>
