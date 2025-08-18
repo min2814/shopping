@@ -1255,8 +1255,8 @@
     function toggleIssuerMenu(force) {
       const willOpen =
         typeof force === "boolean" ?
-        force :
-        !issuerMenu.classList.contains("show");
+          force :
+          !issuerMenu.classList.contains("show");
       if (willOpen) {
         issuerMenu.classList.add("show");
         issuerDisp.setAttribute("aria-expanded", "true");
@@ -1355,10 +1355,10 @@
           if (entry.isIntersecting) activateById(entry.target.id);
         });
       }, {
-        root: null,
-        rootMargin: `-${headerOffset + 10}px 0px -60% 0px`,
-        threshold: 0.01,
-      }
+      root: null,
+      rootMargin: `-${headerOffset + 10}px 0px -60% 0px`,
+      threshold: 0.01,
+    }
     );
     sections.forEach((sec) => io.observe(sec));
 
@@ -1443,25 +1443,25 @@
 
     /* ===== 결제 카드 캐러셀 ===== */
     const cards = [{
-        bank: "토스뱅크",
-        last4: "4821",
-        theme: "toss"
-      },
-      {
-        bank: "NH채움",
-        last4: "1103",
-        theme: "nh"
-      },
-      {
-        bank: "KB국민",
-        last4: "2878",
-        theme: "kb"
-      },
-      {
-        bank: "신한",
-        last4: "9042",
-        theme: "shinhan"
-      },
+      bank: "토스뱅크",
+      last4: "4821",
+      theme: "toss"
+    },
+    {
+      bank: "NH채움",
+      last4: "1103",
+      theme: "nh"
+    },
+    {
+      bank: "KB국민",
+      last4: "2878",
+      theme: "kb"
+    },
+    {
+      bank: "신한",
+      last4: "9042",
+      theme: "shinhan"
+    },
     ];
     const slidesEl = document.getElementById("slides");
     const dotsEl = document.getElementById("cardDots");
@@ -1484,8 +1484,8 @@
         wrap.className = "slide" + (idx === current ? " is-center" : "");
         wrap.innerHTML =
           `<img alt="${c.bank} 카드 **** ${c.last4}" src="${cardSVGData(
-              c
-            )}"/>` + `<div class="sub">${c.bank} •••• ${c.last4}</div>`;
+            c
+          )}"/>` + `<div class="sub">${c.bank} •••• ${c.last4}</div>`;
         wrap.addEventListener("click", () => goTo(idx));
         slidesEl.appendChild(wrap);
       });
@@ -1690,8 +1690,8 @@
     function toggleGenderMenu(force) {
       const willOpen =
         typeof force === "boolean" ?
-        force :
-        !genderMenu.classList.contains("show");
+          force :
+          !genderMenu.classList.contains("show");
       if (willOpen) {
         genderMenu.classList.add("show");
         genderDisp.setAttribute("aria-expanded", "true");
@@ -1729,10 +1729,43 @@
         return;
       }
       if (editing) {
+        // 저장 로직 추가
+        const profileData = {
+          name: nameField.value.trim(),
+          phone: phoneInput.value.trim(),
+          email: emailInput.value.trim(),
+          birth: birthInput.value,
+          gender: genderTextEl.dataset.value || ""
+        };
+        localStorage.setItem("shop.profile.v1", JSON.stringify(profileData));
+
         alert("프로필이 저장되었습니다. ✅");
       }
       setEditing(!editing);
     });
+
+    (function loadProfile() {
+      try {
+        const raw = localStorage.getItem("shop.profile.v1");
+        if (!raw) return;
+        const data = JSON.parse(raw);
+
+        if (data.name) nameField.value = data.name;
+        if (data.phone) phoneInput.value = data.phone;
+        if (data.email) emailInput.value = data.email;
+        if (data.birth) birthInput.value = data.birth;
+        if (data.gender) {
+          genderTextEl.textContent = data.gender === "male" ? "남성" :
+            data.gender === "female" ? "여성" :
+              data.gender === "other" ? "기타/비공개" : "선택하세요";
+          genderTextEl.dataset.value = data.gender;
+        }
+      } catch (e) {
+        console.warn("프로필 불러오기 실패", e);
+      }
+    })();
+
+
     document.querySelectorAll(".calendar-btn").forEach((btn) =>
       btn.addEventListener("click", () => {
         if (!editing) return;
@@ -1750,14 +1783,14 @@
         if (v.startsWith("010")) {
           if (v.length > 7)
             v = v
-            .replace(/(\d{3})(\d{4})(\d{0,4}).*/, "$1-$2-$3")
-            .replace(/-$/, "");
+              .replace(/(\d{3})(\d{4})(\d{0,4}).*/, "$1-$2-$3")
+              .replace(/-$/, "");
           else if (v.length > 3) v = v.replace(/(\d{3})(\d{0,4})/, "$1-$2");
         } else {
           if (v.length > 7)
             v = v
-            .replace(/(\d{3})(\d{3,4})(\d{0,4}).*/, "$1-$2-$3")
-            .replace(/-$/, "");
+              .replace(/(\d{3})(\d{3,4})(\d{0,4}).*/, "$1-$2-$3")
+              .replace(/-$/, "");
           else if (v.length > 3) v = v.replace(/(\d{3})(\d{0,4})/, "$1-$2");
         }
         phoneInput.value = v;
