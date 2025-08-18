@@ -1,6 +1,7 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #f0f4ff;
+  /* 배경색을 다른 페이지와 같이 흰색으로 변경 */
+  background-color: #ffffff;
   margin: 0;
   padding: 20px;
   display: flex;
@@ -12,8 +13,9 @@ body {
   width: 100%;
   background-color: #ffffff;
   padding: 40px;
-  border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  /* 배경이 흰색이므로 불필요한 테두리와 그림자 제거 또는 완화 */
+  border-radius: 8px; /* 모서리를 약간만 둥글게 조정 */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* 그림자를 더 은은하게 변경 */
 }
 
 h2 {
@@ -24,9 +26,10 @@ h2 {
 
 h3 {
   color: #444;
-  border-bottom: 2px solid  #077DE2 ;
+  /* 통일성을 위해 파란색 밑줄 제거 */
   padding-bottom: 10px;
   margin-bottom: 20px;
+  border-bottom: 2px solid #eee; /* 밑줄을 연한 회색으로 변경하거나, border-bottom 속성 자체를 제거해도 좋습니다. */
 }
 
 .order-summary,
@@ -36,20 +39,57 @@ h3 {
   margin-bottom: 30px;
 }
 
+/* 주문 상품 정보 리스트 스타일 */
 #product-list {
   list-style-type: none;
   padding: 0;
 }
 
 #product-list li {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
+  display: flex; /* Flexbox 레이아웃 사용 */
+  align-items: center; /* 세로 중앙 정렬 */
+  gap: 15px; /* 각 항목 사이의 간격 */
+  padding: 15px 0; /* 패딩을 늘려서 높이 균등하게 */
   border-bottom: 1px dashed #e0e0e0;
+  min-height: 100px; /* 최소 높이 설정으로 일정한 높이 유지 */
 }
 
 #product-list li:last-child {
   border-bottom: none;
+}
+
+#product-list li img {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  object-fit: cover; /* 이미지 비율 유지 */
+}
+
+/* 제품명 스타일 - 좌측 정렬, 충분한 공간 확보 */
+#product-list li .product-title {
+  flex: 2;
+  text-align: left;
+  word-break: break-word;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+/* 가격 스타일 */
+#product-list li .product-price {
+  width: 120px;
+  text-align: right;
+  flex-shrink: 0;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* 수량 스타일 */
+#product-list li .product-quantity {
+  width: 60px;
+  text-align: center;
+  flex-shrink: 0;
+  font-weight: 500;
 }
 
 input[type="text"],
@@ -84,13 +124,14 @@ input[type="tel"] {
 }
 
 .payment-options label:hover {
-  border-color: #b6ccfe;
-  background-color: #f5f8ff;
+  border-color: #ccc;
+  background-color: #f9f9f9;
 }
 
 .payment-options label.selected {
-  background-color:  #077DE2 ;
-  border-color:  #077DE2 ;
+  /* 핵심 색상을 검은색으로 변경 */
+  background-color: #000000;
+  border-color: #000000;
   color: #fff;
   font-weight: bold;
 }
@@ -104,15 +145,56 @@ input[type="tel"] {
 }
 
 .total-price {
-  text-align: right;
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
   margin-top: 40px;
 }
 
-#total-amount {
-  color:  #077DE2 ;
+.total-price-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.total-price-header h3 {
+  border-bottom: none;
+  margin: 0;
+  padding: 0;
+}
+
+#final-amount {
+  font-size: 30px;
+  /* 핵심 색상을 검은색으로 변경 */
+  color: #000000;
+  font-weight: bold;
+}
+
+.total-price-details {
+  padding: 10px 10px 0 10px;
+}
+
+.total-price-details p {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+  font-size: 16px;
+  color: #555;
+}
+
+.total-price-details span:nth-child(2) {
+  font-weight: bold;
+}
+
+.total-price-divider {
+  border: 0;
+  height: 2px;
+  /* 핵심 색상을 검은색으로 변경 */
+  background: #000000;
+  margin: 10px 0 20px 0;
+}
+
+#total-amount,
+#delivery-fee {
+  font-weight: bold;
 }
 
 #payment-button {
@@ -120,7 +202,8 @@ input[type="tel"] {
   padding: 15px;
   font-size: 18px;
   color: #fff;
-  background-color:  #077DE2 ;
+  /* 핵심 색상을 검은색으로 변경 */
+  background-color: #000000;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -128,7 +211,8 @@ input[type="tel"] {
 }
 
 #payment-button:hover {
-  background-color:  #077DE2 ;
+  /* hover 시 약간 밝은 검은색으로 변경 */
+  background-color: #333333;
 }
 
 #card-select-container {
@@ -192,7 +276,8 @@ input[type="tel"] {
 .address-group button {
   padding: 12px 20px;
   font-size: 16px;
-  background-color:  #077DE2 ;
+  /* 핵심 색상을 검은색으로 변경 */
+  background-color: #000000;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -201,7 +286,8 @@ input[type="tel"] {
 }
 
 .address-group button:hover {
-  background-color:  #077ce283 ;
+  /* hover 시 약간 밝은 검은색으로 변경 */
+  background-color: #333333;
 }
 
 .address-result,
@@ -216,8 +302,26 @@ input.detail-address {
 }
 
 .payment-terms input[type="checkbox"] {
-  width: 20px;      
+  width: 20px;
   height: 20px;
-  accent-color: #077DE2; 
+  /* 체크박스 색상도 검은색으로 변경 */
+  accent-color: #000000;
   cursor: pointer;
+}
+
+select {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-size: 16px;
+  background-color: #fff;
+}
+
+select:focus {
+  /* 포커스 색상도 검은색으로 변경 */
+  border-color: #000000;
+  outline: none;
 }
